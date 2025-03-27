@@ -1,11 +1,12 @@
 #include "MotorDriver.h"
 #include <Arduino.h>
 
-MotorDriver::MotorDriver(int pwm, int dir) : pwmPin(pwm), dirPin(dir) {}
+MotorDriver::MotorDriver(int pwm, int in1, int in2) : pwmPin(pwm), in1Pin(in1), in2Pin(in2) {}
 
 void MotorDriver::begin() {
     pinMode(pwmPin, OUTPUT);
-    pinMode(dirPin, OUTPUT);
+    pinMode(in1Pin, OUTPUT);
+    pinMode(in2Pin, OUTPUT);
 }
 
 void MotorDriver::setSpeed(float speed) {

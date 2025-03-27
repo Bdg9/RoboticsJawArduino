@@ -1,17 +1,19 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define NUM_ACTUATORS 6
+
 // Geometry (units in mm)
-const float BASE_JOINTS[6][3] = {
-    {100, 0, 0}, {50, 86.6, 0}, {-50, 86.6, 0}, {-100, 0, 0}, {-50, -86.6, 0}, {50, -86.6, 0}
+const float BASE_JOINTS[NUM_ACTUATORS][3] = {
+    {215, 147.224, 0}, {235, 112.583, 0}, {20, -259.808, 0}, {-20, -259.808, 0}, {-235, 112.583, 0}, {-215, -147.224, 0}
 };
 
-const float PLATFORM_JOINTS[6][3] = {
-    {30, 0, 0}, {15, 25.98, 0}, {-15, 25.98, 0}, {-30, 0, 0}, {-15, -25.98, 0}, {15, -25.98, 0}
+const float PLATFORM_JOINTS[NUM_ACTUATORS][3] = {
+    {20, 147.224, 0}, {137.5, -56.292, 0}, {117.5, -90.933, 0}, {-117.5, -90.933, 0}, {-137.5, -56.292, 0}, {-20, 147.224, 0}
 };
 
-const float ACTUATOR_MIN_LENGTH = 50.0f;
-const float ACTUATOR_MAX_LENGTH = 200.0f;
+const float ACTUATOR_MIN_LENGTH = 277.955f;
+const float ACTUATOR_MAX_LENGTH = 379.555f;
 
 // PID constants
 const float ACT_KP = 2.0f;
@@ -21,9 +23,10 @@ const float ACT_KD = 0.1f;
 // Update interval (ms)
 const unsigned long PLATFORM_UPDATE_INTERVAL = 10;
 
-// Pin assignments (customize before upload)
-const int ACT_PWM_PINS[6] = {2, 3, 4, 5, 6, 7};
-const int ACT_DIR_PINS[6] = {8, 9, 10, 11, 12, 13};
-const int ACT_POT_PINS[6] = {A0, A1, A2, A3, A4, A5};
+// Pin assignments 
+const int ACT_PWM_PINS[NUM_ACTUATORS] = {28, 12, 29, 6, 5, 0};
+const int ACT_IN1_PINS[NUM_ACTUATORS] = {27, 25, 30, 8, 4, 2};
+const int ACT_IN2_PINS[NUM_ACTUATORS] = {26, 24, 31, 7, 3, 1};
+const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 22, 21, 20, 19, 18};
 
 #endif // CONFIG_H
