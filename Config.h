@@ -25,8 +25,8 @@ const unsigned long PLATFORM_UPDATE_INTERVAL = 10;
 
 // Pin assignments 
 const int ACT_PWM_PINS[NUM_ACTUATORS] = {28, 12, 29, 6, 5, 0};
-const int ACT_IN1_PINS[NUM_ACTUATORS] = {27, 25, 30, 8, 4, 2};
-const int ACT_IN2_PINS[NUM_ACTUATORS] = {26, 24, 31, 7, 3, 1};
+const int ACT_A_PINS[NUM_ACTUATORS] = {27, 25, 30, 8, 4, 2};
+const int ACT_B_PINS[NUM_ACTUATORS] = {26, 24, 31, 7, 3, 1};
 const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 22, 21, 20, 19, 18};
 
 #endif // CONFIG_H

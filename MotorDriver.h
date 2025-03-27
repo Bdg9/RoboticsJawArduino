@@ -3,11 +3,12 @@
 
 class MotorDriver {
 public:
-    MotorDriver(int pwmPin, int in1Pin, int in2Pin);
+    MotorDriver(int pwmPin, int aPin, int bPin);
     void begin();
     void setSpeed(float speed); // speed in [-255,255]
+    void stop();
 private:
-    int pwmPin, in1Pin, in2Pin;
+    int pwmPin, aPin, bPin;
 };
 
 #endif // MOTOR_DRIVER_H
