@@ -8,6 +8,7 @@ Trajectory trajectory;
 void setup() {
     Serial.begin(115200);
     platform.begin();
+    platform.calibrateActuators(true);
 
     Pose p0 = {0,0,0,0,0,0};
     Pose p1 = {0,0,50,0,0,0};

@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #define NUM_ACTUATORS 6
+#define CALIB_TIME 4000 //ms
 
 // Geometry (units in mm)
 const float BASE_JOINTS[NUM_ACTUATORS][3] = {
