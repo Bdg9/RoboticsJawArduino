@@ -8,7 +8,7 @@ public:
     Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb);
     void begin();
     void setTargetLength(float length);
-    void update();
+    bool update();
     float getLength() const;
     void stop();
     void setSpeed(int speed);

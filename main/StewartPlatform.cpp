@@ -23,8 +23,11 @@ void StewartPlatform::moveToPose(const Pose& pose) {
     }
 }
 
-void StewartPlatform::update() {
-    for(int i = 0; i < 6; i++) actuators[i]->update();
+bool StewartPlatform::update() {
+    for(int i = 0; i < 6; i++){
+        if(!actuators[i]->update()) return false;       
+    }
+    return true;
 }
 
 bool StewartPlatform::calibrate(bool debug) {

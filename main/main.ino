@@ -28,6 +28,11 @@ void loop() {
     //     lastUpdate = now;
     //     Pose target = trajectory.getPose(now);
     //     platform.moveToPose(target);
-    //     platform.update();
+    //     if(!platform.update()) {
+    //         Serial.println("Error: Failed updating platform. Stoppping execution.");
+    //         platform.stop();
+    //         while (true) {
+                    // Halt execution
+    //          }   
     // }
 }
