@@ -14,6 +14,8 @@ public:
     void setSpeed(int speed);
     void setMin(int min);
     void setMax(int max);
+    inline int getMin(){ return minPotValue; }
+    inline int getMax(){ return maxPotValue; }
     int potPin;
 private:
     MotorDriver driver;

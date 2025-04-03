@@ -8,7 +8,12 @@ Trajectory trajectory;
 void setup() {
     Serial.begin(9600);
     platform.begin();
-    platform.calibrate(true);
+    if (!platform.calibrate(true)) {
+        Serial.println("Calibration failed. Stopping execution.");
+        while (true) {
+            // Halt execution
+        }
+    }
 
     Pose p0 = {0,0,0,0,0,0};
     Pose p1 = {0,0,50,0,0,0};

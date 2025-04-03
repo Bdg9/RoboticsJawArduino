@@ -27,7 +27,7 @@ void StewartPlatform::update() {
     for(int i = 0; i < 6; i++) actuators[i]->update();
 }
 
-void StewartPlatform::calibrate(bool debug) {
+bool StewartPlatform::calibrate(bool debug) {
     Serial.println("Calibrating actuators...");
 
     //extend all actuators
@@ -61,8 +61,6 @@ void StewartPlatform::calibrate(bool debug) {
         }
     }
 
-    Serial.println("retracting all");
-
     //retract all actuators
     time = millis();
     while (millis() - time < CALIB_TIME) {
@@ -90,6 +88,17 @@ void StewartPlatform::calibrate(bool debug) {
         if(debug) {
             Serial.print("Actuator "); Serial.print(i); Serial.print(": maxPotValue = "); Serial.println(max);
         }
+        if(max < actuators[i]->getMin()){
+            Serial.print("Error: Actuator "); Serial.print(i); Serial.print(" max potentiometer value ("); Serial.print(max); 
+            Serial.print(") < min potentiometer value (") ; Serial.print(actuators[i]->getMin()); Serial.println(")");
+            return false;
+        }else if((max - actuators[i]->getMin) < CALIB_MIN_DIF){
+            Serial.print("Error: Actuator "); Serial.print(i); Serial.println(", not enoug difference between min and max pot values.)");
+            return false;
+        }
     }
+
+    Serial.println("Calibration done.");
+    return true;
     
 }

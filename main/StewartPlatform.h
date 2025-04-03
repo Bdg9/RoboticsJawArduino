@@ -10,7 +10,7 @@ public:
     void begin();
     void moveToPose(const Pose& pose);
     void update();
-    void calibrate(bool debug=false);
+    bool calibrate(bool debug=false);
 private:
     Actuator* actuators[6];
     float targetLengths[6];
