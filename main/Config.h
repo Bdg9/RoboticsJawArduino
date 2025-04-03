@@ -31,4 +31,23 @@ const int ACT_A_PINS[NUM_ACTUATORS] = {34, 7, 4, 1, 28, 25};
 const int ACT_B_PINS[NUM_ACTUATORS] = {33, 6, 3, 0, 27, 24};
 const int ACT_POT_PINS[NUM_ACTUATORS] = {22, 21, 20, 18, 17, 16};
 
+// Constraints for the pose
+const float MIN_X = -20.0f;
+const float MAX_X = 20.0f;
+
+const float MIN_Y = -20.0f;
+const float MAX_Y = 20.0f;
+
+const float MIN_Z = 0.0f;
+const float MAX_Z = 60.0f;
+
+const float MIN_ROLL = -5.0f;
+const float MAX_ROLL = 35.0f;
+
+const float MIN_PITCH = -20.0f;
+const float MAX_PITCH = 20.0f;
+
+const float MIN_YAW = -10.0f;
+const float MAX_YAW = 10.0f;
+
 #endif // CONFIG_H

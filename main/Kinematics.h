@@ -2,6 +2,7 @@
 #define KINEMATICS_H
 
 #include "Config.h"
+#include "Arduino.h"
 
 struct Pose { float x, y, z; float roll, pitch, yaw; };
 

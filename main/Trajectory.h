@@ -6,7 +6,7 @@
 class Trajectory {
 public:
     Trajectory();
-    void addWaypoint(const Pose& pose, unsigned long time);
+    bool addWaypoint(const Pose& pose, unsigned long time);
     Pose getPose(unsigned long currentTime);
 private:
     static const int MAX_POINTS = 10;

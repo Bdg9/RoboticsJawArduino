@@ -92,7 +92,7 @@ bool StewartPlatform::calibrate(bool debug) {
             Serial.print("Error: Actuator "); Serial.print(i); Serial.print(" max potentiometer value ("); Serial.print(max); 
             Serial.print(") < min potentiometer value (") ; Serial.print(actuators[i]->getMin()); Serial.println(")");
             return false;
-        }else if((max - actuators[i]->getMin) < CALIB_MIN_DIF){
+        }else if((max - actuators[i]->getMin()) < CALIB_MIN_DIF){
             Serial.print("Error: Actuator "); Serial.print(i); Serial.println(", not enoug difference between min and max pot values.)");
             return false;
         }
