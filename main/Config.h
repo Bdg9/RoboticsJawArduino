@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #define NUM_ACTUATORS 6
-#define CALIB_TIME 4000 //ms
+#define CALIB_TIME 10000 //ms
 
 // Geometry (units in mm)
 const float BASE_JOINTS[NUM_ACTUATORS][3] = {
@@ -25,9 +25,9 @@ const float ACT_KD = 0.1f;
 const unsigned long PLATFORM_UPDATE_INTERVAL = 10;
 
 // Pin assignments 
-const int ACT_PWM_PINS[NUM_ACTUATORS] = {28, 12, 29, 6, 5, 0};
-const int ACT_A_PINS[NUM_ACTUATORS] = {27, 25, 30, 8, 4, 2};
-const int ACT_B_PINS[NUM_ACTUATORS] = {26, 24, 31, 7, 3, 1};
-const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 22, 21, 20, 19, 18};
+const int ACT_PWM_PINS[NUM_ACTUATORS] = {35, 8, 5, 2, 29, 26};
+const int ACT_A_PINS[NUM_ACTUATORS] = {34, 7, 4, 1, 28, 25};
+const int ACT_B_PINS[NUM_ACTUATORS] = {33, 6, 3, 0, 27, 24};
+const int ACT_POT_PINS[NUM_ACTUATORS] = {22, 21, 20, 18, 17, 16};
 
 #endif // CONFIG_H

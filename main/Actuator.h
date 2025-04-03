@@ -11,10 +11,12 @@ public:
     void update();
     float getLength() const;
     void stop();
-    void calibrate(bool debug=false);
+    void setSpeed(int speed);
+    void setMin(int min);
+    void setMax(int max);
+    int potPin;
 private:
     MotorDriver driver;
-    int potPin;
     int minPotValue;
     int maxPotValue;
     int actuatorNb;
