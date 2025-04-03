@@ -9,7 +9,7 @@ public:
     StewartPlatform();
     void begin();
     void moveToPose(const Pose& pose);
-    void update();
+    bool update();
     bool calibrate(bool debug=false);
 private:
     Actuator* actuators[6];
