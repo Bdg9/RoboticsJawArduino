@@ -9,6 +9,7 @@ public:
     StewartPlatform();
     void begin();
     void moveToPose(const Pose& pose);
+    void stop();
     bool update();
     bool calibrate(bool debug=false);
 private:

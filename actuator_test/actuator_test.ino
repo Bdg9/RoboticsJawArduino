@@ -30,20 +30,18 @@ void loop() {
     stopActuators(); // Stop the actuator
     delay(1000); // Wait for 1 second
 
-    // Serial.print("Actuator extended position: ");
-    // int position = analogRead(POT_PIN);
-    // Serial.println(position);
-    // delay(10);
+    Serial.print("Actuator extended position: ");
+    printAllActuatorPositions();
+    delay(10);
 
     moveAllActuators(-1, SPEED_MAX); // Move backward at max speed
     delay(DELAY_TIME); 
     stopActuators(); // Stop the actuator
     delay(1000); // Wait for 1 second
 
-    // Serial.print("Actuator retracted position: ");
-    // position = analogRead(POT_PIN);
-    // Serial.println(position);
-    // delay(10);    
+    Serial.print("Actuator retracted position: ");
+    printAllActuatorPositions();
+    delay(10);    
 }
 
 void actuatorTest(int speed, int actuatorIndex) {
@@ -125,5 +123,15 @@ void moveAllActuators(int direction, int speed) {
             digitalWrite(B_PINS[i], LOW);
         }
         analogWrite(PWM_PINS[i], speed);
+    }
+}
+
+void printAllActuatorPositions() {
+    for (int i = 0; i < 6; i++) {
+        int position = analogRead(POT_PINS[i]);
+        Serial.print("Actuator ");
+        Serial.print(i + 1);
+        Serial.print(" position: ");
+        Serial.println(position);
     }
 }

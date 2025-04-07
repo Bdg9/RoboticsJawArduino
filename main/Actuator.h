@@ -2,6 +2,7 @@
 #define ACTUATOR_H
 
 #include "MotorDriver.h"
+#include "Utils.h"
 
 class Actuator {
 public:
@@ -9,7 +10,7 @@ public:
     void begin();
     void setTargetLength(float length);
     bool update();
-    float getLength() const;
+    float getLength();
     void stop();
     void setSpeed(int speed);
     void setMin(int min);

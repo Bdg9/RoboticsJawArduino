@@ -40,6 +40,20 @@ bool Trajectory::addWaypoint(const Pose& pose, unsigned long time) {
     return true;
 }
 
+void Trajectory::printPoints() {
+    Serial.println("Trajectory Points:");
+    for(int i = 0; i < count; i++) {
+        Serial.print("Point "); Serial.print(i); Serial.print(": ");
+        Serial.print("Time: "); Serial.print(points[i].time); Serial.print(", ");
+        Serial.print("Pose: ("); Serial.print(points[i].pose.x); Serial.print(", ");
+        Serial.print(points[i].pose.y); Serial.print(", ");
+        Serial.print(points[i].pose.z); Serial.print(", ");
+        Serial.print(points[i].pose.roll); Serial.print(", ");
+        Serial.print(points[i].pose.pitch); Serial.print(", ");
+        Serial.print(points[i].pose.yaw); Serial.println(")");
+    }
+}
+
 Pose Trajectory::getPose(unsigned long currentTime) {
     if(count == 0) return {0,0,0,0,0,0};
     if(currentTime <= points[0].time) return points[0].pose;
@@ -67,7 +81,6 @@ Pose Trajectory::getPose(unsigned long currentTime) {
             interpolatedPose.roll = clamp(interpolatedPose.roll, MIN_ROLL, MAX_ROLL);
             interpolatedPose.pitch = clamp(interpolatedPose.pitch, MIN_PITCH, MAX_PITCH);
             interpolatedPose.yaw = clamp(interpolatedPose.yaw, MIN_YAW, MAX_YAW);
-
             return interpolatedPose;
         }
     }

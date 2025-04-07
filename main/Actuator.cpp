@@ -10,9 +10,17 @@ void Actuator::begin() {
     pinMode(potPin, INPUT);
 }
 
-float Actuator::getLength() const {
+float Actuator::getLength() {
     int raw = analogRead(potPin);
-    return map(raw, minPotValue, maxPotValue, (int)ACTUATOR_MIN_LENGTH, (int)ACTUATOR_MAX_LENGTH);
+    //update min/max if raw > max or raw < min
+    if(raw > maxPotValue) {
+        maxPotValue = raw;
+        Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" maxPotValue updated.");
+    } else if(raw < minPotValue) {
+        minPotValue = raw;
+        Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" minPotValue updated.");
+    }
+    return mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
 }
 
 void Actuator::setTargetLength(float length) {
@@ -24,6 +32,9 @@ bool Actuator::update() {
     if(current < ACTUATOR_MIN_LENGTH || current > ACTUATOR_MAX_LENGTH) {
         driver.setSpeed(0);
         Serial.print("Error: Actuator "); Serial.print(actuatorNb); Serial.println(" out of bounds.");
+        Serial.print("Current length: "); Serial.println(current);
+        Serial.print("Target length: "); Serial.println(targetLength);
+        Serial.print("Min length: "); Serial.println(ACTUATOR_MIN_LENGTH);
         return false;
     }
     float error = targetLength - current;
@@ -32,6 +43,8 @@ bool Actuator::update() {
     float output = ACT_KP * error + ACT_KI * errorSum + ACT_KD * dError;
     driver.setSpeed(output);
     lastError = error;
+    // Serial.print("Actuator "); Serial.print(actuatorNb); 
+    // Serial.print(" target speed: "); Serial.println(output);
     return true;
 }
 
