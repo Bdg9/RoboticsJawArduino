@@ -21,9 +21,9 @@ const float ACTUATOR_MAX_LENGTH = 480.240f;
 const float Z0 = 324.415f;
 
 // PID constants
-const float ACT_KP = 25.0f;
+const float ACT_KP = 10.0f;
 const float ACT_KI = 0.0f;
-const float ACT_KD = 1.0f;
+const float ACT_KD = 0.0f;
 
 // Update interval (ms)
 const unsigned long PLATFORM_UPDATE_INTERVAL = 10;

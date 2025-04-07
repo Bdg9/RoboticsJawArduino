@@ -44,7 +44,9 @@ bool Actuator::update() {
     driver.setSpeed(output);
     lastError = error;
     Serial.print("Actuator "); Serial.print(actuatorNb); 
-    Serial.print(" target speed: "); Serial.println(output);
+    Serial.print(" target speed: "); Serial.print(output);
+    Serial.print(", target length: "); Serial.print(targetLength);
+    Serial.print(", current length: "); Serial.println(current);
     return true;
 }
 
