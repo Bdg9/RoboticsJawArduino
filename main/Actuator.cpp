@@ -43,8 +43,8 @@ bool Actuator::update() {
     float output = ACT_KP * error + ACT_KI * errorSum + ACT_KD * dError;
     driver.setSpeed(output);
     lastError = error;
-    // Serial.print("Actuator "); Serial.print(actuatorNb); 
-    // Serial.print(" target speed: "); Serial.println(output);
+    Serial.print("Actuator "); Serial.print(actuatorNb); 
+    Serial.print(" target speed: "); Serial.println(output);
     return true;
 }
 

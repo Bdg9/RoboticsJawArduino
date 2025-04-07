@@ -32,6 +32,7 @@ void setup() {
     trajectory.addWaypoint(p5, 15000);
     trajectory.addWaypoint(p6, 18000);
     trajectory.addWaypoint(p7, 21000);
+    trajectory.addWaypoint(p0, 24000);
     trajectory.printPoints();
 }
 
@@ -43,14 +44,6 @@ void loop() {
     if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
         lastUpdate = now;
         Pose target = trajectory.getPose(now);
-        Serial.print("Target Pose: ");
-        Serial.print("X: "); Serial.print(target.x);
-        Serial.print(", Y: "); Serial.print(target.y);
-        Serial.print(", Z: "); Serial.print(target.z);
-        Serial.print(", Roll: "); Serial.print(target.roll);
-        Serial.print(", Pitch: "); Serial.print(target.pitch);
-        Serial.print(", Yaw: "); Serial.print(target.yaw);
-        Serial.print(", time: "); Serial.println(now);
         platform.moveToPose(target);
         if(!platform.update()) {
             Serial.println("Error: Failed updating platform. Stoppping execution.");
