@@ -1,5 +1,6 @@
 #include "MotorDriver.h"
 #include <Arduino.h>
+#include "Config.h"
 
 MotorDriver::MotorDriver(int pwm, int a, int b) : pwmPin(pwm), aPin(a), bPin(b) {}
 
@@ -10,8 +11,9 @@ void MotorDriver::begin() {
 }
 
 void MotorDriver::setSpeed(float speed) {
-    digitalWrite(aPin, speed >= 0 ? HIGH : LOW); //to test
-    digitalWrite(bPin, speed >= 0 ? LOW : HIGH);
+    digitalWrite(aPin, speed >= 0 ? LOW : HIGH); 
+    digitalWrite(bPin, speed >= 0 ? HIGH : LOW);
+    if(abs(speed) < MIN_SPEED){ speed = 0; } 
     analogWrite(pwmPin, (int)min(abs(speed), 255.0f));
 }
 
