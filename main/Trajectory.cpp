@@ -74,12 +74,12 @@ Pose Trajectory::getPose(unsigned long currentTime) {
 }
 
 void Trajectory::printPose(const Pose& pose) {
-    Serial.print("Pose: ("); Serial.print(pose.x); Serial.print(", ");
-    Serial.print(pose.y); Serial.print(", ");
-    Serial.print(pose.z); Serial.print(", ");
-    Serial.print(pose.roll); Serial.print(", ");
-    Serial.print(pose.pitch); Serial.print(", ");
-    Serial.print(pose.yaw); Serial.println(")");
+    Serial.print("Pose: "); Serial.print("x: "); Serial.print(pose.x); Serial.print(", ");
+    Serial.print("y: "); Serial.print(pose.y); Serial.print(", ");
+    Serial.print("z: "); Serial.print(pose.z); Serial.print(", ");
+    Serial.print("roll: "); Serial.print(pose.roll); Serial.print(", ");
+    Serial.print("pitch: "); Serial.print(pose.pitch); Serial.print(", ");
+    Serial.print("yaw: "); Serial.println(pose.yaw);
 }
 
 void Trajectory::printPoints() {

@@ -7,6 +7,8 @@ import re
 import time
 import serial.tools.list_ports
 
+# ==== Helper Functions ====
+
 def find_teensy_port():
     ports = serial.tools.list_ports.comports()
     for port in ports:
@@ -21,6 +23,27 @@ def find_teensy_by_vid_pid():
             return port.device
     return None
 
+def update_line(line, x_data, y_data):
+    if len(y_data) > MAX_POINTS:
+        x = x_data[-MAX_POINTS:]
+        y = y_data[-MAX_POINTS:]
+    else:
+        x = x_data
+        y = y_data
+    line.set_data(x, y)
+
+def save_plot(fig, axes, data, titles, y_labels, filename):
+    for ax, title, y_label, values in zip(axes, titles, y_labels, data):
+        ax.plot(values, label=title)
+        ax.set_xlabel("Sample")
+        ax.set_ylabel(y_label)
+        ax.set_title(title)
+        ax.legend()
+        ax.grid(True)
+    plt.tight_layout()
+    fig.savefig(filename)
+    plt.close(fig)
+
 # ==== Configuration ====
 SERIAL_PORT = find_teensy_port() or find_teensy_by_vid_pid()
 if not SERIAL_PORT:
@@ -32,15 +55,21 @@ MAX_POINTS = 500       # Max points to show per actuator
 speed_data = {i: [] for i in range(6)}
 target_lengths = {i: [] for i in range(6)}
 current_lengths = {i: [] for i in range(6)}
-
-all_speed_data = []
-all_target_lengths = []
-all_current_lengths = []
-timestamps = []
+timestamps = {i: [] for i in range(6)}  # Timestamps for actuators
+pose_data = {
+    "x": [],
+    "y": [],
+    "z": [],
+    "roll": [],
+    "pitch": [],
+    "yaw": [],
+    "timestamp": [],
+}
 
 # ==== Set up Serial ====
-ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=2)
+ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
 time.sleep(2)  # Let the Teensy reset
+start_time = time.time()
 
 # ==== Setup Plot for Speeds ====
 fig, axes = plt.subplots(3, 2, figsize=(12, 8))  # Create a 3x2 grid of subplots
@@ -75,50 +104,90 @@ for i, ax in enumerate(axes2):
     ax.legend()
     ax.grid(True)
 
+# ==== Setup Plot for Pose ====
+fig3, axes3 = plt.subplots(3, 2, figsize=(12, 8))  # Create a 3x2 grid of subplots for pose
+axes3 = axes3.flatten()  # Flatten the 2D array of axes for easier indexing
+pose_lines = {}
+
+# Define y-axis limits for each pose component
+pose_limits = {
+    "x": (-20, 20),
+    "y": (-20, 20),
+    "z": (375, 481),
+    "roll": (-1.5, 1.5),  # -π/2 to π/2
+    "pitch": (-1.5, 1.5),  # -π/2 to π/2
+    "yaw": (-1.5, 1.5),  # -π/2 to π/2
+}
+
+for i, (key, ax) in enumerate(zip(pose_data.keys(), axes3)):
+    line, = ax.plot([], [], label=f'{key.capitalize()}')
+    pose_lines[key] = line
+    ax.set_xlim(0, MAX_POINTS)
+    ax.set_ylim(*pose_limits[key])  # Set y-axis limits based on the pose component
+    ax.set_xlabel("Sample")
+    ax.set_ylabel(key.capitalize())
+    ax.set_title(f"Pose {key.capitalize()}")
+    ax.legend()
+    ax.grid(True)
+
 # ==== Animation Update Function ====
 def update(frame):
     for _ in range(500):  # Process up to 500 lines per frame
         if ser.in_waiting:
             line = ser.readline().decode(errors='ignore').strip()
+            current_time = time.time()-start_time
             match = re.match(r"Actuator (\d) target speed: (-?\d+\.?\d*), target length: (-?\d+\.?\d*), current length: (-?\d+\.?\d*)", line)
             if match:
                 i = int(match.group(1))
                 speed = float(match.group(2))
                 target_length = float(match.group(3))
                 current_length = float(match.group(4))
+                timestamps[i].append(current_time)
 
                 # Update speed data
                 speed_data[i].append(speed)
                 # Update length data
                 target_lengths[i].append(target_length)
                 current_lengths[i].append(current_length)
+            
+            match = re.match(r"Pose: x: (-?\d+\.?\d*), y: (-?\d+\.?\d*), z: (-?\d+\.?\d*), roll: (-?\d+\.?\d*), pitch: (-?\d+\.?\d*), yaw: (-?\d+\.?\d*)", line)
+            if match:
+                pose_data["x"].append(float(match.group(1)))
+                pose_data["y"].append(float(match.group(2)))
+                pose_data["z"].append(float(match.group(3)))
+                pose_data["roll"].append(float(match.group(4)))
+                pose_data["pitch"].append(float(match.group(5)))
+                pose_data["yaw"].append(float(match.group(6)))
+                pose_data["timestamp"].append(current_time)
 
         # Update speed lines
         for i, line in enumerate(speed_lines):
-            if len(speed_data[i]) > MAX_POINTS:
-                y = speed_data[i][-MAX_POINTS:]
-            else:
-                y = speed_data[i]
-            x = list(range(len(y)))
-            line.set_data(x, y)
+            update_line(line, timestamps[i], speed_data[i])
 
         # Update length lines
         for i, (target_line, current_line) in enumerate(length_lines):
-            if len(target_lengths[i]) > MAX_POINTS:
-                y_target = target_lengths[i][-MAX_POINTS:]
-            else:
-                y_target = target_lengths[i]
-            if len(current_lengths[i]) > MAX_POINTS:
-                y_current = current_lengths[i][-MAX_POINTS:]
-            else:
-                y_current = current_lengths[i]  
+            update_line(target_line, timestamps[i], target_lengths[i])
+            update_line(current_line, timestamps[i], current_lengths[i])
+        
+        #update pose lines
+        for i, (key, line) in enumerate(pose_lines.items()):
+            if key != "timestamp":
+                update_line(line, pose_data["timestamp"], pose_data[key])
 
-            x_target = list(range(len(y_target)))    
-            x_current = list(range(len(y_current)))
-            target_line.set_data(x_target, y_target)   
-            current_line.set_data(x_current, y_current)
+        # Update x-axis limits for all plots
+        if len(timestamps[i]) > 0:
+            if len(timestamps[0]) > MAX_POINTS:
+                for i in range(6):
+                    axes[i].set_xlim(timestamps[i][-MAX_POINTS], timestamps[i][-1])
+                    axes2[i].set_xlim(timestamps[i][-MAX_POINTS], timestamps[i][-1])
+                    axes3[i].set_xlim(pose_data["timestamp"][-MAX_POINTS], pose_data["timestamp"][-1])
+            else:
+                for i in range(6):
+                    axes[i].set_xlim(timestamps[i][0], timestamps[i][-1])
+                    axes2[i].set_xlim(timestamps[i][0], timestamps[i][-1])
+                    axes3[i].set_xlim(pose_data["timestamp"][0], pose_data["timestamp"][-1])
 
-    return speed_lines + [line for pair in length_lines for line in pair]
+    return speed_lines + [line for pair in length_lines for line in pair] + list(pose_lines.values())
 
 # ==== Save Plots After Animation Ends ====
 def save_plots():
@@ -126,7 +195,8 @@ def save_plots():
     fig_speed, axes_speed = plt.subplots(3, 2, figsize=(12, 8))
     axes_speed = axes_speed.flatten()
     for i, ax in enumerate(axes_speed):
-        ax.plot(speed_data[i], label=f'Actuator {i} Speed', color='green')
+        ax.plot(speed_data[i], label=f'Motor speed command', color='green')
+        ax.set_xlim(timestamps[i][0], timestamps[i][-1])
         ax.set_xlabel("Sample")
         ax.set_ylabel("Speed")
         ax.set_title(f"Actuator {i} Speeds")
@@ -140,8 +210,9 @@ def save_plots():
     fig_length, axes_length = plt.subplots(3, 2, figsize=(12, 8))
     axes_length = axes_length.flatten()
     for i, ax in enumerate(axes_length):
-        ax.plot(target_lengths[i], label=f'Actuator {i} Target Length', color='blue', linestyle='None', marker='o', markersize=0.1)
-        ax.plot(current_lengths[i], label=f'Actuator {i} Current Length', color='orange')
+        ax.plot(target_lengths[i], label=f'Target Length', color='blue', linestyle='None', marker='o', markersize=0.1)
+        ax.plot(current_lengths[i], label=f'Current Length', color='orange')
+        ax.set_xlim(timestamps[i][0], timestamps[i][-1])
         ax.set_xlabel("Sample")
         ax.set_ylabel("Length")
         ax.set_title(f"Actuator {i} Lengths")
@@ -151,10 +222,26 @@ def save_plots():
     fig_length.savefig("Results\lengths_plot.png")
     plt.close(fig_length)
 
+    fig_pose, axes_pose = plt.subplots(3, 2, figsize=(12, 8))
+    axes_pose = axes_pose.flatten()
+    for i, (key, ax) in enumerate(zip(pose_data.keys(), axes_pose)):
+        ax.plot(pose_data[key], label=f'{key.capitalize()}', color='purple', linestyle='None', marker='o', markersize=0.1)
+        ax.set_xlim(pose_data["timestamp"][0], pose_data["timestamp"][-1])
+        ax.set_xlabel("Sample")
+        ax.set_ylabel(key.capitalize())
+        ax.set_title(f"{key.capitalize()}")
+        ax.legend()
+        ax.grid(True)
+    plt.tight_layout()
+    fig_pose.savefig("Results\pose_plot.png")
+    plt.close(fig_pose)
+
 try:
     # Start the animations
     ani = animation.FuncAnimation(fig, update, interval=200,cache_frame_data=False)
     ani2 = animation.FuncAnimation(fig2, update, interval=200, cache_frame_data=False)
+    ani3 = animation.FuncAnimation(fig3, update, interval=200, cache_frame_data=False)
+
     plt.tight_layout()
     plt.show()
 except KeyboardInterrupt:
