@@ -44,6 +44,7 @@ void loop() {
     if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
         lastUpdate = now;
         Pose target = trajectory.getPose(now);
+        trajectory.printPose(target);
         platform.moveToPose(target);
         if(!platform.update()) {
             Serial.println("Error: Failed updating platform. Stoppping execution.");

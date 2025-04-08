@@ -7,20 +7,12 @@ Actuator::Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb)
 void Actuator::begin() {
     driver.begin();
     pinMode(potPin, INPUT);
+    std::fill(length_data_buffer, length_data_buffer + ACT_LPF_N, (float)ACTUATOR_MIN_LENGTH); // Initialize the buffer to zero
 }
 
 float Actuator::getLength() {
     // Read the potentiometer value and store it in the buffer
     int raw = analogRead(potPin);
-    pot_data_buffer[buffer_index] = raw;
-    buffer_index = (buffer_index + 1) % ACT_LPF_N; // Circular buffer index
-
-    // Calculate the average of the last ACT_LPF_N readings
-    int sum = 0;
-    for (int i = 0; i < ACT_LPF_N; i++) {
-        sum += pot_data_buffer[i];
-    }
-    raw = sum / ACT_LPF_N; // Average value
 
     //update min/max if raw > max or raw < min
     if(raw > maxPotValue) {
@@ -30,9 +22,24 @@ float Actuator::getLength() {
         minPotValue = raw;
         Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" minPotValue updated.");
     }
+
+    float length = mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
+
+    // Apply low pass filter to smooth the reading
+    length_data_buffer[buffer_index] = length;
+    buffer_index = (buffer_index + 1) % ACT_LPF_N; // Circular buffer index
+
+    // Calculate the average of the last ACT_LPF_N readings if the buffer is full
+    float sum = 0;
+    for(int i = 0; i < ACT_LPF_N; i++) {
+        sum += length_data_buffer[i];
+    }
+    float filtered_length = sum / ACT_LPF_N;
+
+    Serial.print("Actuator "); Serial.print(actuatorNb); Serial.print(" length: "); Serial.print(length);
+    Serial.print(", filtered length: "); Serial.println(filtered_length);
     
-    // Map the raw potentiometer value to the actuator length range
-    return mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
+    return filtered_length;
 }
 
 void Actuator::setTargetLength(float length) {

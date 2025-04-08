@@ -9,6 +9,7 @@ public:
     bool addWaypoint(const Pose& pose, unsigned long time);
     Pose getPose(unsigned long currentTime);
     void printPoints();
+    void printPose(const Pose& pose);
 private:
     static const int MAX_POINTS = 10;
     struct Waypoint { Pose pose; unsigned long time; } points[MAX_POINTS];

@@ -77,7 +77,7 @@ for i, ax in enumerate(axes2):
 
 # ==== Animation Update Function ====
 def update(frame):
-    for _ in range(500):  # Process up to 100 lines per frame
+    for _ in range(500):  # Process up to 500 lines per frame
         if ser.in_waiting:
             line = ser.readline().decode(errors='ignore').strip()
             match = re.match(r"Actuator (\d) target speed: (-?\d+\.?\d*), target length: (-?\d+\.?\d*), current length: (-?\d+\.?\d*)", line)
@@ -140,7 +140,7 @@ def save_plots():
     fig_length, axes_length = plt.subplots(3, 2, figsize=(12, 8))
     axes_length = axes_length.flatten()
     for i, ax in enumerate(axes_length):
-        ax.plot(target_lengths[i], label=f'Actuator {i} Target Length', color='blue')
+        ax.plot(target_lengths[i], label=f'Actuator {i} Target Length', color='blue', linestyle='None', marker='o', markersize=0.1)
         ax.plot(current_lengths[i], label=f'Actuator {i} Current Length', color='orange')
         ax.set_xlabel("Sample")
         ax.set_ylabel("Length")
@@ -153,7 +153,7 @@ def save_plots():
 
 try:
     # Start the animations
-    #ani = animation.FuncAnimation(fig, update, interval=200,cache_frame_data=False)
+    ani = animation.FuncAnimation(fig, update, interval=200,cache_frame_data=False)
     ani2 = animation.FuncAnimation(fig2, update, interval=200, cache_frame_data=False)
     plt.tight_layout()
     plt.show()
