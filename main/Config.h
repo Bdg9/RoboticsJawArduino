@@ -22,12 +22,11 @@ const float Z0 = 324.415f;
 
 // PID constants
 const float ACT_KP = 25.0f;
-const float ACT_KI = 0.2f;
+const float ACT_KI = 0.1f;
 const float ACT_KD = 0.0f;
 const float MAX_INTEGRAL = 100.0f; // Maximum integral term to prevent windup
 
 // Low pass filter constant
-const float ACT_LPF_ALPHA = 0.2f; // Smoothing factor (0 < alpha <= 1, smaller = smoother)
 const int ACT_LPF_N = 10; // Number of samples to average
 
 // Update interval (ms)
@@ -38,7 +37,7 @@ const int ACT_PWM_PINS[NUM_ACTUATORS] = {33, 8, 5, 2, 29, 25};
 const int ACT_A_PINS[NUM_ACTUATORS] = {34, 12, 4, 1, 28, 26};
 const int ACT_B_PINS[NUM_ACTUATORS] = {36, 6, 3, 0, 27, 24};
 const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 20, 17, 16, 15};
-const int PWM_FREQ = 25000; // 25kHz
+const int PWM_FREQ = 23000; // 23kHz
 
 // Constraints for the pose
 const float MIN_X = -20.0f;
@@ -50,8 +49,8 @@ const float MAX_Y = 20.0f;
 const float MIN_Z = Z0 + 0.0f;
 const float MAX_Z = Z0 + 60.0f;
 
-const float MIN_ROLL = degrees2rad(-5.0f);
-const float MAX_ROLL = degrees2rad(35.0f);
+const float MIN_ROLL = degrees2rad(-35.0f);
+const float MAX_ROLL = degrees2rad(5.0f);
 
 const float MIN_PITCH = degrees2rad(-20.0f);
 const float MAX_PITCH = degrees2rad(20.0f);
