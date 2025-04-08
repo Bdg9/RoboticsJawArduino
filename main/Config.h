@@ -21,9 +21,13 @@ const float ACTUATOR_MAX_LENGTH = 480.240f;
 const float Z0 = 324.415f;
 
 // PID constants
-const float ACT_KP = 10.0f;
+const float ACT_KP = 20.0f;
 const float ACT_KI = 0.0f;
 const float ACT_KD = 0.0f;
+
+// Low pass filter constant
+const float ACT_LPF_ALPHA = 0.2f; // Smoothing factor (0 < alpha <= 1, smaller = smoother)
+const int ACT_LPF_N = 10; // Number of samples to average
 
 // Update interval (ms)
 const unsigned long PLATFORM_UPDATE_INTERVAL = 10;

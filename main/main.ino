@@ -20,9 +20,9 @@ void setup() {
     Pose p1 = {0,0,Z0+50,0,0,0};
     Pose p2 = {0,0,Z0+50,0,0,degrees2rad(10)};
     Pose p3 = {0,0,Z0+50,0,0,degrees2rad(-10)};
-    Pose p4 = {0,0,Z0+50,0,degrees2rad(20),0};
-    Pose p5 = {0,0,Z0+50,0,degrees2rad(-20),0};
-    Pose p6 = {0,0,Z0+50,degrees2rad(30),0,0};
+    Pose p4 = {0,0,Z0+50,0,degrees2rad(10),0};
+    Pose p5 = {0,0,Z0+50,0,degrees2rad(-10),0};
+    Pose p6 = {0,0,Z0+50,degrees2rad(10),0,0};
     Pose p7 = {0,0,Z0+50,degrees2rad(-5),0,0};
     trajectory.addWaypoint(p0, 0);
     trajectory.addWaypoint(p1, 3000);

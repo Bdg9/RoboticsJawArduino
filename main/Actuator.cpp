@@ -1,5 +1,4 @@
 #include "Actuator.h"
-#include "Config.h"
 #include <Arduino.h>
 
 Actuator::Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb)
@@ -11,7 +10,18 @@ void Actuator::begin() {
 }
 
 float Actuator::getLength() {
+    // Read the potentiometer value and store it in the buffer
     int raw = analogRead(potPin);
+    pot_data_buffer[buffer_index] = raw;
+    buffer_index = (buffer_index + 1) % ACT_LPF_N; // Circular buffer index
+
+    // Calculate the average of the last ACT_LPF_N readings
+    int sum = 0;
+    for (int i = 0; i < ACT_LPF_N; i++) {
+        sum += pot_data_buffer[i];
+    }
+    raw = sum / ACT_LPF_N; // Average value
+
     //update min/max if raw > max or raw < min
     if(raw > maxPotValue) {
         maxPotValue = raw;
@@ -20,6 +30,8 @@ float Actuator::getLength() {
         minPotValue = raw;
         Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" minPotValue updated.");
     }
+    
+    // Map the raw potentiometer value to the actuator length range
     return mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
 }
 

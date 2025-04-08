@@ -3,6 +3,7 @@
 
 #include "MotorDriver.h"
 #include "Utils.h"
+#include "Config.h"
 
 class Actuator {
 public:
@@ -26,6 +27,8 @@ private:
     float targetLength;
     float errorSum;
     float lastError;
+    int pot_data_buffer[ACT_LPF_N]; // Buffer for the last 10 readings
+    int buffer_index = 0; // Index for the next reading to be added to the buffer
 };
 
 #endif // ACTUATOR_H
