@@ -58,6 +58,7 @@ bool Actuator::update() {
     }
     float error = targetLength - current;
     errorSum += error * (PLATFORM_UPDATE_INTERVAL / 1000.0f);
+    errorSum = constrain(errorSum, -MAX_INTEGRAL, MAX_INTEGRAL); // Prevent integral windup
     float dError = (error - lastError) / (PLATFORM_UPDATE_INTERVAL / 1000.0f);
     float output = ACT_KP * error + ACT_KI * errorSum + ACT_KD * dError;
     driver.setSpeed(output);
@@ -65,7 +66,8 @@ bool Actuator::update() {
     Serial.print("Actuator "); Serial.print(actuatorNb); 
     Serial.print(" target speed: "); Serial.print(output);
     Serial.print(", target length: "); Serial.print(targetLength);
-    Serial.print(", current length: "); Serial.println(current);
+    Serial.print(", current length: "); Serial.print(current);
+    Serial.print(", time: "); Serial.println(millis());
     return true;
 }
 

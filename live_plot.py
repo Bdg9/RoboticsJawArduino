@@ -30,6 +30,8 @@ def update_line(line, x_data, y_data):
     else:
         x = x_data
         y = y_data
+    if len(x) > 0:
+        x = [i - x[0] for i in x]  # Normalize x-axis to start from 0
     line.set_data(x, y)
 
 def save_plot(fig, axes, data, titles, y_labels, filename):
@@ -136,21 +138,23 @@ def update(frame):
         if ser.in_waiting:
             line = ser.readline().decode(errors='ignore').strip()
             current_time = time.time()-start_time
-            match = re.match(r"Actuator (\d) target speed: (-?\d+\.?\d*), target length: (-?\d+\.?\d*), current length: (-?\d+\.?\d*)", line)
+            match = re.match(r"Actuator (\d) target speed: (-?\d+\.?\d*), target length: (-?\d+\.?\d*), current length: (-?\d+\.?\d*), time: (-?\d+\.?\d*)", line)
             if match:
                 i = int(match.group(1))
                 speed = float(match.group(2))
                 target_length = float(match.group(3))
                 current_length = float(match.group(4))
-                timestamps[i].append(current_time)
+                timestamp = float(match.group(5))
 
                 # Update speed data
                 speed_data[i].append(speed)
                 # Update length data
                 target_lengths[i].append(target_length)
                 current_lengths[i].append(current_length)
+                # Update timestamps
+                timestamps[i].append(timestamp)
             
-            match = re.match(r"Pose: x: (-?\d+\.?\d*), y: (-?\d+\.?\d*), z: (-?\d+\.?\d*), roll: (-?\d+\.?\d*), pitch: (-?\d+\.?\d*), yaw: (-?\d+\.?\d*)", line)
+            match = re.match(r"Pose: x: (-?\d+\.?\d*), y: (-?\d+\.?\d*), z: (-?\d+\.?\d*), roll: (-?\d+\.?\d*), pitch: (-?\d+\.?\d*), yaw: (-?\d+\.?\d*), time: (-?\d+\.?\d*)", line)
             if match:
                 pose_data["x"].append(float(match.group(1)))
                 pose_data["y"].append(float(match.group(2)))
@@ -158,7 +162,7 @@ def update(frame):
                 pose_data["roll"].append(float(match.group(4)))
                 pose_data["pitch"].append(float(match.group(5)))
                 pose_data["yaw"].append(float(match.group(6)))
-                pose_data["timestamp"].append(current_time)
+                pose_data["timestamp"].append(float(match.group(7)))
 
         # Update speed lines
         for i, line in enumerate(speed_lines):
@@ -175,17 +179,21 @@ def update(frame):
                 update_line(line, pose_data["timestamp"], pose_data[key])
 
         # Update x-axis limits for all plots
-        if len(timestamps[i]) > 0:
-            if len(timestamps[0]) > MAX_POINTS:
-                for i in range(6):
-                    axes[i].set_xlim(timestamps[i][-MAX_POINTS], timestamps[i][-1])
-                    axes2[i].set_xlim(timestamps[i][-MAX_POINTS], timestamps[i][-1])
-                    axes3[i].set_xlim(pose_data["timestamp"][-MAX_POINTS], pose_data["timestamp"][-1])
-            else:
-                for i in range(6):
-                    axes[i].set_xlim(timestamps[i][0], timestamps[i][-1])
-                    axes2[i].set_xlim(timestamps[i][0], timestamps[i][-1])
-                    axes3[i].set_xlim(pose_data["timestamp"][0], pose_data["timestamp"][-1])
+        for i, line in enumerate(speed_lines):
+            x_data = line.get_xdata()
+            if len(x_data) > 0:
+                    axes[i].set_xlim(x_data[0], x_data[-1])
+
+        for i, (target_line, current_line) in enumerate(length_lines):
+            x_data_target = target_line.get_xdata()
+            x_data_current = current_line.get_xdata()
+            if len(x_data_target) > 1:
+                axes2[i].set_xlim(x_data_target[0], x_data_target[-1])
+
+        x_data_pose = list(pose_lines.values())[0].get_xdata()  # Use the first pose line for x-axis limits
+        if len(x_data_pose) > 1:
+            for ax in axes3:
+                ax.set_xlim(x_data_pose[0], x_data_pose[-1])
 
     return speed_lines + [line for pair in length_lines for line in pair] + list(pose_lines.values())
 
@@ -195,8 +203,9 @@ def save_plots():
     fig_speed, axes_speed = plt.subplots(3, 2, figsize=(12, 8))
     axes_speed = axes_speed.flatten()
     for i, ax in enumerate(axes_speed):
-        ax.plot(speed_data[i], label=f'Motor speed command', color='green')
-        ax.set_xlim(timestamps[i][0], timestamps[i][-1])
+        timestamps[i] = [t - timestamps[i][0] for t in timestamps[i]]  # Normalize timestamps to start from 0
+
+        ax.plot(timestamps[i], speed_data[i], label=f'Motor speed command', color='green')
         ax.set_xlabel("Sample")
         ax.set_ylabel("Speed")
         ax.set_title(f"Actuator {i} Speeds")
@@ -210,9 +219,9 @@ def save_plots():
     fig_length, axes_length = plt.subplots(3, 2, figsize=(12, 8))
     axes_length = axes_length.flatten()
     for i, ax in enumerate(axes_length):
-        ax.plot(target_lengths[i], label=f'Target Length', color='blue', linestyle='None', marker='o', markersize=0.1)
-        ax.plot(current_lengths[i], label=f'Current Length', color='orange')
-        ax.set_xlim(timestamps[i][0], timestamps[i][-1])
+        timestamps[i] = [t - timestamps[i][0] for t in timestamps[i]]  # Normalize timestamps to start from 0
+        ax.plot(timestamps[i], target_lengths[i], label=f'Target Length', color='blue', linestyle='None', marker='o', markersize=0.1)
+        ax.plot(timestamps[i], current_lengths[i], label=f'Current Length', color='orange')
         ax.set_xlabel("Sample")
         ax.set_ylabel("Length")
         ax.set_title(f"Actuator {i} Lengths")
@@ -225,13 +234,14 @@ def save_plots():
     fig_pose, axes_pose = plt.subplots(3, 2, figsize=(12, 8))
     axes_pose = axes_pose.flatten()
     for i, (key, ax) in enumerate(zip(pose_data.keys(), axes_pose)):
-        ax.plot(pose_data[key], label=f'{key.capitalize()}', color='purple', linestyle='None', marker='o', markersize=0.1)
-        ax.set_xlim(pose_data["timestamp"][0], pose_data["timestamp"][-1])
-        ax.set_xlabel("Sample")
-        ax.set_ylabel(key.capitalize())
-        ax.set_title(f"{key.capitalize()}")
-        ax.legend()
-        ax.grid(True)
+        if key != "timestamp":
+            pose_data["timestamp"] = [t - pose_data["timestamp"][0] for t in pose_data["timestamp"]]  # Normalize timestamps to start from 0
+            ax.plot(pose_data["timestamp"], pose_data[key], label=f'{key.capitalize()}', color='purple', linestyle='None', marker='o', markersize=0.1)
+            ax.set_xlabel("Sample")
+            ax.set_ylabel(key.capitalize())
+            ax.set_title(f"{key.capitalize()}")
+            ax.legend()
+            ax.grid(True)
     plt.tight_layout()
     fig_pose.savefig("Results\pose_plot.png")
     plt.close(fig_pose)

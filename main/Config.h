@@ -21,9 +21,10 @@ const float ACTUATOR_MAX_LENGTH = 480.240f;
 const float Z0 = 324.415f;
 
 // PID constants
-const float ACT_KP = 20.0f;
-const float ACT_KI = 0.0f;
+const float ACT_KP = 25.0f;
+const float ACT_KI = 0.2f;
 const float ACT_KD = 0.0f;
+const float MAX_INTEGRAL = 100.0f; // Maximum integral term to prevent windup
 
 // Low pass filter constant
 const float ACT_LPF_ALPHA = 0.2f; // Smoothing factor (0 < alpha <= 1, smaller = smoother)
@@ -37,6 +38,7 @@ const int ACT_PWM_PINS[NUM_ACTUATORS] = {33, 8, 5, 2, 29, 25};
 const int ACT_A_PINS[NUM_ACTUATORS] = {34, 12, 4, 1, 28, 26};
 const int ACT_B_PINS[NUM_ACTUATORS] = {36, 6, 3, 0, 27, 24};
 const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 20, 17, 16, 15};
+const int PWM_FREQ = 25000; // 25kHz
 
 // Constraints for the pose
 const float MIN_X = -20.0f;
@@ -57,6 +59,6 @@ const float MAX_PITCH = degrees2rad(20.0f);
 const float MIN_YAW = degrees2rad(-10.0f);
 const float MAX_YAW = degrees2rad(10.0f);
 
-const int MIN_SPEED = 10;
+const int MIN_SPEED = 20;
 
 #endif // CONFIG_H

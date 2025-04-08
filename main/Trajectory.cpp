@@ -79,7 +79,8 @@ void Trajectory::printPose(const Pose& pose) {
     Serial.print("z: "); Serial.print(pose.z); Serial.print(", ");
     Serial.print("roll: "); Serial.print(pose.roll); Serial.print(", ");
     Serial.print("pitch: "); Serial.print(pose.pitch); Serial.print(", ");
-    Serial.print("yaw: "); Serial.println(pose.yaw);
+    Serial.print("yaw: "); Serial.print(pose.yaw); Serial.print(", ");
+    Serial.print("time: "); Serial.println(millis());
 }
 
 void Trajectory::printPoints() {

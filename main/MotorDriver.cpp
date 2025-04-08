@@ -6,6 +6,7 @@ MotorDriver::MotorDriver(int pwm, int a, int b) : pwmPin(pwm), aPin(a), bPin(b) 
 
 void MotorDriver::begin() {
     pinMode(pwmPin, OUTPUT);
+    analogWriteFrequency(pwmPin, PWM_FREQ); 
     pinMode(aPin, OUTPUT);
     pinMode(bPin, OUTPUT);
 }
