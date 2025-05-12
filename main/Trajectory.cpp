@@ -18,25 +18,74 @@ T clamp(const T& value, const T& min, const T& max) {
     return value;
 }
 
-Trajectory::Trajectory() : count(0) {}
+Trajectory::Trajectory(unsigned long fixedInterval) : count(0), fixedInterval(fixedInterval) {}
 
-bool Trajectory::addWaypoint(const Pose& pose, unsigned long time) {
-    // Check if the pose is within the constraints
+bool Trajectory::addWaypoint(const Pose& pose) {
+    pose.x = Z0 + pose.x; // Adjust the x coordinate to the Z0 level.
+    pose.roll = degrees2rad(pose.roll); // Convert roll, pitch, and yaw from degrees to radians.
+    pose.pitch = degrees2rad(pose.pitch);
+    pose.yaw = degrees2rad(pose.yaw);
+    // Validate that the pose is within the allowed limits.
     if( pose.x < MIN_X || pose.x > MAX_X ||
-       pose.y < MIN_Y || pose.y > MAX_Y ||
-       pose.z < MIN_Z || pose.z > MAX_Z ||
-       pose.roll < MIN_ROLL || pose.roll > MAX_ROLL ||
-       pose.pitch < MIN_PITCH || pose.pitch > MAX_PITCH ||
-       pose.yaw < MIN_YAW || pose.yaw > MAX_YAW) {
+        pose.y < MIN_Y || pose.y > MAX_Y ||
+        pose.z < MIN_Z || pose.z > MAX_Z ||
+        pose.roll < MIN_ROLL || pose.roll > MAX_ROLL ||
+        pose.pitch < MIN_PITCH || pose.pitch > MAX_PITCH ||
+        pose.yaw < MIN_YAW || pose.yaw > MAX_YAW) {
         Serial.println("Error: Pose out of bounds.");
         return false;
-    }else if(count > 0 && time <= points[count-1].time) {
-        Serial.println("Error: Time must be greater than the last waypoint.");
-        return false;
-    }else if(count >= MAX_POINTS) {
+    }
+    if(count >= MAX_POINTS) {
         Serial.println("Error: Maximum number of waypoints reached.");
         return false;
-    }else if(count < MAX_POINTS) points[count++] = {pose, time}; // Add the waypoint if all checks pass
+    }
+    // Compute time using fixed interval. First waypoint at time 0.
+    unsigned long time = count * fixedInterval;
+    points[count++] = {pose, time};
+    return true;
+}
+
+// Load trajectory points from a CSV file. Each line should contain: x,y,z,roll,pitch,yaw.
+bool Trajectory::loadFromCSV(const char* filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        Serial.print("Error: Could not open file: ");
+        Serial.println(filename);
+        return false;
+    }
+    std::string line;
+    // Reset current trajectory.
+    count = 0;
+    while (std::getline(file, line)) {
+        if(line.empty()) continue;
+        std::istringstream ss(line);
+        std::string token;
+        Pose pose;
+        // Read x
+        if(!std::getline(ss, token, ',')) continue;
+        pose.x = std::stof(token);
+        // Read y
+        if(!std::getline(ss, token, ',')) continue;
+        pose.y = std::stof(token);
+        // Read z
+        if(!std::getline(ss, token, ',')) continue;
+        pose.z = std::stof(token);
+        // Read roll
+        if(!std::getline(ss, token, ',')) continue;
+        pose.roll = std::stof(token);
+        // Read pitch
+        if(!std::getline(ss, token, ',')) continue;
+        pose.pitch = std::stof(token);
+        // Read yaw
+        if(!std::getline(ss, token, ',')) continue;
+        pose.yaw = std::stof(token);
+        // Add the waypoint. If adding fails, break.
+        if (!addWaypoint(pose)) {
+            Serial.println("Error: Failed to add waypoint from CSV.");
+            break;
+        }
+    }
+    file.close();
     return true;
 }
 

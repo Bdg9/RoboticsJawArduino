@@ -16,23 +16,23 @@ void setup() {
         }
     }
 
-    Pose p0 = {0,0,Z0,0,0,0};
-    Pose p1 = {0,0,Z0+50,0,0,0};
-    Pose p2 = {0,0,Z0+50,0,0,degrees2rad(10)};
-    Pose p3 = {0,0,Z0+50,0,0,degrees2rad(-10)};
-    Pose p4 = {0,0,Z0+50,0,degrees2rad(10),0};
-    Pose p5 = {0,0,Z0+50,0,degrees2rad(-10),0};
-    Pose p6 = {0,0,Z0+50,degrees2rad(5),0,0};
-    Pose p7 = {0,0,Z0+50,degrees2rad(-20),0,0};
-    trajectory.addWaypoint(p0, 0);
-    trajectory.addWaypoint(p1, 1500);
-    trajectory.addWaypoint(p2,3000);
-    trajectory.addWaypoint(p3, 4500);
-    trajectory.addWaypoint(p4, 6000);
-    trajectory.addWaypoint(p5, 7500);
-    trajectory.addWaypoint(p6, 9000);
-    trajectory.addWaypoint(p7, 10500);
-    trajectory.addWaypoint(p0, 12000);
+    Pose p0 = {0,0,0,0,0,0};
+    Pose p1 = {0,0,50,0,0,0};
+    Pose p2 = {0,0,50,0,0,10};
+    Pose p3 = {0,0,50,0,0,-10};
+    Pose p4 = {0,0,50,0,10,0};
+    Pose p5 = {0,0,50,0,-10,0};
+    Pose p6 = {0,0,50,5,0,0};
+    Pose p7 = {0,0,50,-20,0,0};
+    trajectory.addWaypoint(p0);
+    trajectory.addWaypoint(p1);
+    trajectory.addWaypoint(p2);
+    trajectory.addWaypoint(p3);
+    trajectory.addWaypoint(p4);
+    trajectory.addWaypoint(p5);
+    trajectory.addWaypoint(p6);
+    trajectory.addWaypoint(p7);
+    trajectory.addWaypoint(p0);
     trajectory.printPoints();
 }
 
