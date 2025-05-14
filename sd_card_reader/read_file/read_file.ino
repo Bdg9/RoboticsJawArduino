@@ -76,6 +76,32 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
+    //if command is start
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+    if (command.equalsIgnoreCase("start")) {
+      Serial.println("Starting file reading...");
+      return;
+    }else if (command.equalsIgnoreCase("stop")) {
+      Serial.println("Stopping file reading...");
+      return;
+    }else if (command.equalsIgnoreCase("calibrate")) {
+      Serial.println("calibrating...");
+      return;
+    }else if (command.equalsIgnoreCase("list_csv_files")) {
+      listCSVFiles();
+      //send the file names in a single line
+      Serial.print("File names: ");
+      for (int i = 0; i < fileCount; i++) {
+        Serial.print(fileNames[i]);
+        if (i < fileCount - 1) {
+          Serial.print(", ");
+        }
+      }
+      Serial.println();
+      return;
+    }
+    
     int index = Serial.parseInt();
     printf("Selected index: %d\n", index);
     if (index >= 0 && index < fileCount) {
