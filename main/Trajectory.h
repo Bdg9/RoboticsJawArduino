@@ -12,7 +12,7 @@ public:
     Trajectory(unsigned long fixedInterval = 1000);
 
     // Adds a waypoint with the fixed interval; time is computed automatically.
-    bool addWaypoint(const Pose& pose);
+    bool addWaypoint(Pose& pose);
 
     // Reads waypoints from a CSV file. Each line should contain the pose parameters in a comma-separated format.
     // The time for each point is computed based on the fixed interval.

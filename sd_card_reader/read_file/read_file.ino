@@ -91,7 +91,6 @@ void loop() {
     }else if (command.equalsIgnoreCase("list_csv_files")) {
       listCSVFiles();
       //send the file names in a single line
-      Serial.print("File names: ");
       for (int i = 0; i < fileCount; i++) {
         Serial.print(fileNames[i]);
         if (i < fileCount - 1) {

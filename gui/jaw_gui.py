@@ -149,7 +149,7 @@ class RobotGUI(QMainWindow):
         self.calibrate_button.clicked.connect(self.open_calibration_window)
         self.speed_slider.valueChanged.connect(self.send_speed)
         self.trajectory_dropdown.activated.connect(self.send_trajectory)
-        # intercept “about to show” to trigger request_list()
+        # intercept “about to show” to trigger list request
         self.trajectory_dropdown.popupAboutToBeShown.connect(self.load_trajectory_files)
 
         self.data = []
@@ -157,21 +157,26 @@ class RobotGUI(QMainWindow):
         self.timer.timeout.connect(self.update_plots)
         self.timer.start(100)
 
+        self.pending_files = None  # <-- new attribute to store file list
+
     def eventFilter(self, source, event):
         if source == self.trajectory_dropdown.view() and event.type() == QEvent.Show:
             self.load_trajectory_files()
         return super().eventFilter(source, event)
 
     def load_trajectory_files(self):
+        self.pending_files = None
         self.serial.write("list_csv_files")
+        # Let the serial thread fetch the file list.
+        QTimer.singleShot(500, self.update_trajectory_files)
+
+    def update_trajectory_files(self):
         self.trajectory_dropdown.clear()
-        # receive the file names from the serial port, they are sent in one line with each name separated by a comma
-        line = self.serial.serial.readline().decode().strip()
-        if line:
-            filenames = line.split(',')
-            for filename in filenames:
-                if filename.endswith('.csv'):
-                    self.trajectory_dropdown.addItem(filename)
+        if self.pending_files:
+            for filename in self.pending_files:
+                self.trajectory_dropdown.addItem(filename)
+        else:
+            self.trajectory_dropdown.addItem("No files found")
 
     def send_start(self):
         self.serial.write("start")
@@ -197,6 +202,11 @@ class RobotGUI(QMainWindow):
         self.log(f"Sent: trajectory:{filename}")
 
     def handle_serial_data(self, line):
+        # If this is the file list sent from the SD card, capture it and do not process further.
+        if ".csv" in line:
+            self.pending_files = [fn.strip() for fn in line.split(',') if fn.strip().endswith('.csv')]
+            return
+
         try:
             values = list(map(float, line.split(',')))
             if len(values) >= 5:
@@ -212,23 +222,16 @@ class RobotGUI(QMainWindow):
         if not self.data:
             return
 
-        arr = np.array(self.data[-100:])
-        x, y, z, c1, c2 = arr[:, 0], arr[:, 1], arr[:, 2], arr[:, 3], arr[:, 4]
+        # arr = np.array(self.data[-100:])
+        # x, y, z, c1, c2 = arr[:, 0], arr[:, 1], arr[:, 2], arr[:, 3], arr[:, 4]
 
-        self.ax3d.clear()
-        self.ax3d.plot(x, y, z, color='blue')
-        self.ax3d.set_xlabel('X')
-        self.ax3d.set_ylabel('Y')
-        self.ax3d.set_zlabel('Z')
+        # self.ax3d.clear()
+        # self.ax3d.plot(x, y, z, color='blue')
+        # self.ax3d.set_xlabel('X')
+        # self.ax3d.set_ylabel('Y')
+        # self.ax3d.set_zlabel('Z')
 
-        self.ax1d.clear()
-        self.ax1d.plot(c1, label='Curve 1')
-        self.ax1d.plot(c2, label='Curve 2')
-        self.ax1d.legend()
-        self.ax1d.set_xlabel('Time')
-
-        self.canvas_3d.draw()
-        self.canvas_1d.draw()
+        # self.canvas_3d.draw()
 
     def closeEvent(self, event):
         self.serial.stop()
