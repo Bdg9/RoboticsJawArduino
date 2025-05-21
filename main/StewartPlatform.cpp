@@ -36,6 +36,20 @@ void StewartPlatform::stop() {
     for(int i = 0; i < 6; i++) actuators[i]->stop();
 }
 
+State StewartPlatform::getState() const {
+    return state;
+}
+
+bool StewartPlatform::setState(State newState) {
+    if (newState == CALIBRATING) {
+        for (int i = 0; i < NUM_ACTUATORS; i++) {
+            actuators[i]->stop();
+        }
+    }
+    state = newState;
+    return true;
+}
+
 bool StewartPlatform::calibrate(bool debug) {
     Serial.println("Calibrating actuators...");
 

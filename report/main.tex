@@ -1,0 +1,120 @@
+\documentclass[11pt,a4paper]{article}
+
+% -------- Encoding & language ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+
+% -------- Core maths & symbols ---------
+\usepackage{amsmath,amssymb,gensymb}
+\usepackage{textcomp}
+
+% -------- Floats, graphics, tables -----
+\usepackage{graphicx}           % figures
+\usepackage{float}              % [H] specifier
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{justification=raggedright,singlelinecheck=false,labelfont=bf}
+\usepackage{booktabs,tabularx,array,makecell,multirow}
+\renewcommand\tabularxcolumn[1]{>{\Centering}m{#1}}
+
+% -------- Algorithms (choose ONE set) --
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+% \usepackage{algorithm}        % comment this out if you keep algorithm2e
+% \usepackage{algpseudocode}
+
+% -------- Code listings ---------------
+\usepackage{minted}             % needs -shell-escape
+
+% -------- Miscellaneous ---------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  pdftitle={X-jaw},
+  pdfpagemode=FullScreen,
+}
+\usepackage{cleveref}
+\usepackage{setspace,enumitem,fancyhdr,ragged2e,indentfirst}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{csquotes}
+
+% -------- Bibliography -----------------
+\usepackage[sorting=none,backend=biber]{biblatex}
+\addbibresource{biblio.bib}
+
+% -------- Header / footer --------------
+\fancyhf{}
+\fancyhead[R]{De Groot}
+\fancyfoot[L]{EPFL}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{CREATE Lab}
+\renewcommand{\footrulewidth}{0.4pt}
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+
+% -------- Custom commands --------------
+\newcommand{\diff}{\mathrm{d}}
+\DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
+
+\setlength{\parskip}{8pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+    \begin{titlepage}
+    \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+    \center
+    \includegraphics[scale=0.25]{Figures/logo.png}\\[0.4cm]
+
+    \textsc{\LARGE École Polytechnique Fédérale de Lausanne}\\[1.5cm]
+    \vfill
+    
+    \HRule \\[0.4cm]
+    {\huge \bfseries X-jaw}\\
+    \HRule
+    \\[0.5cm]
+    
+    \textsc{\Large Master thesis}
+    \vfill 
+   
+    \centering
+    \bigskip
+    \textit{Author} : \\[0.2cm]
+
+    Barbara \textsc{De Groot, 296815}\\
+
+    \bigskip
+    \bigskip
+
+    CREATE Lab, Prof. Josie Hughes\\
+    \textit{Supervisor} : Benhui Dai\\[0.2cm]
+
+    \bigskip
+    \bigskip
+    
+    {\large \today}\\[2cm]
+    \end{titlepage}
+
+\newpage
+\tableofcontents
+
+\newpage
+%\input{Abstract}
+\input{Introduction}
+\input{Methods}
+\input{Results}
+\input{Discussion}
+\input{Conclusion}
+
+\newpage
+\section{References}
+\printbibliography[heading=none]
+
+% \input{Appendix}
+% \input{Extended_data}
+
+\end{document}

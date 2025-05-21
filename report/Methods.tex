@@ -1,0 +1,40 @@
+\section{Methods}
+
+\subsection{Required workspace and forces --> criteria for design}
+\begin{itemize}
+    \item max chewing force across literature
+    \item max range of motion across literature
+\end{itemize}
+
+\subsection{Mechanical design}
+\begin{itemize}
+    \item goal is to create a robotic jaw that can mimic the motion and force of human chewing 
+    \item 6dof stewart platform to be able to mimic the motion of the jaw
+    \item linear actuators instead of rotary servo motors to have more efficient force transmission + simpler kinematics + more rigid structure
+    \item choice of actuators based on the required force to mimic human chewing (speed less important as jaw can chew even if slow) + required length to reach the desired range of motion + feedback to control in position
+    \item choosing the dimensions of the stewart platform based on the size of the actuators + working space of the robot
+    \item choice of structure/material to hold upper jaw to be rigid enough to not deform under the forces applied by the actuators 
+    \item 3 axis load cells to measure the force applied by the jaw
+    \item so far 3d printed teeth/jaw but to be changed in the future
+\end{itemize}
+
+\subsection{Control}
+\begin{itemize}
+    \item electronics schematics ?
+    \item inverse kinematics
+    \item finding intial position of the actuators
+    \item PID control for position
+    \item state machine that will help for later coordination with other modules like tongue/saliva
+    \item gui for user friendly use ?
+\end{itemize}
+
+\subsection{human jaw motion with motion capture}
+\begin{itemize}
+    \item choice of placement of markers based on other papers
+    \item describing the experiments we desired
+    \item PCA for synergy control ?
+\end{itemize}
+
+
+
+

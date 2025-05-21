@@ -34,3 +34,18 @@
 # Results folder
 Results/
 
+#from report folder, ignore the build files but not the .tex files
+report/*
+!report/main.tex
+!report/main.pdf
+!report/Introduction.tex
+!report/Methods.tex
+!report/Results.tex
+!report/Discussion.tex
+!report/Conclusion.tex
+!report/biblio.bib
+
+#from data_processing folder, ignore .csv
+data_processing/*.csv
+data_processing/data/*.csv
+
