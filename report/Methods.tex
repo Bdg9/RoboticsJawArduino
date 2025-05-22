@@ -11,7 +11,8 @@
     \item goal is to create a robotic jaw that can mimic the motion and force of human chewing 
     \item 6dof stewart platform to be able to mimic the motion of the jaw
     \item linear actuators instead of rotary servo motors to have more efficient force transmission + simpler kinematics + more rigid structure
-    \item choice of actuators based on the required force to mimic human chewing (speed less important as jaw can chew even if slow) + required length to reach the desired range of motion + feedback to control in position
+    \item choice of actuators based on the required force to mimic human chewing (speed less important as jaw can chew even if slow) + required length to 
+    reach the desired range of motion + feedback to control in position
     \item choosing the dimensions of the stewart platform based on the size of the actuators + working space of the robot
     \item choice of structure/material to hold upper jaw to be rigid enough to not deform under the forces applied by the actuators 
     \item 3 axis load cells to measure the force applied by the jaw
@@ -28,12 +29,64 @@
     \item gui for user friendly use ?
 \end{itemize}
 
-\subsection{human jaw motion with motion capture}
-\begin{itemize}
-    \item choice of placement of markers based on other papers
-    \item describing the experiments we desired
-    \item PCA for synergy control ?
-\end{itemize}
+\subsection{Data acquisition and processing}
+
+\paragraph{Subjects.} 
+Two healthy adult volunteers (author and project supervisor) participated in this pilot recording. Owing to time constraints and the exploratory 
+nature of the study, no additional subjects were recruited.
+
+\paragraph{Motion-capture acquisition.}
+Mandibular motion was recorded with a five-camera OptiTrack system sampling at 120 Hz.
+Four reflective markers arranged in a square were attached to the forehead and served as a head-fixed reference frame.
+A second set of three markers forming a triangle was placed on the gnathion.
+Two additional lip markers were recorded but later discarded because a single marker cannot encode orientation. \cite{motion_capture_adult,motion_capture_children}
+
+The subject then performed the motion sequences listed in Table~\ref{tab:recording-protocol}. Each frame was saved by Motive as a \texttt{.csv} file that contains
+the 3-D marker positions (in millimetres) and the orientation of each marker set as quaternions. The calibrated volume had a residual error of $0.3\,$mm.
+% TODO: insert a photograph of the marker placement
+
+\begin{table}[H]
+  \centering
+  \small                                   
+  \renewcommand{\arraystretch}{1.1}  
+  \begin{tabularx}{\textwidth}{@{} c l l @{}}      
+    \toprule
+    \textbf{Food} & \textbf{Motion} & \textbf{\textit{Optional:} Duration} \\
+    \midrule
+    % ---------- Empty mouth block ----------
+    Empty mouth & 20$\times$ open–close cycles                 & —     \\[1pt]
+    \midrule
+    % ---------- Chewing-gum block ----------
+    \multirow{5}{*}{\parbox[c]{3.2cm}{\centering Chewing gum\\(Xylit-Pro,\\\emph{Excitemint})}}
+      & Random side chewing                                    & 2 min \\[1pt]
+      & Right-side chewing                                     & 1 min \\[1pt]
+      & Left-side chewing                                      & 1 min \\[1pt]
+      & Front-teeth-only chewing                               & 1 min \\ 
+    \midrule
+    % ---------- Biscuit block ----------
+    \multirow{5}{*}{\parbox[c]{3.2cm}{\centering Biscuits\\(Bretzeli, \emph{Kambli})}}
+      & random chewing                                    & — \\[1pt]
+      & front-teeth chew → right-side chew                & — \\[1pt]
+      & front-teeth chew → left-side chew                  & — \\[1pt]
+      & \textit{fast} random chewing                      & — \\[1pt]
+      & \textit{slow} random chewing                       & — \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Recording protocol. \textit{Notes:}  
+  For chewing-gum trials the first run began with an unchewed piece and the same gum was kept for all subsequent motions.  
+  For biscuit trials each run started with an empty, closed mouth; the subject then placed a biscuit, chewed as instructed, and swallowed.}
+  \label{tab:recording-protocol}
+\end{table}
+
+\paragraph{Data processing.}
+To reduce the noise, we apply a 4th-order butterworth filter to the data. The cutoff frequency is set to 6Hz, as human mastication frequency is around 1Hz to 2Hz %\cite{chewing_frequency} TODO: find paper
+. \\
+The data is then transformed to the head reference frame using rotation matrices. 
+
+
+TODO: PCA ?
+
+
 
 
 
