@@ -7,21 +7,65 @@ Actuator::Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb)
 void Actuator::begin() {
     driver.begin();
     pinMode(potPin, INPUT);
+    loadCalibration();
     std::fill(length_data_buffer, length_data_buffer + ACT_LPF_N, (float)ACTUATOR_MIN_LENGTH); // Initialize the buffer to zero
+}
+
+void Actuator::loadCalibration() {
+    // Build filename e.g., "/robotics_jaw/cal_act1.txt" for actuator 1.
+    String filename = String(SD_ROOT) + "cal_act" + String(actuatorNb) + ".txt";
+    if (SD.exists(filename.c_str())) {
+        File calFile = SD.open(filename.c_str(), FILE_READ);
+        if (calFile) {
+            // Read the first two lines: the first line for min and the second for max.
+            String minLine = calFile.readStringUntil('\n');
+            String maxLine = calFile.readStringUntil('\n');
+            minPotValue = minLine.toInt();
+            maxPotValue = maxLine.toInt();
+            Serial.print("Actuator ");
+            Serial.print(actuatorNb);
+            Serial.println(" calibration loaded:");
+            Serial.print("Min: ");
+            Serial.println(minPotValue);
+            Serial.print("Max: ");
+            Serial.println(maxPotValue);
+            calFile.close();
+        } else {
+            Serial.print("Actuator ");
+            Serial.print(actuatorNb);
+            Serial.println(" calibration file exists but failed to open.");
+        }
+    } else {
+        Serial.print("Error: Actuator ");
+        Serial.print(actuatorNb);
+        Serial.println(" calibration file not found.");
+        // TODO: Handle the case where the calibration file does not exist.
+    }
+}
+
+void Actuator::saveCalibration() {
+    // Build filename e.g., "/robotics_jaw/cal_act1.txt" for actuator 1.
+    String filename = String(SD_ROOT) + "cal_act" + String(actuatorNb) + ".txt";
+    // Remove the file first if it exists to ensure a fresh write.
+    if(SD.exists(filename.c_str())) {
+        SD.remove(filename.c_str());
+    }
+    File calFile = SD.open(filename.c_str(), FILE_WRITE);
+    if (calFile) {
+        calFile.println(minPotValue);
+        calFile.println(maxPotValue);
+        calFile.close();
+        Serial.print("Calibration saved for Actuator ");
+        Serial.println(actuatorNb);
+    } else {
+        Serial.print("Error: Could not open calibration file for Actuator ");
+        Serial.println(actuatorNb);
+    }
 }
 
 float Actuator::getLength() {
     // Read the potentiometer value and store it in the buffer
     int raw = analogRead(potPin);
-
-    //update min/max if raw > max or raw < min
-    if(raw > maxPotValue) {
-        maxPotValue = raw;
-        Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" maxPotValue updated.");
-    } else if(raw < minPotValue) {
-        minPotValue = raw;
-        Serial.print("Warning: Actuator "); Serial.print(actuatorNb); Serial.println(" minPotValue updated.");
-    }
 
     float length = mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
 

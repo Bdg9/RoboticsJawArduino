@@ -50,7 +50,7 @@ void StewartPlatform::stop() {
 //     return true;
 // }
 
-bool StewartPlatform::calibrate(bool debug) {
+bool StewartPlatform::calibrateActuators(bool debug) {
     Serial.println("Calibrating actuators...");
 
     // Extend all actuators
@@ -130,6 +130,10 @@ bool StewartPlatform::calibrate(bool debug) {
         }
     }
 
+    Serial.println("Saving calibration in SD card.");
+    for (int i = 0; i < NUM_ACTUATORS; i++) {
+        actuators[i]->saveCalibration();
+    }
     Serial.println("Calibration done.");
     return true;
 }

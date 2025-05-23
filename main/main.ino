@@ -17,12 +17,12 @@ void setup() {
     }
 
     platform.begin();
-    if (!platform.calibrate(true)) {
-        Serial.println("Calibration failed. Stopping execution.");
-        // while (true) {
-        //     // Halt execution
-        // }
-    }
+    // if (!platform.calibrateActuators(true)) {
+    //     Serial.println("Calibration failed. Stopping execution.");
+    //     while (true) {
+    //         // Halt execution
+    //     }
+    // }
 
     if (!trajectory.loadFromCSV("test_trajectory.csv")) {
         Serial.println("Error: Failed to load trajectory from CSV.");

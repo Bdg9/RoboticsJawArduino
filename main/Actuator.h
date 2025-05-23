@@ -4,11 +4,15 @@
 #include "MotorDriver.h"
 #include "Utils.h"
 #include "Config.h"
+#include <SPI.h>
+#include <SD.h>
 
 class Actuator {
 public:
     Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb);
     void begin();
+    void loadCalibration();
+    void saveCalibration();
     void setTargetLength(float length);
     bool update();
     float getLength();
