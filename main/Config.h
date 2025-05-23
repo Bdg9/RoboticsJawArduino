@@ -3,6 +3,10 @@
 
 #include "Utils.h"
 
+// SD card configuration
+#define SD_CS BUILTIN_SDCARD  // Builtin SD card number for Teensy 4.1
+const char SD_ROOT[] = "/robotics_jaw/"; // Path to the SD card directory
+
 #define NUM_ACTUATORS 6
 #define CALIB_TIME 10000 //ms
 #define CALIB_MIN_DIF 100

@@ -21,7 +21,7 @@ T clamp(const T& value, const T& min, const T& max) {
 Trajectory::Trajectory(unsigned long fixedInterval) : count(0), fixedInterval(fixedInterval) {}
 
 bool Trajectory::addWaypoint(Pose& pose) {
-    pose.x = Z0 + pose.x; // Adjust the x coordinate to the Z0 level.
+    pose.z = Z0 + pose.z; // Adjust the z coordinate to the Z0 level.
     pose.roll = degrees2rad(pose.roll); // Convert roll, pitch, and yaw from degrees to radians.
     pose.pitch = degrees2rad(pose.pitch);
     pose.yaw = degrees2rad(pose.yaw);
@@ -46,46 +46,69 @@ bool Trajectory::addWaypoint(Pose& pose) {
 }
 
 // Load trajectory points from a CSV file. Each line should contain: x,y,z,roll,pitch,yaw.
-bool Trajectory::loadFromCSV(const char* filename) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        Serial.print("Error: Could not open file: ");
-        Serial.println(filename);
+bool Trajectory::loadFromCSV(const String &filename) {
+    String fullPath = SD_ROOT + filename;
+    File dataFile = SD.open(fullPath.c_str());
+    if (!dataFile) {
+        Serial.println("Failed to open file.");
         return false;
     }
-    std::string line;
+
     // Reset current trajectory.
     count = 0;
-    while (std::getline(file, line)) {
-        if(line.empty()) continue;
-        std::istringstream ss(line);
-        std::string token;
+
+    Serial.println("Reading file content:");
+
+    // Skip the header line with column names.
+    if(dataFile.available()) {
+        dataFile.readStringUntil('\n');
+    }
+    
+    while (dataFile.available()) {
+        String line = dataFile.readStringUntil('\n');
+        if (line.length() == 0) continue; // Skip empty lines
+
+        // Expecting each line: x,y,z,roll,pitch,yaw
+        int pos1 = line.indexOf(',');
+        int pos2 = line.indexOf(',', pos1 + 1);
+        int pos3 = line.indexOf(',', pos2 + 1);
+        int pos4 = line.indexOf(',', pos3 + 1);
+        int pos5 = line.indexOf(',', pos4 + 1);
+        if (pos1 == -1 || pos2 == -1 || pos3 == -1 || pos4 == -1 || pos5 == -1) {
+            Serial.println("Error: Malformed CSV line.");
+            continue;
+        }
+
         Pose pose;
-        // Read x
-        if(!std::getline(ss, token, ',')) continue;
-        pose.x = std::stof(token);
-        // Read y
-        if(!std::getline(ss, token, ',')) continue;
-        pose.y = std::stof(token);
-        // Read z
-        if(!std::getline(ss, token, ',')) continue;
-        pose.z = std::stof(token);
-        // Read roll
-        if(!std::getline(ss, token, ',')) continue;
-        pose.roll = std::stof(token);
-        // Read pitch
-        if(!std::getline(ss, token, ',')) continue;
-        pose.pitch = std::stof(token);
-        // Read yaw
-        if(!std::getline(ss, token, ',')) continue;
-        pose.yaw = std::stof(token);
+        String token;
+        token = line.substring(0, pos1);
+        pose.x = token.toFloat();
+        token = line.substring(pos1 + 1, pos2);
+        pose.y = token.toFloat();
+        token = line.substring(pos2 + 1, pos3);
+        pose.z = token.toFloat();
+        token = line.substring(pos3 + 1, pos4);
+        pose.roll = token.toFloat();
+        token = line.substring(pos4 + 1, pos5);
+        pose.pitch = token.toFloat();
+        token = line.substring(pos5 + 1);
+        pose.yaw = token.toFloat();
+
+        Serial.print("Read pose: ");
+        Serial.print("x: "); Serial.print(pose.x); Serial.print(", ");
+        Serial.print("y: "); Serial.print(pose.y); Serial.print(", ");
+        Serial.print("z: "); Serial.print(pose.z); Serial.print(", ");
+        Serial.print("roll: "); Serial.print(pose.roll); Serial.print(", ");
+        Serial.print("pitch: "); Serial.print(pose.pitch); Serial.print(", ");
+        Serial.print("yaw: "); Serial.println(pose.yaw);
+
         // Add the waypoint. If adding fails, break.
         if (!addWaypoint(pose)) {
             Serial.println("Error: Failed to add waypoint from CSV.");
             break;
         }
     }
-    file.close();
+    dataFile.close();
     return true;
 }
 

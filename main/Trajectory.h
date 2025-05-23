@@ -5,6 +5,8 @@
 #include <fstream>    // For CSV file reading
 #include <sstream>
 #include <string>
+#include <SPI.h>
+#include <SD.h>
 
 class Trajectory {
 public:
@@ -16,7 +18,7 @@ public:
 
     // Reads waypoints from a CSV file. Each line should contain the pose parameters in a comma-separated format.
     // The time for each point is computed based on the fixed interval.
-    bool loadFromCSV(const char* filename);
+    bool loadFromCSV(const String &filename);
 
     // Returns the interpolated or current pose based on the current time.
     Pose getPose(unsigned long currentTime);

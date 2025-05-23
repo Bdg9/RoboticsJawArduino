@@ -2,38 +2,42 @@
 #include "StewartPlatform.h"
 #include "Trajectory.h"
 #include "Utils.h"
+#include <SD.h>
+#include <SPI.h>
 
 StewartPlatform platform;
 Trajectory trajectory;
 
 void setup() {
     Serial.begin(9600);
+
+    // Initialize SD card
+    if (!SD.begin(SD_CS)) {
+        Serial.println("Error: SD card initialization failed!");
+    }
+
     platform.begin();
     if (!platform.calibrate(true)) {
         Serial.println("Calibration failed. Stopping execution.");
+        // while (true) {
+        //     // Halt execution
+        // }
+    }
+
+    if (!trajectory.loadFromCSV("test_trajectory.csv")) {
+        Serial.println("Error: Failed to load trajectory from CSV.");
+        // Halt execution
         while (true) {
             // Halt execution
         }
     }
 
-    Pose p0 = {0,0,0,0,0,0};
-    Pose p1 = {0,0,50,0,0,0};
-    // Pose p2 = {0,0,50,0,0,10};
-    // Pose p3 = {0,0,50,0,0,-10};
-    // Pose p4 = {0,0,50,0,10,0};
-    // Pose p5 = {0,0,50,0,-10,0};
-    // Pose p6 = {0,0,50,5,0,0};
-    // Pose p7 = {0,0,50,-20,0,0};
-    trajectory.addWaypoint(p0);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p1);
-    trajectory.addWaypoint(p0);
     trajectory.printPoints();
+
+    //stop here for debugging
+    while (true) {
+        // Halt execution
+    }
 }
 
 void loop() {

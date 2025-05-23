@@ -10,26 +10,26 @@ void RobotController::calibrate() {
 }
 
 void RobotController::move() {
-    //init time
-    static unsigned long init_time = millis();
-    static unsigned long lastUpdate = 0;
-    unsigned long now = millis() - init_time;
-    if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
-        lastUpdate = now;
-        Pose target = trajectory.getPose(now);
-        trajectory.printPose(target);
-        platform.moveToPose(target);
-        if(!platform.update()) {
-            Serial.println("Error: Failed updating platform. Stoppping execution.");
-            // platform.stop();
-            // while (true) {
-            //         //Halt execution
-            //  } 
-            state = RobotState::STOP;  
-            onEnterStop();
-            return;
-        }
-    }
+    // //init time
+    // static unsigned long init_time = millis();
+    // static unsigned long lastUpdate = 0;
+    // unsigned long now = millis() - init_time;
+    // if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
+    //     lastUpdate = now;
+    //     Pose target = trajectory.getPose(now);
+    //     trajectory.printPose(target);
+    //     platform.moveToPose(target);
+    //     if(!platform.update()) {
+    //         Serial.println("Error: Failed updating platform. Stoppping execution.");
+    //         // platform.stop();
+    //         // while (true) {
+    //         //         //Halt execution
+    //         //  } 
+    //         state = RobotState::STOP;  
+    //         onEnterStop();
+    //         return;
+    //     }
+    // }
 
 }
 
