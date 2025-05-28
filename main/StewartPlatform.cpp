@@ -9,7 +9,7 @@ StewartPlatform::StewartPlatform() {
 
 void StewartPlatform::begin() {
     for(int i = 0; i < 6; i++) actuators[i]->begin();
-    kin.setRotationCenter(0, 102.0f, 83.0f);
+    kin.setRotationCenter(ROTATION_CENTER_X, ROTATION_CENTER_Y, ROTATION_CENTER_Z);
     kin.setHomePose({0, -50, 0, 0, 0, 0}); // Set home pose with Z0
 }
 

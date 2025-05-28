@@ -65,4 +65,9 @@ const float MAX_YAW = degrees2rad(10.0f);
 
 const int MIN_SPEED = 20;
 
+// Center of rotation
+const float ROTATION_CENTER_X = 0.0f;
+const float ROTATION_CENTER_Y = 102.0f;
+const float ROTATION_CENTER_Z = 83.0f;
+
 #endif // CONFIG_H
