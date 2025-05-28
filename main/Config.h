@@ -40,7 +40,7 @@ const unsigned long PLATFORM_UPDATE_INTERVAL = 10;
 const int ACT_PWM_PINS[NUM_ACTUATORS] = {33, 8, 5, 2, 29, 25};
 const int ACT_A_PINS[NUM_ACTUATORS] = {34, 12, 4, 1, 28, 26};
 const int ACT_B_PINS[NUM_ACTUATORS] = {36, 6, 3, 0, 27, 24};
-const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 20, 17, 16, 15};
+const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 40, 17, 16, 41};
 const int PWM_FREQ = 23000; // 23kHz
 
 // Constraints for the pose

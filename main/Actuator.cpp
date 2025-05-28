@@ -29,6 +29,9 @@ void Actuator::loadCalibration() {
             Serial.println(minPotValue);
             Serial.print("Max: ");
             Serial.println(maxPotValue);
+            //debug string print
+            Serial.print("Calibration file: ");
+            Serial.println(minLine  + " " + maxLine);
             calFile.close();
         } else {
             Serial.print("Actuator ");
@@ -81,6 +84,7 @@ float Actuator::getLength() {
     float filtered_length = sum / ACT_LPF_N;
 
     Serial.print("Actuator "); Serial.print(actuatorNb); Serial.print(" length: "); Serial.print(length);
+    Serial.print(", raw pot value: "); Serial.print(raw);
     Serial.print(", filtered length: "); Serial.println(filtered_length);
     
     return filtered_length;
@@ -92,14 +96,14 @@ void Actuator::setTargetLength(float length) {
 
 bool Actuator::update() {
     float current = getLength();
-    if(current < ACTUATOR_MIN_LENGTH || current > ACTUATOR_MAX_LENGTH) {
-        driver.setSpeed(0);
-        Serial.print("Error: Actuator "); Serial.print(actuatorNb); Serial.println(" out of bounds.");
-        Serial.print("Current length: "); Serial.println(current);
-        Serial.print("Target length: "); Serial.println(targetLength);
-        Serial.print("Min length: "); Serial.println(ACTUATOR_MIN_LENGTH);
-        return false;
-    }
+    // if(current < ACTUATOR_MIN_LENGTH || current > ACTUATOR_MAX_LENGTH) {
+    //     driver.setSpeed(0);
+    //     Serial.print("Error: Actuator "); Serial.print(actuatorNb); Serial.println(" out of bounds.");
+    //     Serial.print("Current length: "); Serial.println(current);
+    //     Serial.print("Target length: "); Serial.println(targetLength);
+    //     Serial.print("Min length: "); Serial.println(ACTUATOR_MIN_LENGTH);
+    //     return false;
+    // }
     float error = targetLength - current;
     errorSum += error * (PLATFORM_UPDATE_INTERVAL / 1000.0f);
     errorSum = constrain(errorSum, -MAX_INTEGRAL, MAX_INTEGRAL); // Prevent integral windup

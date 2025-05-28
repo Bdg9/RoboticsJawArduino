@@ -9,10 +9,12 @@ StewartPlatform::StewartPlatform() {
 
 void StewartPlatform::begin() {
     for(int i = 0; i < 6; i++) actuators[i]->begin();
+    kin.setRotationCenter(0, 102.0f, 83.0f);
+    kin.setHomePose({0, -50, 0, 0, 0, 0}); // Set home pose with Z0
 }
 
 void StewartPlatform::moveToPose(const Pose& pose) {
-    Kinematics::inverse(pose, targetLengths);
+    kin.inverse(pose, targetLengths);
     for(int i = 0; i < 6; i++) {
         float clamped = constrain(targetLengths[i], ACTUATOR_MIN_LENGTH, ACTUATOR_MAX_LENGTH);
         if(clamped != targetLengths[i]) {
@@ -130,10 +132,10 @@ bool StewartPlatform::calibrateActuators(bool debug) {
         }
     }
 
-    Serial.println("Saving calibration in SD card.");
-    for (int i = 0; i < NUM_ACTUATORS; i++) {
-        actuators[i]->saveCalibration();
-    }
+    // Serial.println("Saving calibration in SD card.");
+    // for (int i = 0; i < NUM_ACTUATORS; i++) {
+    //     actuators[i]->saveCalibration();
+    // }
     Serial.println("Calibration done.");
     return true;
 }

@@ -15,6 +15,7 @@ public:
 private:
     Actuator* actuators[6];
     float targetLengths[6];
+    Kinematics kin;
 };
 
 #endif // STEWART_PLATFORM_H
