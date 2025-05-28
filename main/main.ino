@@ -17,8 +17,8 @@ void setup() {
     }
 
     platform.begin();
-    if (!platform.calibrateActuators(true)) {
-        Serial.println("Calibration failed. Stopping execution.");
+    if (!platform.calibrateActuators(false, true)) {
+        Serial.println("Error: Calibration failed. Stopping execution.");
         while (true) {
             // Halt execution
         }

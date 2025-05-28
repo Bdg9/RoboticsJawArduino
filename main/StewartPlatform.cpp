@@ -52,90 +52,98 @@ void StewartPlatform::stop() {
 //     return true;
 // }
 
-bool StewartPlatform::calibrateActuators(bool debug) {
-    Serial.println("Calibrating actuators...");
+bool StewartPlatform::calibrateActuators(bool fullCalibration, bool debug) {
+    if (fullCalibration) {
+        Serial.println("Calibrating actuators (full stroke)...");
 
-    // Extend all actuators
-    int time = millis();
-    while (millis() - time < CALIB_TIME) {
-        for (int i = 0; i < NUM_ACTUATORS; i++) {
-            actuators[i]->setSpeed(255);
-        }
-    }
-
-    for (int i = 0; i < NUM_ACTUATORS; i++) {
-        actuators[i]->stop();
-    }
-
-    delay(10);
-
-    // Set max values (extended position)
-    for (int i = 0; i < NUM_ACTUATORS; i++) {
-        int max = analogRead(actuators[i]->potPin);
-        for (int j = 0; j < 10; j++) {
-            int raw = analogRead(actuators[i]->potPin);
-            if (raw > max) {
-                max = raw;
+        // Extend all actuators to set max values.
+        int startTime = millis();
+        while (millis() - startTime < CALIB_TIME) {
+            for (int i = 0; i < NUM_ACTUATORS; i++) {
+                actuators[i]->setSpeed(255);
             }
         }
-        actuators[i]->setMax(max);
-        if (debug) {
-            Serial.print("Actuator ");
-            Serial.print(i);
-            Serial.print(": maxPotValue = ");
-            Serial.println(max);
+        for (int i = 0; i < NUM_ACTUATORS; i++) {
+            actuators[i]->stop();
+        }
+        delay(10);
+
+        // Compute max values from extended position.
+        for (int i = 0; i < NUM_ACTUATORS; i++) {
+            int max_val = analogRead(actuators[i]->potPin);
+            for (int j = 0; j < 10; j++) {
+                int raw = analogRead(actuators[i]->potPin);
+                if (raw > max_val) {
+                    max_val = raw;
+                }
+            }
+            actuators[i]->setMax(max_val);
+            if (debug) {
+                Serial.print("Actuator ");
+                Serial.print(i);
+                Serial.print(": maxPotValue = ");
+                Serial.println(max_val);
+            }
         }
     }
 
-    // Retract all actuators
-    time = millis();
-    while (millis() - time < CALIB_TIME) {
+    // Retract actuators to set min values.
+    if (fullCalibration)
+        Serial.println("Retracting actuators for min calibration...");
+    else
+        Serial.println("Calibrating actuators (min only)...");
+
+    int startTime = millis();
+    while (millis() - startTime < CALIB_TIME) {
         for (int i = 0; i < NUM_ACTUATORS; i++) {
             actuators[i]->setSpeed(-255);
         }
     }
-
     for (int i = 0; i < NUM_ACTUATORS; i++) {
         actuators[i]->stop();
     }
 
-    // Set min values (retracted position)
+    // Compute min values from retracted position.
     for (int i = 0; i < NUM_ACTUATORS; i++) {
-        int min = analogRead(actuators[i]->potPin);
+        int min_val = analogRead(actuators[i]->potPin);
         for (int j = 0; j < 10; j++) {
             int raw = analogRead(actuators[i]->potPin);
-            if (raw < min) {
-                min = raw;
+            if (raw < min_val) {
+                min_val = raw;
             }
         }
-        actuators[i]->setMin(min);
+        actuators[i]->setMin(min_val);
         if (debug) {
             Serial.print("Actuator ");
             Serial.print(i);
             Serial.print(": minPotValue = ");
-            Serial.println(min);
+            Serial.println(min_val);
         }
-        if (min > actuators[i]->getMax()) {
+
+        if (min_val > actuators[i]->getMax()) {
             Serial.print("Error: Actuator ");
             Serial.print(i);
             Serial.print(" min potentiometer value (");
-            Serial.print(min);
+            Serial.print(min_val);
             Serial.print(") > max potentiometer value (");
             Serial.print(actuators[i]->getMax());
             Serial.println(")");
             return false;
-        } else if ((actuators[i]->getMax() - min) < CALIB_MIN_DIF) {
+        } else if ((actuators[i]->getMax() - min_val) < CALIB_MIN_DIF) {
             Serial.print("Error: Actuator ");
             Serial.print(i);
             Serial.println(", not enough difference between min and max pot values.");
             return false;
+        } else if (min_val > CALIB_PIN_NOT_WORKING) {
+            Serial.print("Error: Actuator ");
+            Serial.print(i);
+            Serial.print(" min potentiometer value (");
+            Serial.print(min_val);
+            Serial.print(") is too high, pin may be not working.");
+            return false;
         }
     }
 
-    // Serial.println("Saving calibration in SD card.");
-    // for (int i = 0; i < NUM_ACTUATORS; i++) {
-    //     actuators[i]->saveCalibration();
-    // }
     Serial.println("Calibration done.");
     return true;
 }

@@ -18,6 +18,7 @@ void Actuator::loadCalibration() {
         File calFile = SD.open(filename.c_str(), FILE_READ);
         if (calFile) {
             // Read the first two lines: the first line for min and the second for max.
+            // TODO: now that we calibrate min at each boot, we can remove the first line.
             String minLine = calFile.readStringUntil('\n');
             String maxLine = calFile.readStringUntil('\n');
             minPotValue = minLine.toInt();
@@ -29,9 +30,6 @@ void Actuator::loadCalibration() {
             Serial.println(minPotValue);
             Serial.print("Max: ");
             Serial.println(maxPotValue);
-            //debug string print
-            Serial.print("Calibration file: ");
-            Serial.println(minLine  + " " + maxLine);
             calFile.close();
         } else {
             Serial.print("Actuator ");

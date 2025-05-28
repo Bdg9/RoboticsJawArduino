@@ -10,6 +10,7 @@ const char SD_ROOT[] = "/robotics_jaw/"; // Path to the SD card directory
 #define NUM_ACTUATORS 6
 #define CALIB_TIME 10000 //ms
 #define CALIB_MIN_DIF 100
+#define CALIB_PIN_NOT_WORKING 600
 
 // Geometry (units in mm)
 const float BASE_JOINTS[NUM_ACTUATORS][3] = {
