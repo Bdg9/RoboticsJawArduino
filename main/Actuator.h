@@ -14,8 +14,8 @@ public:
     void loadCalibration();
     void saveCalibration();
     void setTargetLength(float length);
-    bool update();
-    float getLength();
+    bool update(bool verbose = false);
+    float getLength(bool verbose = false);
     void stop();
     void setSpeed(int speed);
     void setMin(int min);

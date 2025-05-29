@@ -2,6 +2,7 @@
 #define ROBOT_CONTROLLER_H
 
 #include "StewartPlatform.h"
+#include "Trajectory.h" 
 
 enum class RobotState {
     CALIBRATING,
@@ -19,10 +20,14 @@ public:
 
     // Add additional functions to coordinate subsystems during transitions
     void update();  // For periodic updates if needed
+    void setPlatformHomePose(const Pose& pose);
+    void setCalibrationTargetPose(const Pose& pose);
 
 private:
     RobotState state;
     StewartPlatform* platform;
+    Trajectory trajectory; // Assuming a Trajectory class exists
+    Pose calibrationTargetPose; // Target pose for calibration
 
     // State-specific methods
     void calibrate();     

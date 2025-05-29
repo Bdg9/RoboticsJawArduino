@@ -10,8 +10,11 @@ public:
     void begin();
     void moveToPose(const Pose& pose);
     void stop();
-    bool update();
+    bool update(bool verbose=false);
     bool calibrateActuators(bool fullCalibration, bool debug=false);
+    void setHomePose(const Pose& pose) {
+        kin.setHomePose(pose);
+    }
 private:
     Actuator* actuators[6];
     float targetLengths[6];

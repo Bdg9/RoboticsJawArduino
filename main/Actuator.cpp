@@ -64,7 +64,7 @@ void Actuator::saveCalibration() {
     }
 }
 
-float Actuator::getLength() {
+float Actuator::getLength(bool verbose) {
     // Read the potentiometer value and store it in the buffer
     int raw = analogRead(potPin);
 
@@ -81,9 +81,12 @@ float Actuator::getLength() {
     }
     float filtered_length = sum / ACT_LPF_N;
 
-    Serial.print("Actuator "); Serial.print(actuatorNb); Serial.print(" length: "); Serial.print(length);
-    Serial.print(", raw pot value: "); Serial.print(raw);
-    Serial.print(", filtered length: "); Serial.println(filtered_length);
+    if(verbose) {
+        Serial.print("Actuator "); Serial.print(actuatorNb);
+        Serial.print(" raw pot value: "); Serial.print(raw);
+        Serial.print(", length: "); Serial.print(length);
+        Serial.print(", filtered length: "); Serial.println(filtered_length);
+    }
     
     return filtered_length;
 }
@@ -92,8 +95,8 @@ void Actuator::setTargetLength(float length) {
     targetLength = constrain(length, ACTUATOR_MIN_LENGTH, ACTUATOR_MAX_LENGTH);
 }
 
-bool Actuator::update() {
-    float current = getLength();
+bool Actuator::update(bool verbose) {
+    float current = getLength(verbose);
     // if(current < ACTUATOR_MIN_LENGTH || current > ACTUATOR_MAX_LENGTH) {
     //     driver.setSpeed(0);
     //     Serial.print("Error: Actuator "); Serial.print(actuatorNb); Serial.println(" out of bounds.");
@@ -109,11 +112,13 @@ bool Actuator::update() {
     float output = ACT_KP * error + ACT_KI * errorSum + ACT_KD * dError;
     driver.setSpeed(output);
     lastError = error;
-    Serial.print("Actuator "); Serial.print(actuatorNb); 
-    Serial.print(" target speed: "); Serial.print(output);
-    Serial.print(", target length: "); Serial.print(targetLength);
-    Serial.print(", current length: "); Serial.print(current);
-    Serial.print(", time: "); Serial.println(millis());
+    if (verbose) {
+        Serial.print("Actuator "); Serial.print(actuatorNb); 
+        Serial.print(" target speed: "); Serial.print(output);
+        Serial.print(", target length: "); Serial.print(targetLength);
+        Serial.print(", current length: "); Serial.print(current);
+        Serial.print(", time: "); Serial.println(millis());
+    }
     return true;
 }
 

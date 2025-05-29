@@ -10,7 +10,7 @@ StewartPlatform::StewartPlatform() {
 void StewartPlatform::begin() {
     for(int i = 0; i < 6; i++) actuators[i]->begin();
     kin.setRotationCenter(ROTATION_CENTER_X, ROTATION_CENTER_Y, ROTATION_CENTER_Z);
-    kin.setHomePose({0, -50, 0, 0, 0, 0}); // Set home pose with Z0
+    kin.setHomePose({0, 0, 0, 0, 0, 0}); // Set home pose with Z0
 }
 
 void StewartPlatform::moveToPose(const Pose& pose) {
@@ -27,9 +27,9 @@ void StewartPlatform::moveToPose(const Pose& pose) {
     }
 }
 
-bool StewartPlatform::update() {
+bool StewartPlatform::update(bool verbose) {
     for(int i = 0; i < 6; i++){
-        if(!actuators[i]->update()) return false;       
+        if(!actuators[i]->update(verbose)) return false;       
     }
     return true;
 }

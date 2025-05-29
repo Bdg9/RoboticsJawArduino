@@ -7,10 +7,10 @@ import time
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QComboBox,
     QSlider, QLabel, QVBoxLayout, QWidget, QFileDialog, QHBoxLayout,
-    QDialog, QGridLayout, QTextEdit
+    QDialog, QGridLayout, QTextEdit, QFormLayout, QSpinBox
 )
 from PyQt5.QtCore import Qt, QTimer, QEvent, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QTextCursor
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
@@ -53,45 +53,56 @@ class CalibrationWindow(QDialog):
         self.setModal(True)
 
         layout = QVBoxLayout()
-        grid = QGridLayout()
+        form_layout = QFormLayout()
 
-        self.set_origin_button = QPushButton("Set Origin")
-        self.set_origin_button.clicked.connect(lambda: self.send_command("set_origin"))
-        layout.addWidget(self.set_origin_button)
+        self.x_spin = QSpinBox()
+        self.x_spin.setRange(-1000, 1000)
+        self.x_spin.setValue(0)
+        self.x_spin.valueChanged.connect(self.send_position)
 
-        self.up_button = QPushButton("↑")
-        self.down_button = QPushButton("↓")
-        self.left_button = QPushButton("←")
-        self.right_button = QPushButton("→")
+        self.y_spin = QSpinBox()
+        self.y_spin.setRange(-1000, 1000)
+        self.y_spin.setValue(0)
+        self.y_spin.valueChanged.connect(self.send_position)
 
-        self.up_button.clicked.connect(lambda: self.send_command("move_up"))
-        self.down_button.clicked.connect(lambda: self.send_command("move_down"))
-        self.left_button.clicked.connect(lambda: self.send_command("move_left"))
-        self.right_button.clicked.connect(lambda: self.send_command("move_right"))
+        self.z_spin = QSpinBox()
+        self.z_spin.setRange(325, 474)
+        self.z_spin.setValue(325)
+        self.z_spin.valueChanged.connect(self.send_position)
 
-        grid.addWidget(self.up_button, 0, 1)
-        grid.addWidget(self.left_button, 1, 0)
-        grid.addWidget(self.right_button, 1, 2)
-        grid.addWidget(self.down_button, 2, 1)
+        form_layout.addRow("X (mm):", self.x_spin)
+        form_layout.addRow("Y (mm):", self.y_spin)
+        form_layout.addRow("Z (mm):", self.z_spin)
 
-        layout.addLayout(grid)
+        layout.addLayout(form_layout)
+
+        set_origin_button = QPushButton("Set Origin")
+        set_origin_button.clicked.connect(self.set_origin)
+        layout.addWidget(set_origin_button)
+
         self.setLayout(layout)
+        # Make the calibration window bigger so that the title is visible.
+        self.resize(250, 150)
 
-    def keyPressEvent(self, event):
-        key_map = {
-            Qt.Key_Up: "move_up",
-            Qt.Key_Down: "move_down",
-            Qt.Key_Left: "move_left",
-            Qt.Key_Right: "move_right"
-        }
-        if event.key() in key_map:
-            self.send_command(key_map[event.key()])
+    def send_position(self):
+        x = self.x_spin.value()
+        y = self.y_spin.value()
+        z = self.z_spin.value()
+        command = f"set position:{x},{y},{z}"
+        self.send_command(command)
+
+    def set_origin(self):
+        x = self.x_spin.value()
+        y = self.y_spin.value()
+        z = self.z_spin.value()
+        command = f"set origin:{x},{y},{z}"
+        self.send_command(command)
 
 
 class RobotGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Robotic jaw")
+        self.setWindowTitle("X-Jaw")
 
         main_layout = QVBoxLayout()
         control_layout = QHBoxLayout()
@@ -187,8 +198,19 @@ class RobotGUI(QMainWindow):
         self.log("Sent: stop")
 
     def open_calibration_window(self):
+        # Disable main window buttons
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(False)
+        self.calibrate_button.setEnabled(False)
+        
         self.cal_window = CalibrationWindow(self.serial.write)
+        self.cal_window.setModal(True)
         self.cal_window.exec()
+        
+        # Re-enable buttons once the calibration window is closed
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(True)
+        self.calibrate_button.setEnabled(True)
 
     def send_speed(self):
         value = self.speed_slider.value()
@@ -217,6 +239,7 @@ class RobotGUI(QMainWindow):
     def log(self, message):
         timestamp = time.strftime("[%H:%M:%S] ")
         self.error_console.append(timestamp + message)
+        self.error_console.moveCursor(QTextCursor.End)
 
     def update_plots(self):
         if not self.data:

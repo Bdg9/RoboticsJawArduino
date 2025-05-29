@@ -7,6 +7,18 @@ RobotController::RobotController(StewartPlatform* platform)
 }
 
 void RobotController::calibrate() {
+    static unsigned long init_time = millis();
+    static unsigned long lastUpdate = 0;
+    unsigned long now = millis() - init_time;
+    if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
+        lastUpdate = now;
+        //trajectory.printPose(currentTarget);
+        platform->moveToPose(calibrationTargetPose);
+        if(!platform->update(false)) {
+            Serial.println("Error: Failed updating platform. Stopping robot.");
+            setState(RobotState::STOP);
+        }
+    }
 }
 
 void RobotController::move() {
@@ -30,10 +42,10 @@ void RobotController::move() {
     //         return;
     //     }
     // }
-
 }
 
 void RobotController::stop() {
+    //nothing happening for now
 }
 
 RobotState RobotController::getState() const {
@@ -81,12 +93,30 @@ void RobotController::update() {
     }
 }
 
+void RobotController::setPlatformHomePose(const Pose& pose) {
+    if(platform) {
+        platform->setHomePose(pose);
+    } else {
+        Serial.println("Error: Platform not initialized. Could not set home pose.");
+    }
+}
+
+void RobotController::setCalibrationTargetPose(const Pose& pose) {
+    if(platform && state == RobotState::CALIBRATING) {
+        calibrationTargetPose = pose;
+    } else if (platform && state != RobotState::CALIBRATING) {
+        Serial.println("Error: Platform is not in CALIBRATING state. Setting calibration target pose not possible.");
+    } else {
+        Serial.println("Error: Platform not initialized. Could not set calibration target pose.");
+    }
+}
+
 void RobotController::onEnterCalibrating() {
     Serial.println("Entering calibration state.");
     // For calibration: activate the stewart platform calibration routines,
     // allow GUI commands such as arrow keys, set origin, etc.
     if(platform) {
-        // Optionally, stop movement before calibration begins.
+        // Stop movement before calibration begins.
         platform->stop();
     }
     // Similarly, other subsystems could be prepared for a manual calibration mode.
