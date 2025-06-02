@@ -21,7 +21,6 @@ T clamp(const T& value, const T& min, const T& max) {
 Trajectory::Trajectory(unsigned long fixedInterval) : count(0), fixedInterval(fixedInterval) {}
 
 bool Trajectory::addWaypoint(Pose& pose) {
-    pose.z = Z0 + pose.z; // Adjust the z coordinate to the Z0 level.
     pose.roll = degrees2rad(pose.roll); // Convert roll, pitch, and yaw from degrees to radians.
     pose.pitch = degrees2rad(pose.pitch);
     pose.yaw = degrees2rad(pose.yaw);

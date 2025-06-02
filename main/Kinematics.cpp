@@ -18,7 +18,6 @@
 //         float wz = R[2][0]*px + R[2][1]*py + R[2][2]*pz + z;
 //         float bx = BASE_JOINTS[i][0], by = BASE_JOINTS[i][1], bz = BASE_JOINTS[i][2];
 //         lengths[i] = sqrt((wx - bx)*(wx - bx) + (wy - by)*(wy - by) + (wz - bz)*(wz - bz));
-//     }
 // }
 
 
@@ -39,7 +38,7 @@ Kinematics::Kinematics()
 {
     // Default: rotation centre at platform origin & robot home pose = identity.
     rotationCenter[0] = rotationCenter[1] = rotationCenter[2] = 0.0f;
-    homePose = {0,0,0, 0,0,0};
+    homePose = {0,0,0,0,0,0};
 }
 
 // === Public setters =========================================================
@@ -58,44 +57,44 @@ void Kinematics::setHomePose(const Pose& p)
 // === Inverse kinematics =====================================================
 // pose → incremental pose *about the user‑defined centre* relative to the home pose.
 // lengths → six actuator lengths (mm)
-void Kinematics::inverse(const Pose& pose, float lengths[NUM_ACTUATORS]) const
+void Kinematics::inverse(const Pose& pose, float lengths[NUM_ACTUATORS], bool absolute /* = false */) const
 {
-    // --------------------------------------------------------------------
-    // 1) Compose orientation (home ⊕ incremental)
-    //    For small angles you can safely add Roll/Pitch/Yaw. For larger
-    //    angles replace this section by proper matrix multiplication.
-    // --------------------------------------------------------------------
-    const float roll  = homePose.roll  + pose.roll;
-    const float pitch = homePose.pitch + pose.pitch;
-    const float yaw   = homePose.yaw   + pose.yaw;
+    float roll, pitch, yaw;
+    float x, y, z;
+    
+    if (absolute) {
+        // Use the given absolute pose.
+        roll  = pose.roll;
+        pitch = pose.pitch;
+        yaw   = pose.yaw;
+        x = pose.x;
+        y = pose.y;
+        z = pose.z;
+    } else {
+        // Use incremental pose relative to the home pose.
+        roll  = homePose.roll  + pose.roll;
+        pitch = homePose.pitch + pose.pitch;
+        yaw   = homePose.yaw   + pose.yaw;
+        x = homePose.x + pose.x;
+        y = homePose.y + pose.y;
+        z = homePose.z + pose.z;
+    }
 
     float R[3][3];
     rotationMatrix(roll, pitch, yaw, R);
 
-    // --------------------------------------------------------------------
-    // 2) Compose translation (home + incremental)
-    //    All translations are expressed in the platform coordinate frame.
-    // --------------------------------------------------------------------
-    const float x = homePose.x + pose.x;
-    const float y = homePose.y + pose.y;
-    const float z = homePose.z + pose.z;
-
-    // Local alias for rotation centre (gnathion).
+    // Use the user-defined rotation centre.
     const float cx = rotationCenter[0];
     const float cy = rotationCenter[1];
     const float cz = rotationCenter[2];
 
-    // --------------------------------------------------------------------
-    // 3) Forward transform each platform joint and measure distance to its
-    //    corresponding base joint.
-    // --------------------------------------------------------------------
     for (int i = 0; i < NUM_ACTUATORS; ++i) {
         // Platform joint coordinates (local platform frame)
         float px = PLATFORM_JOINTS[i][0];
         float py = PLATFORM_JOINTS[i][1];
         float pz = PLATFORM_JOINTS[i][2];
 
-        // Rotate *about the user‑defined centre* and translate.
+        // Rotate about the user‑defined centre and translate.
         float wx = R[0][0]*(px - cx) + R[0][1]*(py - cy) + R[0][2]*(pz - cz) + x + cx;
         float wy = R[1][0]*(px - cx) + R[1][1]*(py - cy) + R[1][2]*(pz - cz) + y + cy;
         float wz = R[2][0]*(px - cx) + R[2][1]*(py - cy) + R[2][2]*(pz - cz) + z + cz;

@@ -100,6 +100,9 @@ class CalibrationWindow(QDialog):
 
 
 class RobotGUI(QMainWindow):
+    # Add a signal to handle serial data safely from threads.
+    serialDataReceived = pyqtSignal(str)
+    
     def __init__(self):
         super().__init__()
         self.setWindowTitle("X-Jaw")
@@ -152,7 +155,8 @@ class RobotGUI(QMainWindow):
         self.setCentralWidget(container)
 
         ports = list(serial.tools.list_ports.comports())
-        self.serial = SerialReader(ports[0].device, 115200, self.handle_serial_data)
+        # Pass the emit function of the signal as callback.
+        self.serial = SerialReader(ports[0].device, 115200, self.serialDataReceived.emit)
         self.serial.start()
 
         self.start_button.clicked.connect(self.send_start)
@@ -169,6 +173,9 @@ class RobotGUI(QMainWindow):
         self.timer.start(100)
 
         self.pending_files = None  # <-- new attribute to store file list
+
+        # Connect the new signal to the handle_serial_data slot.
+        self.serialDataReceived.connect(self.handle_serial_data)
 
     def eventFilter(self, source, event):
         if source == self.trajectory_dropdown.view() and event.type() == QEvent.Show:
@@ -202,6 +209,8 @@ class RobotGUI(QMainWindow):
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(False)
         self.calibrate_button.setEnabled(False)
+
+        self.serial.write("calibrate")
         
         self.cal_window = CalibrationWindow(self.serial.write)
         self.cal_window.setModal(True)
@@ -211,6 +220,8 @@ class RobotGUI(QMainWindow):
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(True)
         self.calibrate_button.setEnabled(True)
+
+        self.serial.write("stop") # Ensure the robot moves back to stop state after calibration
 
     def send_speed(self):
         value = self.speed_slider.value()
@@ -223,12 +234,12 @@ class RobotGUI(QMainWindow):
         self.serial.write(f"trajectory:{filename}")
         self.log(f"Sent: trajectory:{filename}")
 
+    # Remove any direct calls to update GUI from the serial thread.
     def handle_serial_data(self, line):
         # If this is the file list sent from the SD card, capture it and do not process further.
         if ".csv" in line:
             self.pending_files = [fn.strip() for fn in line.split(',') if fn.strip().endswith('.csv')]
             return
-
         try:
             values = list(map(float, line.split(',')))
             if len(values) >= 5:

@@ -12,22 +12,27 @@ enum class RobotState {
 
 class RobotController {
 public:
-    RobotController(StewartPlatform* platform);
-
     // Current state getter
     RobotState getState() const;
     bool setState(RobotState newState);
 
     // Add additional functions to coordinate subsystems during transitions
+    bool begin();
     void update();  // For periodic updates if needed
     void setPlatformHomePose(const Pose& pose);
     void setCalibrationTargetPose(const Pose& pose);
+    void setTrajectoryFileName(const String& filename) {
+        trajectoryFileName = filename;
+    }
 
 private:
-    RobotState state;
-    StewartPlatform* platform;
+    RobotState state = RobotState::STOP; // Initial state
+    StewartPlatform platform;
     Trajectory trajectory; // Assuming a Trajectory class exists
-    Pose calibrationTargetPose; // Target pose for calibration
+    Pose calibrationTargetPose = {0, 0, Z0+5, 0, 0, 0}; // Target pose for calibration
+    String trajectoryFileName = "test_trajectory.csv"; // File name for trajectory
+    String loadedTrajectoryFileName = ""; // Track the currently loaded trajectory file
+    unsigned long trajectoryInitTime = 0; // Time when trajectory is started because we changed to MOVING state
 
     // State-specific methods
     void calibrate();     
@@ -38,6 +43,8 @@ private:
     void onEnterCalibrating();
     void onEnterMoving();
     void onEnterStop();
+    bool loadTrajectoryFromFile(const String& filename);
+
 };
 
 #endif // ROBOT_CONTROLLER_H

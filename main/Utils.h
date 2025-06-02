@@ -31,7 +31,6 @@ inline void listCSVFiles() {
     Serial.println("Not a directory.");
     return;
   }
-  Serial.println("Listing CSV files:");
   fileCount = 0;
 
   while (true) {

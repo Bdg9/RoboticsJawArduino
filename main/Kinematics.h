@@ -9,7 +9,7 @@ struct Pose { float x, y, z; float roll, pitch, yaw; };
 class Kinematics {
 public:
     // void inverse(const Pose& pose, float lengths[6]);
-    void inverse(const Pose& pose, float lengths[NUM_ACTUATORS]) const;
+    void inverse(const Pose& pose, float lengths[NUM_ACTUATORS], bool absolute = false) const;
     void rotationMatrix(float roll, float pitch, float yaw, float R[3][3]);
     Kinematics();
     void setRotationCenter(float cx, float cy, float cz);

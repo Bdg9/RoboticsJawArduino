@@ -8,12 +8,18 @@ class StewartPlatform {
 public:
     StewartPlatform();
     void begin();
-    void moveToPose(const Pose& pose);
+    void moveToPose(const Pose& pose, bool absolute = false);
+    void moveToHomePose() {
+        moveToPose(kin.getHomePose(), true); // Move to home pose with absolute position kinematics
+    }
     void stop();
     bool update(bool verbose=false);
     bool calibrateActuators(bool fullCalibration, bool debug=false);
     void setHomePose(const Pose& pose) {
-        kin.setHomePose(pose);
+        kin.setHomePose(pose); 
+    }
+    Pose getHomePose() const {
+        return kin.getHomePose();
     }
 private:
     Actuator* actuators[6];

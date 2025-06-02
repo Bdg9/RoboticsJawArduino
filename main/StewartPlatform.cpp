@@ -10,11 +10,11 @@ StewartPlatform::StewartPlatform() {
 void StewartPlatform::begin() {
     for(int i = 0; i < 6; i++) actuators[i]->begin();
     kin.setRotationCenter(ROTATION_CENTER_X, ROTATION_CENTER_Y, ROTATION_CENTER_Z);
-    kin.setHomePose({0, 0, 0, 0, 0, 0}); // Set home pose with Z0
+    kin.setHomePose({0, 0, Z0+5, 0, 0, 0}); // Set home pose with Z0
 }
 
-void StewartPlatform::moveToPose(const Pose& pose) {
-    kin.inverse(pose, targetLengths);
+void StewartPlatform::moveToPose(const Pose& pose, bool absolute) {
+    kin.inverse(pose, targetLengths, absolute);
     for(int i = 0; i < 6; i++) {
         float clamped = constrain(targetLengths[i], ACTUATOR_MIN_LENGTH, ACTUATOR_MAX_LENGTH);
         if(clamped != targetLengths[i]) {

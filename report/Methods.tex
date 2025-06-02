@@ -20,16 +20,120 @@
 \end{itemize}
 
 \subsection{Control}
-\begin{itemize}
-    \item electronics schematics ?
-    \item inverse kinematics
-    \item finding intial position of the actuators
-    \item PID control for position
-    \item state machine that will help for later coordination with other modules like tongue/saliva
-    \item gui for user friendly use ?
+
+%The control layer combines a high-speed microcontroller, a modular C++ codebase, and classical PI loops to deliver real-time motion of 
+%the Stewart platform.  Figure~\ref{fig:code_structure} gives the software context, while the full electronics schematic is shown in 
+%Fig.~\ref{fig:elec_schematic}.
+
+\subsubsection{Hardware (electronics)}
+A Teensy~4.1 (600 MHz ARM Cortex-M7, single-precision FPU) executes the control loop.% at \SI{100}{\hertz}. %? %todo: add ref for the freq/reason
+Its key peripherals are:  
+\begin{itemize}[nosep]
+    \item three \SI{12}{\ampere} dual DC motor drivers (DF Robot) controlling the six linear actuators;
+    \item six analogue inputs reading potentiometer position feedback from the linear actuators;
+    \item three transmitters for the load cells mounted on top of the maxilla;
+    \item an on-board micro-SD slot used for trajectory files and calibration data.
 \end{itemize}
+A \SI{12}{\volt} AC/DC brick powers the actuators directly; the user's computer supplies \SI{5}{\volt} to the Teensy, which in 
+turn sources the \SI{3.3}{\volt} logic rails for the motor drivers and load-cell transmitters.
+The full electronics schematic is shown in Fig.~\ref{fig:elec_schematic}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/elec_schematic.drawio.png}
+\caption{Electronics schematic.}
+\label{fig:elec_schematic}
+\end{figure}
+
+\subsubsection{Software architecture}
+The central class \texttt{RobotController} maintains the finite-state machine in Fig.~\ref{fig:state_machine} and manages two
+ modules:  
+\begin{itemize}[nosep]
+    \item \texttt{StewartPlatform}: inverse kinematics, trajectory interpolation, and low-level actuator commands;
+    \item \texttt{ForceSensing}: continuous load-cell acquisition and filtering;
+\end{itemize}
+The controller is designed to be modular, allowing for easy addition of new modules such as a tongue or saliva module in the future.
+The three controller states are:
+\begin{enumerate}
+    \item \textbf{Stop} – return to home pose; reload trajectory if the user selects a new file;
+    \item \textbf{Calibrate} – user can manually change the initial $(x,y,z)$ position via the GUI;
+    \item \textbf{Move} – replay the selected trajectory.
+\end{enumerate}
+A lightweight Python GUI on the host PC issues high-level commands, such as state changes, and plots sensor data.  
+
+    
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/code_structure.drawio.png}
+\caption{Overall code structure.}
+\label{fig:code_structure}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/state_machine.drawio.png}
+\caption{Robot controller state machine.}
+\label{fig:state_machine}
+\end{figure}
+
+\subsubsection{Position control}
+
+The Stewart Platform follows a 3D trajectory (x, y, z, roll, pitch, yaw) from a .csv file on the micro-SD card.
+See section \ref{sec:motion-capture} for details on the recording protocol and data processing.
+Each pose is defined by its position ${\bf t}=(x,y,z)$ and orientation given by the Euler angles $(\phi,\theta,\psi)$,
+ which are the roll, pitch, and yaw angles respectively.
+The trajectory is then linearly interpolated with a fixed time step chosen by the user.
+
+\paragraph{Inverse kinematics}
+For each pose in the trajectory, \texttt{Kinematics} computes the lengths of the six linear actuators that will achieve 
+the desired pose of the platform, i.e. the inverse kinematics. To do so, we first compute the standard rotation matrix 
+$R(\phi,\theta,\psi)$ for the Euler angles, which is defined as the product of three rotation matrices about 
+the $Z$, $Y$, and $X$ axes:
+\[
+R(\phi,\theta,\psi) = R_Z(\psi) R_Y(\theta) R_X(\phi) =
+\begin{pmatrix}
+\cos\psi & -\sin\psi & 0 \\
+\sin\psi & \cos\psi & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+\begin{pmatrix}
+\cos\theta & 0 & \sin\theta \\
+0 & 1 & 0 \\
+-\sin\theta & 0 & \cos\theta
+\end{pmatrix}
+\begin{pmatrix}
+1 & 0 & 0 \\
+0 & \cos\phi & -\sin\phi \\
+0 & \sin\phi & \cos\phi
+\end{pmatrix}
+\]
+
+The platform joints ${\bf p}_i$, $i$ being the actuator index, are then rotated about a fixed point ${\bf c}$, 
+which is the front of the gnathion, and translated by the user-defined home position ${\bf t}=(x,y,z)$, 
+resulting in the world coordinates of the platform joints:
+\[
+{\bf w}_i = R\bigl({\bf p}_i-{\bf c}\bigr)+{\bf c}+{\bf t}.
+\]
+
+Finally, the actuator length is the Euclidean distance to the fixed base joint ${\bf b}_i$:
+\[
+\ell_i = \lVert {\bf w}_i-{\bf b}_i\rVert_2.
+\]
+
+\paragraph{PI controller}
+For each actuator, its desired length is sent to a PI position controller, see Figure~\ref{fig:actuator_pi}.
+To minimize the noise of the potentiometer feedback, we apply a low-pass filter averaging the last 10 samples.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/actuator_pi.drawio.png}
+\caption{Position PI controller for the linear actuators.}
+\label{fig:actuator_pi}
+\end{figure}
 
 \subsection{Data acquisition and processing}
+\label{sec:motion-capture}
 
 \paragraph{Subjects.} 
 Two healthy adult volunteers (author and project supervisor) participated in this pilot recording. Owing to time constraints and the exploratory 
@@ -83,8 +187,6 @@ To reduce the noise, we apply a 4th-order butterworth filter to the data. The cu
 . \\
 The data is then transformed to the head reference frame using rotation matrices. 
 
-
-TODO: PCA ?
 
 
 

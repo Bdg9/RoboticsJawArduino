@@ -1,55 +1,44 @@
 #include <Arduino.h>
-#include "StewartPlatform.h"
-#include "Trajectory.h"
+#include "RobotController.h"
 #include "Utils.h"
 
-StewartPlatform platform;
-Trajectory trajectory;
-
-//TODO: make calib into state machine
-// Define a global variable for the target pose.
-Pose currentTarget = {0, 0, Z0+5, 0, 0, 0};
+RobotController robotController;
 
 void setup() {
     Serial.begin(9600);
 
     // Initialize SD card
     if (!SD.begin(SD_CS)) {
-        Serial.println("Error: SD card initialization failed!");
-    }
-
-    platform.begin();
-    if (!platform.calibrateActuators(false, true)) {
-        Serial.println("Error: Calibration failed. Stopping execution.");
+        Serial.println("Error: SD card initialization failed! Stopping execution.");
         while (true) {
             // Halt execution
         }
     }
 
-    if (!trajectory.loadFromCSV("test_trajectory.csv")) {
-        Serial.println("Error: Failed to load trajectory from CSV.");
-        // Halt execution
+    if(!robotController.begin()) {
+        Serial.println("Error: RobotController initialization failed. Stopping execution.");
         while (true) {
             // Halt execution
         }
     }
-
-    trajectory.printPoints();
 }
 
 void loop() {
+    // Handle commands sent via Serial by gui.
     if (Serial.available()) {
-        //if command is start
         String command = Serial.readStringUntil('\n');
         command.trim();
         if (command.equalsIgnoreCase("start")) {
-            Serial.println("Starting file reading...");
+            Serial.println("Starting robot.");
+            robotController.setState(RobotState::MOVING);
             return;
         }else if (command.equalsIgnoreCase("stop")) {
-            Serial.println("Stopping file reading...");
+            Serial.println("Stopping robot.");
+            robotController.setState(RobotState::STOP);
             return;
         }else if (command.equalsIgnoreCase("calibrate")) {
-            Serial.println("calibrating...");
+            Serial.println("Calibration state");
+            robotController.setState(RobotState::CALIBRATING);
             return;
         }else if (command.equalsIgnoreCase("list_csv_files")) {
             listCSVFiles();
@@ -60,12 +49,7 @@ void loop() {
             filename.trim();
             Serial.print("Loading trajectory from file: ");
             Serial.println(filename);
-            if (!trajectory.loadFromCSV(filename)) {
-                Serial.println("Error: Failed to load trajectory from CSV.");
-            } else {
-                Serial.println("Trajectory loaded successfully:");
-                trajectory.printPoints();
-            }
+            robotController.setTrajectoryFileName(filename);
             return;
         }else if (command.startsWith("set position:")) {
             // Parse the command to set a specific position
@@ -74,7 +58,7 @@ void loop() {
             float x, y, z;
             if (sscanf(params.c_str(), "%f,%f,%f", &x, &y, &z) == 3) {
                 // Update the global target pose.
-                currentTarget = {x, y, z, 0, 0, 0};
+                robotController.setCalibrationTargetPose({x, y, z, 0, 0, 0});
                 Serial.println("New target position received.");
             } else {
                 Serial.print("Error: Invalid parameters for set position. Message received: ");
@@ -87,7 +71,7 @@ void loop() {
             params.trim();
             float x, y, z;
             if (sscanf(params.c_str(), "%f,%f,%f", &x, &y, &z) == 3) {
-                platform.setHomePose({x, y, z, 0, 0, 0});
+                robotController.setPlatformHomePose({x, y, z, 0, 0, 0});
                 Serial.print("Origin set to: ");
                 Serial.print(x); Serial.print(", ");
                 Serial.print(y); Serial.print(", ");
@@ -102,37 +86,5 @@ void loop() {
         }
     }
 
-    static unsigned long init_time = millis();
-    static unsigned long lastUpdate = 0;
-    unsigned long now = millis() - init_time;
-    if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
-        lastUpdate = now;
-        //trajectory.printPose(currentTarget);
-        platform.moveToPose(currentTarget);
-        if(!platform.update(false)) {
-            Serial.println("Error: Failed updating platform. Stoppping execution.");
-            platform.stop();
-            while (true) {
-                    //Halt execution
-             }   
-        }
-    }
-
-    // //init time
-    // static unsigned long init_time = millis();
-    // static unsigned long lastUpdate = 0;
-    // unsigned long now = millis() - init_time;
-    // if(now - lastUpdate >= PLATFORM_UPDATE_INTERVAL) {
-    //     lastUpdate = now;
-    //     Pose target = trajectory.getPose(now);
-    //     trajectory.printPose(target);
-    //     platform.moveToPose(target);
-    //     if(!platform.update()) {
-    //         Serial.println("Error: Failed updating platform. Stoppping execution.");
-    //         platform.stop();
-    //         while (true) {
-    //                 //Halt execution
-    //          }   
-    //     }
-    // }
+    robotController.update();
 }

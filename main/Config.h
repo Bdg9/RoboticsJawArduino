@@ -51,8 +51,8 @@ const float MAX_X = 20.0f;
 const float MIN_Y = -20.0f;
 const float MAX_Y = 20.0f;
 
-const float MIN_Z = Z0 + 0.0f;
-const float MAX_Z = Z0 + 60.0f;
+const float MIN_Z = 0.0f;
+const float MAX_Z = 60.0f;
 
 const float MIN_ROLL = degrees2rad(-35.0f);
 const float MAX_ROLL = degrees2rad(5.0f);
