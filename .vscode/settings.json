@@ -1,5 +1,29 @@
 {
     "files.associations": {
         "ostream": "cpp"
+    },
+    // ---------- LaTeX-Workshop tool & recipe -----------
+    "latex-workshop.latex.tools": [
+    {
+        "name": "latexmk (shell-escape)",
+        "command": "latexmk",
+        "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-shell-escape",        // ← this is the important bit
+        "-pdf",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+        ]
     }
+    ],
+
+    "latex-workshop.latex.recipes": [
+    {
+        "name": "latexmk ➜ PDF (shell-escape)",
+        "tools": [ "latexmk (shell-escape)" ]
+    }
+    ]
+
 }

@@ -19,6 +19,8 @@
 \captionsetup{justification=raggedright,singlelinecheck=false,labelfont=bf}
 \usepackage{booktabs,tabularx,array,makecell,multirow}
 \renewcommand\tabularxcolumn[1]{>{\Centering}m{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+%\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
 
 % -------- Algorithms (choose ONE set) --
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
