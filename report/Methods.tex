@@ -2,11 +2,11 @@
 
 \subsection{Design requirements}
 
-The jaw that we are designing aims at mimicking human chewing as closely as possible. The jaw is responsible for the chewing motion as well as the force applied to the food.
-The speed and acceleration of the jaw are not as important as the force and range of motion, as the jaw can chew even if it is slow.
-For the chewing force, we considered both the bite force and shear force. The maximum clenching force in healthy adults is around \SI{1243}{\newton} \cite{max_clenching_force}
-but the maximum bite force during chewing is around \SI{600}{\newton} \cite{chewing_force}. As we are reproducing chewing, we will use \SI{800}{\newton} as the maximum vertical force
-the lower jaw can apply on the upper jaw.
+The jaw makes essential contributions to the chewing process such as generating the forces required to break down food, controlling the lower mandible motion
+and giving sensory feedback. A robotic jaw should therefore be able to mimic these functions as closely as possible.
+As this is the first iteration of the chewing robot, we focus on force generation and range of motion, while sensory feedback and other functions can be added in future iterations.
+The design requirements are based on the literature and the human jaw anatomy and physiology, as summarized in Table~\ref{tab:functional_criteria}.
+Note that the jaw's speed is not a design requirement as food can be effictively chewed even at slow speeds.
 
 \begin{table}[H]
   \centering
@@ -14,6 +14,10 @@ the lower jaw can apply on the upper jaw.
     \toprule
     \textbf{Quantity} & \textbf{Values reported in the literature} & \textbf{Design target} \\
     \midrule
+    Degrees of freedom (DoF) 
+      & 6 DoF: 3 translational (X, Y, Z) and 3 rotational (roll, pitch, yaw) \cite{6dof}
+      & 6 DoF \\[2pt]
+    \hline
     Vertical (compressive) bite force $F_{z}$ 
       & $600$ N chewing force in healthy adults \cite{chewing_force},\; $1243$ N maximum clenching force \cite{max_clenching_force}
       & $800$ N \\[2pt]
@@ -52,6 +56,8 @@ the lower jaw can apply on the upper jaw.
     \item 3 axis load cells to measure the force applied by the jaw
     \item so far 3d printed teeth/jaw but to be changed in the future
 \end{itemize}
+
+
 
 \subsection{Control}
 
