@@ -117,6 +117,17 @@ def main(
 ) -> None:
     df = pd.read_csv(csv_file).iloc[::every, :]          # optional decimation
 
+    #print min and max of each column
+    print("Data range:")
+    for col in df.columns:
+        if col in ["Frame", "Time"]:
+            continue
+        print(f"  {col}: {df[col].min():.2f} to {df[col].max():.2f}")
+    print(f"Loaded {len(df)} rows from {csv_file}")
+    if df.empty:
+        print("No data to plot, exiting.")
+        return
+
     fig_3d = make_3d_fig(df)
     fig_ts = make_ts_fig(df)
 

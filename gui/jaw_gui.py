@@ -121,11 +121,13 @@ class RobotGUI(QMainWindow):
         self.trajectory_dropdown.view().window().setWindowFlags(                     
             self.trajectory_dropdown.view().window().windowFlags() | Qt.Popup)       
 
-        self.speed_label = QLabel("Speed:")
-        self.speed_slider = QSlider(Qt.Horizontal)
-        self.speed_slider.setMinimum(1)
-        self.speed_slider.setMaximum(100)
-        self.speed_slider.setValue(50)
+        self.speed_label = QLabel("TIme interval between waypoints:")
+        self.speed_spin = QSpinBox()
+        self.speed_spin.setRange(0, 5000)
+        self.speed_spin.setValue(1000)
+        self.speed_spin.setFixedSize(80, 25)
+        self.speed_spin.setSuffix(" ms")
+
 
         self.canvas_3d = FigureCanvas(Figure(figsize=(4, 3)))
         self.ax3d = self.canvas_3d.figure.add_subplot(111, projection='3d')
@@ -143,7 +145,8 @@ class RobotGUI(QMainWindow):
         control_layout.addWidget(self.calibrate_button)
 
         speed_layout.addWidget(self.speed_label)
-        speed_layout.addWidget(self.speed_slider)
+        speed_layout.addWidget(self.speed_spin)
+        speed_layout.setAlignment(Qt.AlignLeft)
 
         main_layout.addLayout(control_layout)
         main_layout.addLayout(speed_layout)
@@ -162,7 +165,7 @@ class RobotGUI(QMainWindow):
         self.start_button.clicked.connect(self.send_start)
         self.stop_button.clicked.connect(self.send_stop)
         self.calibrate_button.clicked.connect(self.open_calibration_window)
-        self.speed_slider.valueChanged.connect(self.send_speed)
+        self.speed_spin.valueChanged.connect(self.send_speed)
         self.trajectory_dropdown.activated.connect(self.send_trajectory)
         # intercept “about to show” to trigger list request
         self.trajectory_dropdown.popupAboutToBeShown.connect(self.load_trajectory_files)
@@ -223,16 +226,16 @@ class RobotGUI(QMainWindow):
 
         self.serial.write("stop") # Ensure the robot moves back to stop state after calibration
 
-    def send_speed(self):
-        value = self.speed_slider.value()
-        self.serial.write(f"speed:{value}")
-        self.log(f"Sent: speed:{value}")
-
     def send_trajectory(self):
         filename = self.trajectory_dropdown.currentText()
         self.log(f"dropdown")
         self.serial.write(f"trajectory:{filename}")
         self.log(f"Sent: trajectory:{filename}")
+    
+    def send_speed(self):
+        value = self.speed_spin.value()
+        self.serial.write(f"set fixed interval:{value}")
+        self.log(f"Sent: set fixed interval:{value}")
 
     # Remove any direct calls to update GUI from the serial thread.
     def handle_serial_data(self, line):

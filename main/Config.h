@@ -51,16 +51,16 @@ const float MAX_X = 20.0f;
 const float MIN_Y = -20.0f;
 const float MAX_Y = 20.0f;
 
-const float MIN_Z = 0.0f;
-const float MAX_Z = 60.0f;
+const float MIN_Z = -30.0f;
+const float MAX_Z = 5.0f;
 
 const float MIN_ROLL = degrees2rad(-35.0f);
-const float MAX_ROLL = degrees2rad(5.0f);
+const float MAX_ROLL = degrees2rad(10.0f);
 
 const float MIN_PITCH = degrees2rad(-20.0f);
 const float MAX_PITCH = degrees2rad(20.0f);
 
-const float MIN_YAW = degrees2rad(-10.0f);
+const float MIN_YAW = degrees2rad(-20.0f);
 const float MAX_YAW = degrees2rad(10.0f);
 
 const int MIN_SPEED = 20;

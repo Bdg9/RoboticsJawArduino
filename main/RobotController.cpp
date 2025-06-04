@@ -79,6 +79,10 @@ void RobotController::setCalibrationTargetPose(const Pose& pose) {
     }
 }
 
+void RobotController::setFixedInterval(unsigned long interval) {
+    fixedInterval = interval;
+}
+
 // ========= Private methods implementation ===========
 
 void RobotController::calibrate() {
@@ -119,6 +123,18 @@ void RobotController::stop() {
         if (!loadTrajectoryFromFile(trajectoryFileName)) {
             Serial.println("Error: Failed to load trajectory from file.");
         } 
+    }
+
+    if(trajectory.getFixedInterval() != fixedInterval) {
+        trajectory.setFixedInterval(fixedInterval);
+        Serial.print("Fixed interval set to: ");
+        Serial.println(fixedInterval);
+
+        if(!trajectory.loadFromCSV(trajectoryFileName)){ // Reload trajectory with new fixed interval
+            Serial.println("Error: Failed to reload trajectory with new fixed interval.");
+        }else{
+            loadedTrajectoryFileName = trajectoryFileName; // Update the loaded trajectory file name
+        }
     }
 
     // If the robot is in STOP state, make platform return to home pose.

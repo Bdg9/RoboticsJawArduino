@@ -21,9 +21,9 @@ T clamp(const T& value, const T& min, const T& max) {
 Trajectory::Trajectory(unsigned long fixedInterval) : count(0), fixedInterval(fixedInterval) {}
 
 bool Trajectory::addWaypoint(Pose& pose) {
-    pose.roll = degrees2rad(pose.roll); // Convert roll, pitch, and yaw from degrees to radians.
-    pose.pitch = degrees2rad(pose.pitch);
-    pose.yaw = degrees2rad(pose.yaw);
+    // pose.roll = degrees2rad(pose.roll); // Convert roll, pitch, and yaw from degrees to radians.
+    // pose.pitch = degrees2rad(pose.pitch);
+    // pose.yaw = degrees2rad(pose.yaw);
     // Validate that the pose is within the allowed limits.
     if( pose.x < MIN_X || pose.x > MAX_X ||
         pose.y < MIN_Y || pose.y > MAX_Y ||
@@ -93,13 +93,13 @@ bool Trajectory::loadFromCSV(const String &filename) {
         token = line.substring(pos5 + 1);
         pose.yaw = token.toFloat();
 
-        Serial.print("Read pose: ");
-        Serial.print("x: "); Serial.print(pose.x); Serial.print(", ");
-        Serial.print("y: "); Serial.print(pose.y); Serial.print(", ");
-        Serial.print("z: "); Serial.print(pose.z); Serial.print(", ");
-        Serial.print("roll: "); Serial.print(pose.roll); Serial.print(", ");
-        Serial.print("pitch: "); Serial.print(pose.pitch); Serial.print(", ");
-        Serial.print("yaw: "); Serial.println(pose.yaw);
+        // Serial.print("Read pose: ");
+        // Serial.print("x: "); Serial.print(pose.x); Serial.print(", ");
+        // Serial.print("y: "); Serial.print(pose.y); Serial.print(", ");
+        // Serial.print("z: "); Serial.print(pose.z); Serial.print(", ");
+        // Serial.print("roll: "); Serial.print(pose.roll); Serial.print(", ");
+        // Serial.print("pitch: "); Serial.print(pose.pitch); Serial.print(", ");
+        // Serial.print("yaw: "); Serial.println(pose.yaw);
 
         // Add the waypoint. If adding fails, break.
         if (!addWaypoint(pose)) {
@@ -156,7 +156,8 @@ void Trajectory::printPose(const Pose& pose) {
 
 void Trajectory::printPoints() {
     Serial.println("Trajectory Points:");
-    for(int i = 0; i < count; i++) {
+    int limit_print = count < 20 ? count : 20; // Limit to 20 points for printing
+    for(int i = 0; i < limit_print; i++) {
         Serial.print("Point "); Serial.print(i); Serial.print(": ");
         Serial.print("Time: "); Serial.print(points[i].time); Serial.print(", ");
         Serial.print("Pose: ("); Serial.print(points[i].pose.x); Serial.print(", ");
@@ -166,4 +167,12 @@ void Trajectory::printPoints() {
         Serial.print(points[i].pose.pitch); Serial.print(", ");
         Serial.print(points[i].pose.yaw); Serial.println(")");
     }
+}
+
+void Trajectory::setFixedInterval(unsigned long interval) {
+    fixedInterval = interval;
+}
+
+int Trajectory::getFixedInterval() const {
+    return fixedInterval;
 }

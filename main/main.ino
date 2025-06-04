@@ -82,6 +82,18 @@ void loop() {
                 Serial.println(command);
             }
             return;
+        } else if (command.startsWith("set fixed interval:")) {
+            // Parse the command to set a new fixed interval
+            String params = command.substring(19);
+            params.trim();
+            unsigned long interval = params.toInt();
+            if (interval > 0) {
+                robotController.setFixedInterval(interval);
+            } else {
+                Serial.print("Error: Invalid fixed interval value. Message received: ");
+                Serial.println(command);
+            }
+            return;
         } else {
             Serial.println("Unknown command. Available commands: start, stop, calibrate, list_csv_files, trajectory:<filename>, set position:<x,y,z>, set origin:<x,y,z>");
         }
