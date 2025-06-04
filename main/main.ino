@@ -60,7 +60,6 @@ void loop() {
             if (sscanf(params.c_str(), "%f,%f,%f", &x, &y, &z) == 3) {
                 // Update the global target pose.
                 robotController.setCalibrationTargetPose({x, y, z, 0, 0, 0});
-                Serial.println("New target position received.");
             } else {
                 Serial.print("Error: Invalid parameters for set position. Message received: ");
                 Serial.println(command);

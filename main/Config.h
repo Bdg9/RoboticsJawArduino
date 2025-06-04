@@ -44,6 +44,24 @@ const int ACT_B_PINS[NUM_ACTUATORS] = {36, 6, 3, 0, 27, 24};
 const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 40, 17, 16, 41};
 const int PWM_FREQ = 23000; // 23kHz
 
+// multiplexer configuration
+const int S0 = 22; // Mux S0 pin
+const int S1 = 20; // Mux S1 pin
+const int S2 = 19; // Mux S2 pin
+const int S3 = 18; // Mux S3 pin
+const int SIG = 15; // Mux SIG pin
+// Multiplexer channel for the load cell
+const int LC_FRONT[3] = {6, 7, 8}; // A, Mux channel for front load cell (x, y, z)
+const int LC_BACK_R[3] = {3, 4, 5}; // B, Mux channel for back right load cell (x, y, z)
+const int LC_BACK_L[3] = {0, 1, 2}; // C, Mux channel for back left load cell (x, y, z)
+// Load cell samples
+const int LC_SAMPLES = 10; // Number of samples to average for load cell readings
+// Load cell calibration
+const int LOAD_CELL_MIN_FORCE = 0; // Minimum load cell value
+const int LOAD_CELL_MAX_FORCE = 500; // Maximum load cell value
+const int LOAD_CELL_MIN = 0; // Minimum load cell ADC value
+const int LOAD_CELL_MAX = 1023; // Maximum load cell ADC value
+
 // Constraints for the pose
 const float MIN_X = -20.0f;
 const float MAX_X = 20.0f;

@@ -98,6 +98,9 @@ void RobotController::calibrate() {
             setState(RobotState::STOP);
         }
     }
+    // update and print the force sensing data
+    forceSensing.update();
+    forceSensing.printForce();
 }
 
 void RobotController::move() {
