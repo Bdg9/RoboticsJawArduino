@@ -108,11 +108,15 @@ class RobotGUI(QMainWindow):
         self.setWindowTitle("X-Jaw")
 
         main_layout = QVBoxLayout()
-        control_layout = QHBoxLayout()
-        speed_layout = QHBoxLayout()
+        
+        grid_layout = QGridLayout()
+        grid_layout.setHorizontalSpacing(20)
+        grid_layout.setVerticalSpacing(10)
 
         self.start_button = QPushButton("Start")
+        self.start_button.setFixedSize(100, 50)
         self.stop_button = QPushButton("Stop")
+        self.stop_button.setFixedSize(100, 50)
         self.calibrate_button = QPushButton("Calibrate")
 
         self.trajectory_label = QLabel("Trajectory:")
@@ -128,7 +132,6 @@ class RobotGUI(QMainWindow):
         self.speed_spin.setFixedSize(80, 25)
         self.speed_spin.setSuffix(" ms")
 
-
         self.canvas_3d = FigureCanvas(Figure(figsize=(4, 3)))
         self.ax3d = self.canvas_3d.figure.add_subplot(111, projection='3d')
 
@@ -137,19 +140,28 @@ class RobotGUI(QMainWindow):
         self.error_console.setFixedHeight(100)
         self.error_console.setPlaceholderText("Console output / errors...")
 
-        control_layout.addWidget(self.start_button)
-        control_layout.addWidget(self.stop_button)
-        control_layout.addWidget(self.trajectory_label)
-        control_layout.addWidget(self.trajectory_dropdown)
-        control_layout.addStretch()
-        control_layout.addWidget(self.calibrate_button)
+        # Left column: put start and stop vertically.
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.start_button)
+        button_layout.addWidget(self.stop_button)
+        grid_layout.addLayout(button_layout, 0, 0, 2, 1)   # spans two rows in the first column
 
+        # Right first row: trajectory label, dropdown, stretch, and calibrate button.
+        traj_layout = QHBoxLayout()
+        traj_layout.addWidget(self.trajectory_label)
+        traj_layout.addWidget(self.trajectory_dropdown)
+        traj_layout.addStretch()
+        traj_layout.addWidget(self.calibrate_button)
+        grid_layout.addLayout(traj_layout, 0, 1)            # first row, second column
+
+        # Right second row: only the speed spin (aligned to left).
+        speed_layout = QHBoxLayout()
         speed_layout.addWidget(self.speed_label)
         speed_layout.addWidget(self.speed_spin)
-        speed_layout.setAlignment(Qt.AlignLeft)
+        speed_layout.addStretch()  # Add stretch to push the spin box to the left
+        grid_layout.addLayout(speed_layout, 1, 1)          # second row, second column
 
-        main_layout.addLayout(control_layout)
-        main_layout.addLayout(speed_layout)
+        main_layout.addLayout(grid_layout)
         main_layout.addWidget(self.canvas_3d)
         main_layout.addWidget(self.error_console)
 
