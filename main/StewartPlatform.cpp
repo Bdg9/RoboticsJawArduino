@@ -2,9 +2,12 @@
 #include "Config.h"
 #include <Arduino.h>
 
-StewartPlatform::StewartPlatform() {
+StewartPlatform::StewartPlatform(): pot_mux(POT_MUX_S0, POT_MUX_S1, POT_MUX_S2, POT_MUX_S3) {
+    pinMode(POT_MUX_SIG_PIN, INPUT); // Mux SIG pin for potentiometers
+    pinMode(POT_MUX_EN_PIN, OUTPUT); // Mux EN pin for potentiometers
+    digitalWrite(POT_MUX_EN_PIN, LOW); // Enable the potentiometer Mux
     for(int i = 0; i < 6; i++)
-        actuators[i] = new Actuator(ACT_PWM_PINS[i], ACT_A_PINS[i], ACT_B_PINS[i], ACT_POT_PINS[i], i);
+        actuators[i] = new Actuator(pot_mux, ACT_PWM_PINS[i], ACT_A_PINS[i], ACT_B_PINS[i], ACT_POT_CH[i], i);
 }
 
 void StewartPlatform::begin() {
@@ -70,9 +73,11 @@ bool StewartPlatform::calibrateActuators(bool fullCalibration, bool debug) {
 
         // Compute max values from extended position.
         for (int i = 0; i < NUM_ACTUATORS; i++) {
-            int max_val = analogRead(actuators[i]->potPin);
+            pot_mux.channel(actuators[i]->potPin);
+            int max_val = analogRead(POT_MUX_SIG);
             for (int j = 0; j < 10; j++) {
-                int raw = analogRead(actuators[i]->potPin);
+                pot_mux.channel(actuators[i]->potPin);
+                int raw = analogRead(POT_MUX_SIG);
                 if (raw > max_val) {
                     max_val = raw;
                 }
@@ -105,9 +110,11 @@ bool StewartPlatform::calibrateActuators(bool fullCalibration, bool debug) {
 
     // Compute min values from retracted position.
     for (int i = 0; i < NUM_ACTUATORS; i++) {
-        int min_val = analogRead(actuators[i]->potPin);
+            pot_mux.channel(actuators[i]->potPin);
+            int min_val = analogRead(POT_MUX_SIG);
         for (int j = 0; j < 10; j++) {
-            int raw = analogRead(actuators[i]->potPin);
+            pot_mux.channel(actuators[i]->potPin);
+            int raw = analogRead(POT_MUX_SIG);
             if (raw < min_val) {
                 min_val = raw;
             }

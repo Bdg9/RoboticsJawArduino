@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "RobotController.h"
 #include "Utils.h"
+#include <CD74HC4067.h>
 
 RobotController robotController;
 

@@ -3,6 +3,7 @@
 
 #include "LoadCell3Axis.h"
 #include "Config.h"
+#include <CD74HC4067.h>
 
 class ForceSensing {
 public:
@@ -23,7 +24,7 @@ public:
     void printForce() const;
 
 private:
-    Mux mux;
+    CD74HC4067 lc_mux; // Multiplexer for load cells
     LoadCell3Axis lc_front; // Front load cell
     LoadCell3Axis lc_back_r; // Back right load cell
     LoadCell3Axis lc_back_l; // Back left load cell

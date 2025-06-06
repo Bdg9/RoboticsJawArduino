@@ -112,7 +112,7 @@ void RobotController::move() {
         Pose target = trajectory.getPose(now);
         trajectory.printPose(target);
         platform.moveToPose(target);
-        if(!platform.update()) {
+        if(!platform.update(true)) {
             Serial.println("Error: Failed updating platform. Stoppping execution.");
             setState(RobotState::STOP); 
             return;

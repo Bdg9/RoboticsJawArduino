@@ -1,7 +1,7 @@
 #include "LoadCell3axis.h"
 
-LoadCell3Axis::LoadCell3Axis(Mux &mux, int muxPinX, int muxPinY, int muxPinZ)
-    : _mux(mux), _chX(muxPinX), _chY(muxPinY), _chZ(muxPinZ) {
+LoadCell3Axis::LoadCell3Axis(CD74HC4067& lc_mux, int muxPinX, int muxPinY, int muxPinZ)
+    : lc_mux(lc_mux), _chX(muxPinX), _chY(muxPinY), _chZ(muxPinZ) {
 }
 
 void LoadCell3Axis::update() {
@@ -20,9 +20,12 @@ ForceVector LoadCell3Axis::getForce() const {
 
 //use circular buffer to read the force vector
 ForceVector LoadCell3Axis::readForce() {
-    int rawX = _mux.read(_chX);
-    int rawY = _mux.read(_chY);
-    int rawZ = _mux.read(_chZ);
+    lc_mux.channel(_chX); // Select channel for X
+    int rawX = analogRead(LC_MUX_SIG); // Read the raw value from the mux
+    lc_mux.channel(_chY); // Select channel for Y
+    int rawY = analogRead(LC_MUX_SIG); // Read the raw value from the mux
+    lc_mux.channel(_chZ); // Select channel for Z
+    int rawZ = analogRead(LC_MUX_SIG); // Read the raw value from the mux
 
     // add values to the circular buffer
     _xDataBuffer[_bufferIndex] = rawX;

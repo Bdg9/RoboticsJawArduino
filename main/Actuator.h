@@ -6,10 +6,12 @@
 #include "Config.h"
 #include <SPI.h>
 #include <SD.h>
+#include <CD74HC4067.h>
+
 
 class Actuator {
 public:
-    Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb);
+    Actuator(CD74HC4067& pot_mux, int pwmPin, int aPin, int bPin, int potPin, int actNb);
     void begin();
     void loadCalibration();
     void saveCalibration();
@@ -24,6 +26,7 @@ public:
     inline int getMax(){ return maxPotValue; }
     int potPin;
 private:
+    CD74HC4067 pot_mux;
     MotorDriver driver;
     int minPotValue;
     int maxPotValue;

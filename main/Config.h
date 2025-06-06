@@ -41,19 +41,20 @@ const unsigned long PLATFORM_UPDATE_INTERVAL = 10;
 const int ACT_PWM_PINS[NUM_ACTUATORS] = {33, 8, 5, 2, 29, 25};
 const int ACT_A_PINS[NUM_ACTUATORS] = {34, 12, 4, 1, 28, 26};
 const int ACT_B_PINS[NUM_ACTUATORS] = {36, 6, 3, 0, 27, 24};
-const int ACT_POT_PINS[NUM_ACTUATORS] = {23, 21, 40, 17, 16, 41};
+const int ACT_POT_CH[NUM_ACTUATORS] = {0, 1, 2, 3, 4, 5};
 const int PWM_FREQ = 23000; // 23kHz
 
 // multiplexer configuration
-const int S0 = 22; // Mux S0 pin
-const int S1 = 20; // Mux S1 pin
-const int S2 = 19; // Mux S2 pin
-const int S3 = 18; // Mux S3 pin
-const int SIG = 15; // Mux SIG pin
+const int LC_MUX_S0 = 26; // Mux S0 pin
+const int LC_MUX_S1 = 25; // Mux S1 pin
+const int LC_MUX_S2 = 14; // Mux S2 pin
+const int LC_MUX_S3 = 13; // Mux S3 pin
+const int LC_MUX_SIG = 41; // Mux SIG pin
+const int LC_MUX_EN = 17; // Mux EN pin 
 // Multiplexer channel for the load cell
-const int LC_FRONT[3] = {6, 7, 8}; // A, Mux channel for front load cell (x, y, z)
-const int LC_BACK_R[3] = {3, 4, 5}; // B, Mux channel for back right load cell (x, y, z)
-const int LC_BACK_L[3] = {0, 1, 2}; // C, Mux channel for back left load cell (x, y, z)
+const int LC_FRONT[3] = {9, 8, 7}; // A, Mux channel for front load cell (x, y, z)
+const int LC_BACK_R[3] = {12, 11, 10}; // B, Mux channel for back right load cell (x, y, z)
+const int LC_BACK_L[3] = {15, 14, 13}; // C, Mux channel for back left load cell (x, y, z)
 // Load cell samples
 const int LC_SAMPLES = 10; // Number of samples to average for load cell readings
 // Load cell calibration
@@ -61,6 +62,15 @@ const int LOAD_CELL_MIN_FORCE = 0; // Minimum load cell value
 const int LOAD_CELL_MAX_FORCE = 500; // Maximum load cell value
 const int LOAD_CELL_MIN = 0; // Minimum load cell ADC value
 const int LOAD_CELL_MAX = 1023; // Maximum load cell ADC value
+
+// Actuator potentiometer mux configuration
+const int POT_MUX_S0 = 22; // Mux S0 pin for potentiometers
+const int POT_MUX_S1 = 21; // Mux S1 pin for potentiometers
+const int POT_MUX_S2 = 20; // Mux S2 pin for potentiometers
+const int POT_MUX_S3 = 19; // Mux S3 pin for potentiometers
+const int POT_MUX_SIG = 18; // Mux SIG pin for potentiometers
+const int POT_MUX_EN = 23; // Mux EN pin for potentiometers
+
 
 // Constraints for the pose
 const float MIN_X = -20.0f;

@@ -1,12 +1,11 @@
 #include "Actuator.h"
 #include <Arduino.h>
 
-Actuator::Actuator(int pwmPin, int aPin, int bPin, int potPin, int actNb)
-    : potPin(potPin), driver(pwmPin, aPin, bPin), minPotValue(0), maxPotValue(0), actuatorNb(actNb), targetLength(0), errorSum(0), lastError(0) {}
+Actuator::Actuator(CD74HC4067& pot_mux, int pwmPin, int aPin, int bPin, int potPin, int actNb)
+    : pot_mux(pot_mux), potPin(potPin), driver(pwmPin, aPin, bPin), minPotValue(0), maxPotValue(0), actuatorNb(actNb), targetLength(0), errorSum(0), lastError(0) {}
 
 void Actuator::begin() {
     driver.begin();
-    pinMode(potPin, INPUT);
     loadCalibration();
     std::fill(length_data_buffer, length_data_buffer + ACT_LPF_N, (float)ACTUATOR_MIN_LENGTH); // Initialize the buffer to zero
 }
@@ -66,7 +65,8 @@ void Actuator::saveCalibration() {
 
 float Actuator::getLength(bool verbose) {
     // Read the potentiometer value and store it in the buffer
-    int raw = analogRead(potPin);
+    pot_mux.channel(potPin); // Select the correct channel for this actuator
+    int raw = analogRead(POT_MUX_SIG);
 
     float length = mapFloat(raw, minPotValue, maxPotValue, (float)ACTUATOR_MIN_LENGTH, (float)ACTUATOR_MAX_LENGTH);
 

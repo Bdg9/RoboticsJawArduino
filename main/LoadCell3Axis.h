@@ -1,7 +1,7 @@
 #ifndef LOAD_CELL_3_AXIS_H
 #define LOAD_CELL_3_AXIS_H
 #include <Arduino.h>
-#include <Mux.h>
+#include <CD74HC4067.h>
 #include "Config.h"
 
 //--------------------------------------------------------------------
@@ -16,7 +16,7 @@ struct ForceVector {
 
 class LoadCell3Axis {
 public:
-    LoadCell3Axis(Mux &mux, int muxPinX, int muxPinY, int muxPinZ);
+    LoadCell3Axis(CD74HC4067& lc_mux, int muxPinX, int muxPinY, int muxPinZ);
     
     // Initialize the load cell
     void update();
@@ -33,7 +33,7 @@ public:
     inline uint8_t getZRawData() const { return _zDataBuffer[_bufferIndex]; }
 
 private:
-  Mux&  _mux;
+  CD74HC4067 lc_mux; // Multiplexer for load cell
   uint8_t  _chX, _chY, _chZ;
   uint8_t  _xDataBuffer[LC_SAMPLES] = {0};
   uint8_t  _yDataBuffer[LC_SAMPLES] = {0};
