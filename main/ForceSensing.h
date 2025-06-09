@@ -23,6 +23,9 @@ public:
     // Print the current force vector to Serial
     void printForce() const;
 
+    // Tare the force vectors of all load cells
+    void tareAll();
+
 private:
     CD74HC4067 lc_mux; // Multiplexer for load cells
     LoadCell3Axis lc_front; // Front load cell

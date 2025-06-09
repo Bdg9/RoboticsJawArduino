@@ -4,9 +4,9 @@ ForceSensing::ForceSensing(): lc_mux(LC_MUX_S0, LC_MUX_S1, LC_MUX_S2, LC_MUX_S3)
                              lc_front(lc_mux, LC_FRONT[0], LC_FRONT[1], LC_FRONT[2]),
                              lc_back_r(lc_mux, LC_BACK_R[0], LC_BACK_R[1], LC_BACK_R[2]),
                              lc_back_l(lc_mux, LC_BACK_L[0], LC_BACK_L[1], LC_BACK_L[2]) {
-    pinMode(LC_MUX_SIG_PIN, INPUT); // Mux SIG pin
-    pinMode(LC_MUX_EN_PIN, OUTPUT); // Mux EN pin
-    digitalWrite(LC_MUX_EN_PIN, LOW); // Enable the Mux
+    pinMode(LC_MUX_SIG, INPUT); // Mux SIG pin
+    pinMode(LC_MUX_EN, OUTPUT); // Mux EN pin
+    digitalWrite(LC_MUX_EN, LOW); // Enable the Mux
 }
 
 void ForceSensing::update() {
@@ -60,4 +60,9 @@ void ForceSensing::printForce() const {
     Serial.println(lc_back_l.getForce().z);
 }
 
+void ForceSensing::tareAll() {
+    lc_front.tare();
+    lc_back_r.tare();
+    lc_back_l.tare();
+}
 

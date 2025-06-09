@@ -137,7 +137,7 @@ class RobotGUI(QMainWindow):
         self.speed_label = QLabel("TIme interval between waypoints:")
         self.speed_spin = QSpinBox()
         self.speed_spin.setRange(0, 5000)
-        self.speed_spin.setValue(1000)
+        self.speed_spin.setValue(100)
         self.speed_spin.setFixedSize(80, 25)
         self.speed_spin.setSuffix(" ms")
 
@@ -310,12 +310,13 @@ class RobotGUI(QMainWindow):
     def log(self, message):
         timestamp = time.strftime("[%H:%M:%S] ")
         full_message = timestamp + message
+        # Wrap each message in its own paragraph so that the styling is isolated.
         if message.startswith("Warning"):
-            colored_message = f'<font color="orange">{full_message}</font>'
+            colored_message = f'<p style="color: orange; margin: 0;">{full_message}</p>'
         elif message.startswith("Error"):
-            colored_message = f'<font color="red">{full_message}</font>'
+            colored_message = f'<p style="color: red; margin: 0;">{full_message}</p>'
         else:
-            colored_message = full_message
+            colored_message = f'<p style="margin: 0;">{full_message}</p>'
         self.error_console.append(colored_message)
         self.error_console.moveCursor(QTextCursor.End)
 
@@ -344,6 +345,7 @@ class RobotGUI(QMainWindow):
         # Get a base filename from the selected trajectory file.
         base_filename = self.trajectory_dropdown.currentText().strip()
         base_filename = base_filename.replace(" ", "_")
+        filename = base_filename.replace(".csv", "")
         speed = self.speed_spin.value()
         timestamp = time.strftime("%Y%m%d-%H%M%S")
 
@@ -353,20 +355,22 @@ class RobotGUI(QMainWindow):
         for i in range(6):
             act_data = [d for d in self.actuator_data if d["actuator"] == i]
             if act_data:
+                #change time so that the first point is at 0 and it's in seconds and not ms
                 times = [d["time"] for d in act_data]
+                times = [(t - times[0]) / 1000 for t in times]  # Convert ms to seconds
                 target_lengths = [d["target_length"] for d in act_data]
                 current_lengths = [d["current_length"] for d in act_data]
                 axs1[i].plot(times, target_lengths, label="Target Length")
                 axs1[i].plot(times, current_lengths, label="Current Length")
                 axs1[i].set_title(f"Actuator {i}")
-                axs1[i].set_xlabel("Time")
-                axs1[i].set_ylabel("Length")
+                axs1[i].set_xlabel("Time (s)")
+                axs1[i].set_ylabel("Length (mm)")
                 axs1[i].legend()
             else:
                 axs1[i].text(0.5, 0.5, "No Data", ha="center")
                 axs1[i].set_title(f"Actuator {i}")
         fig1.tight_layout()
-        lengths_filename = f"{ROOT_DIR}\\{base_filename}_{speed}_ms_lengths_{timestamp}.png"
+        lengths_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_lengths_{timestamp}.png"
         fig1.savefig(lengths_filename)
         self.log(f"Saved lengths plot: {lengths_filename}")
 
@@ -377,43 +381,46 @@ class RobotGUI(QMainWindow):
             act_data = [d for d in self.actuator_data if d["actuator"] == i]
             if act_data:
                 times = [d["time"] for d in act_data]
+                times = [(t - times[0]) / 1000 for t in times]  # Convert ms to seconds
                 speeds = [d["speed"] for d in act_data]
                 axs2[i].plot(times, speeds, label="Speed", color="green")
                 axs2[i].set_title(f"Actuator {i}")
-                axs2[i].set_xlabel("Time")
+                axs2[i].set_xlabel("Time (s)")
                 axs2[i].set_ylabel("Speed")
                 axs2[i].legend()
             else:
                 axs2[i].text(0.5, 0.5, "No Data", ha="center")
                 axs2[i].set_title(f"Actuator {i}")
         fig2.tight_layout()
-        speeds_filename = f"{ROOT_DIR}\\{base_filename}_{speed}_ms_speeds_{timestamp}.png"
+        speeds_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_speeds_{timestamp}.png"
         fig2.savefig(speeds_filename)
         self.log(f"Saved speeds plot: {speeds_filename}")
 
         # --- Plot 3: For pose dimensions: x, y, z, roll, pitch, yaw ---
         dims = ["x", "y", "z", "roll", "pitch", "yaw"]
+        unit = ["mm", "mm", "mm", "rad", "rad", "rad"]
         fig3, axs3 = plt.subplots(3, 2, figsize=(10, 8))
         axs3 = axs3.flatten()
         for idx, dim in enumerate(dims):
             if self.pose_data:
                 times = [d["time"] for d in self.pose_data]
+                times = [(t - times[0]) / 1000 for t in times]  # Convert ms to seconds
                 values = [d[dim] for d in self.pose_data]
                 axs3[idx].plot(times, values, label=dim, color="red")
                 axs3[idx].set_title(dim)
-                axs3[idx].set_xlabel("Time")
-                axs3[idx].set_ylabel(dim)
+                axs3[idx].set_xlabel("Time (s)")
+                axs3[idx].set_ylabel(dim + f" ({unit[idx]})")
                 axs3[idx].legend()
             else:
                 axs3[idx].text(0.5, 0.5, "No Data", ha="center")
                 axs3[idx].set_title(dim)
         fig3.tight_layout()
-        pose_filename = f"{ROOT_DIR}\\{base_filename}_{speed}_ms_pose_{timestamp}.png"
+        pose_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_pose_{timestamp}.png"
         fig3.savefig(pose_filename)
         self.log(f"Saved pose plot: {pose_filename}")
 
         # --- Save actuator data to CSV ---
-        actuator_csv_filename = f"{ROOT_DIR}\\{base_filename}_{speed}_ms_actuator_data_{timestamp}.csv"
+        actuator_csv_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_actuator_data_{timestamp}.csv"
         with open(actuator_csv_filename, mode='w', newline='') as csvfile:
             fieldnames = ["actuator", "speed", "target_length", "current_length", "time"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -422,7 +429,7 @@ class RobotGUI(QMainWindow):
         self.log(f"Saved actuator data CSV: {actuator_csv_filename}")
 
         # --- Save pose data to CSV ---
-        pose_csv_filename = f"{ROOT_DIR}\\{base_filename}_{speed}_ms_pose_data_{timestamp}.csv"
+        pose_csv_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_pose_data_{timestamp}.csv"
         with open(pose_csv_filename, mode='w', newline='') as csvfile:
             fieldnames = ["x", "y", "z", "roll", "pitch", "yaw", "time"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

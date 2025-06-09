@@ -22,7 +22,7 @@ public:
         return kin.getHomePose();
     }
 private:
-    CD74HC4067& pot_mux;
+    CD74HC4067 pot_mux;
     Actuator* actuators[6];
     float targetLengths[6];
     Kinematics kin;

@@ -3,9 +3,9 @@
 #include <Arduino.h>
 
 StewartPlatform::StewartPlatform(): pot_mux(POT_MUX_S0, POT_MUX_S1, POT_MUX_S2, POT_MUX_S3) {
-    pinMode(POT_MUX_SIG_PIN, INPUT); // Mux SIG pin for potentiometers
-    pinMode(POT_MUX_EN_PIN, OUTPUT); // Mux EN pin for potentiometers
-    digitalWrite(POT_MUX_EN_PIN, LOW); // Enable the potentiometer Mux
+    pinMode(POT_MUX_SIG, INPUT); // Mux SIG pin for potentiometers
+    pinMode(POT_MUX_EN, OUTPUT); // Mux EN pin for potentiometers
+    digitalWrite(POT_MUX_EN, LOW); // Enable the potentiometer Mux
     for(int i = 0; i < 6; i++)
         actuators[i] = new Actuator(pot_mux, ACT_PWM_PINS[i], ACT_A_PINS[i], ACT_B_PINS[i], ACT_POT_CH[i], i);
 }

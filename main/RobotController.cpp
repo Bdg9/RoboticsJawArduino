@@ -19,6 +19,9 @@ bool RobotController::begin() {
     }
 
     trajectory.printPoints();
+
+    // Initialize force sensing
+    forceSensing.tareAll(); // Tare all load cells
     return true;
 }
 
