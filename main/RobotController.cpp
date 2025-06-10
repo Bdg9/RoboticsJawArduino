@@ -101,6 +101,7 @@ void RobotController::calibrate() {
             setState(RobotState::STOP);
         }
     }
+    delay(10);
     // update and print the force sensing data
     forceSensing.update();
     forceSensing.printForce();
@@ -164,7 +165,8 @@ void RobotController::onEnterCalibrating() {
     // Stop movement before calibration begins.
     platform.stop();
     
-    // Similarly, other subsystems could be prepared for a manual calibration mode.
+    // Reset calibration target pose
+    calibrationTargetPose = {0, 0, Z0+5, 0, 0, 0}; 
 }
 
 void RobotController::onEnterMoving() {

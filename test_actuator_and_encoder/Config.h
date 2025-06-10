@@ -45,8 +45,8 @@ const int ACT_POT_CH[NUM_ACTUATORS] = {0, 1, 2, 3, 4, 5};
 const int PWM_FREQ = 23000; // 23kHz
 
 // multiplexer configuration
-const int LC_MUX_S0 = 16; // Mux S0 pin
-const int LC_MUX_S1 = 15; // Mux S1 pin
+const int LC_MUX_S0 = 26; // Mux S0 pin
+const int LC_MUX_S1 = 25; // Mux S1 pin
 const int LC_MUX_S2 = 14; // Mux S2 pin
 const int LC_MUX_S3 = 13; // Mux S3 pin
 const int LC_MUX_SIG = 41; // Mux SIG pin

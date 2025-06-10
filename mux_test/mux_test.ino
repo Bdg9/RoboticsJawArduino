@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <CD74HC4067.h>
 
-CD74HC4067 lc_mux(16, 15, 14, 13); // S0, S1, S2, S3
+CD74HC4067 lc_mux(26, 25, 14, 13); // S0, S1, S2, S3
 #define LC_MUX_SIG_PIN 41 // Mux SIG pin
 #define LC_MUX_EN_PIN 17 // Mux EN pin
 

@@ -22,10 +22,13 @@ ForceVector LoadCell3Axis::getForce() const {
 ForceVector LoadCell3Axis::readForce() {
     lc_mux.channel(_chX); // Select channel for X
     int rawX = analogRead(LC_MUX_SIG); // Read the raw value from the mux
+    rawX = analogRead(LC_MUX_SIG); // Read the raw value from the mux again to ensure stability
     lc_mux.channel(_chY); // Select channel for Y
     int rawY = analogRead(LC_MUX_SIG); // Read the raw value from the mux
+    rawY = analogRead(LC_MUX_SIG); // Read the raw value from the mux again to ensure stability
     lc_mux.channel(_chZ); // Select channel for Z
     int rawZ = analogRead(LC_MUX_SIG); // Read the raw value from the mux
+    rawZ = analogRead(LC_MUX_SIG); // Read the raw value from the mux again to ensure stability
 
     // add values to the circular buffer
     _xDataBuffer[_bufferIndex] = rawX;
@@ -45,7 +48,6 @@ ForceVector LoadCell3Axis::readForce() {
     avgY /= LC_SAMPLES;
     avgZ /= LC_SAMPLES;
 
-    // Convert raw values to force vector (you may need to apply calibration/scaling)
     ForceVector force;
     force.x = map(avgX, LOAD_CELL_MIN, LOAD_CELL_MAX, LOAD_CELL_MIN_FORCE, LOAD_CELL_MAX_FORCE);
     force.y = map(avgY, LOAD_CELL_MIN, LOAD_CELL_MAX, LOAD_CELL_MIN_FORCE, LOAD_CELL_MAX_FORCE);

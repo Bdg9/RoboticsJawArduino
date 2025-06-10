@@ -151,6 +151,13 @@ bool StewartPlatform::calibrateActuators(bool fullCalibration, bool debug) {
         }
     }
 
+    // Save calibration data to SD card only if full calibration is requested.
+    if (fullCalibration) {
+        for (int i = 0; i < NUM_ACTUATORS; i++) {
+            actuators[i]->saveCalibration();
+        }
+    }
+
     Serial.println("Calibration done.");
     return true;
 }

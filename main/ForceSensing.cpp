@@ -7,6 +7,9 @@ ForceSensing::ForceSensing(): lc_mux(LC_MUX_S0, LC_MUX_S1, LC_MUX_S2, LC_MUX_S3)
     pinMode(LC_MUX_SIG, INPUT); // Mux SIG pin
     pinMode(LC_MUX_EN, OUTPUT); // Mux EN pin
     digitalWrite(LC_MUX_EN, LOW); // Enable the Mux
+
+    // Put mux on the front load cell channel
+    lc_mux.channel(LC_FRONT[2]); // Select channel for front load cell
 }
 
 void ForceSensing::update() {
@@ -31,33 +34,42 @@ ForceVector ForceSensing::getTotalForce() const {
 
 void ForceSensing::printForce() const {
     ForceVector totalForce = getTotalForce();
+    unsigned long currentTime = millis();
     Serial.print("Total Force - X: ");
     Serial.print(totalForce.x);
     Serial.print(", Y: ");
     Serial.print(totalForce.y);
     Serial.print(", Z: ");
-    Serial.println(totalForce.z);
+    Serial.print(totalForce.z);
+    Serial.print(", Time: ");
+    Serial.println(currentTime);
     
     Serial.print("Front Force - X: ");
     Serial.print(lc_front.getForce().x);
     Serial.print(", Y: ");
     Serial.print(lc_front.getForce().y);
     Serial.print(", Z: ");
-    Serial.println(lc_front.getForce().z);
+    Serial.print(lc_front.getForce().z);
+    Serial.print(", Time: ");
+    Serial.println(currentTime);
     
     Serial.print("Back Right Force - X: ");
     Serial.print(lc_back_r.getForce().x);
     Serial.print(", Y: ");
     Serial.print(lc_back_r.getForce().y);
     Serial.print(", Z: ");
-    Serial.println(lc_back_r.getForce().z);
+    Serial.print(lc_back_r.getForce().z);
+    Serial.print(", Time: ");
+    Serial.println(currentTime);
     
     Serial.print("Back Left Force - X: ");
     Serial.print(lc_back_l.getForce().x);
     Serial.print(", Y: ");
     Serial.print(lc_back_l.getForce().y);
     Serial.print(", Z: ");
-    Serial.println(lc_back_l.getForce().z);
+    Serial.print(lc_back_l.getForce().z);
+    Serial.print(", Time: ");
+    Serial.println(currentTime);
 }
 
 void ForceSensing::tareAll() {

@@ -115,7 +115,11 @@ class RobotGUI(QMainWindow):
         # New attributes to store parsed serial messages 
         self.actuator_data = []   # each entry will be a dict with actuator values
         self.pose_data = []       # each entry will be a dict with pose values
-
+        self.force_data_front = []  # each entry will be a dict with force values for front load cell
+        self.force_data_backr = []   # each entry will be a dict with force values for back right load cell
+        self.force_data_backl = []   # each entry will be a dict with force values for back left load cell
+        self.force_data_total = []  # each entry will be a dict with total force values
+        self.debug_actuator_data = []  # each entry will be a dict with debug actuator values
         main_layout = QVBoxLayout()
         
         grid_layout = QGridLayout()
@@ -241,6 +245,10 @@ class RobotGUI(QMainWindow):
         self.cal_window = CalibrationWindow(self.serial.write)
         self.cal_window.setModal(True)
         self.cal_window.exec()
+
+        # Plot force data after calibration
+        self.generateForcePlots()
+        #self.generateDebugActuatorPlots()
         
         # Re-enable buttons once the calibration window is closed
         self.start_button.setEnabled(True)
@@ -298,7 +306,71 @@ class RobotGUI(QMainWindow):
                 }
                 self.pose_data.append(data)
             return
-        
+
+        # Check if line belongs to a force message.
+        if line.startswith("Total Force - X:"):
+            force_pattern = r"Total Force - X:\s*([^,]+),\s*Y:\s*([^,]+),\s*Z:\s*([^,]+),\s*Time:\s*(\d+)"
+            match = re.match(force_pattern, line)
+            if match:
+                data = {
+                    "Fx": float(match.group(1)),
+                    "Fy": float(match.group(2)),
+                    "Fz": float(match.group(3)),
+                    "time": int(match.group(4))
+                }
+                self.force_data_total.append(data)
+            return
+
+        if line.startswith("Front Force - X:"):
+            force_pattern = r"Front Force - X:\s*([^,]+),\s*Y:\s*([^,]+),\s*Z:\s*([^,]+),\s*Time:\s*(\d+)"
+            match = re.match(force_pattern, line)
+            if match:
+                data = {
+                    "Fx": float(match.group(1)),
+                    "Fy": float(match.group(2)),
+                    "Fz": float(match.group(3)),
+                    "time": int(match.group(4))
+                }
+                self.force_data_front.append(data)
+            return
+        if line.startswith("Back Right Force - X:"):
+            force_pattern = r"Back Right Force - X:\s*([^,]+),\s*Y:\s*([^,]+),\s*Z:\s*([^,]+),\s*Time:\s*(\d+)"
+            match = re.match(force_pattern, line)
+            if match:
+                data = {
+                    "Fx": float(match.group(1)),
+                    "Fy": float(match.group(2)),
+                    "Fz": float(match.group(3)),
+                    "time": int(match.group(4))
+                }
+                self.force_data_backr.append(data)
+            return
+        if line.startswith("Back Left Force - X:"):
+            force_pattern = r"Back Left Force - X:\s*([^,]+),\s*Y:\s*([^,]+),\s*Z:\s*([^,]+),\s*Time:\s*(\d+)"
+            match = re.match(force_pattern, line)
+            if match:
+                data = {
+                    "Fx": float(match.group(1)),
+                    "Fy": float(match.group(2)),
+                    "Fz": float(match.group(3)),
+                    "time": int(match.group(4))
+                }
+                self.force_data_backl.append(data)
+            return
+
+        if line.startswith("Debug Actuator"):         
+            debug_actuator_pattern = r"Debug Actuator\s*(\d+)\s*raw pot value:\s*([\d.]+),\s*length:\s*([\d.]+),\s*filtered length:\s*([\d.]+),?\s*time:\s*(\d+)" 
+            match = re.match(debug_actuator_pattern, line)
+            if match:
+                data = {
+                    "actuator": int(match.group(1)),
+                    "raw_value": float(match.group(2)),
+                    "length": float(match.group(3)),
+                    "filtered_length": float(match.group(4)),
+                    "time": int(match.group(5))
+                }
+                # Append to actuator_data for consistency, or handle separately if needed.
+                self.debug_actuator_data.append(data)
         # Fallback: try to process as generic numeric data.
         try:
             values = list(map(float, line.split(',')))
@@ -436,6 +508,126 @@ class RobotGUI(QMainWindow):
             writer.writeheader()
             writer.writerows(self.pose_data)
         self.log(f"Saved pose data CSV: {pose_csv_filename}")
+    
+    def generateForcePlots(self):
+        # Ensure there is data to plot.
+        if not self.force_data_front and not self.force_data_backr and not self.force_data_backl and not self.force_data_total:
+            self.log("No force data captured for plotting.")
+            return
+
+        # Get a base filename from the selected trajectory file.
+        base_filename = self.trajectory_dropdown.currentText().strip()
+        base_filename = base_filename.replace(" ", "_")
+        filename = base_filename.replace(".csv", "")
+        speed = self.speed_spin.value()
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        dims = ["Fx", "Fy", "Fz"]
+        load_cell_names = ["Front", "Back Right", "Back Left", "Total"]
+        force_data = [self.force_data_front, self.force_data_backr, self.force_data_backl, self.force_data_total]
+
+        # --- Plot: Force data for front, back right, back left, and total ---
+        # One plot for each load cell.
+        for i, load_cell_data in enumerate(force_data):
+            if not load_cell_data:
+                self.log(f"No data for {load_cell_names[i]} load cell.")
+                continue
+            
+            fig, axs = plt.subplots(3, 1, figsize=(10, 8))
+            axs = axs.flatten()
+            for idx, dim in enumerate(dims):
+                times = [d["time"] for d in load_cell_data]
+                times = [(t - times[0]) / 1000 for t in times]
+                values = [d[dim] for d in load_cell_data]
+                axs[idx].plot(times, values, label=dim, color="blue")
+                axs[idx].set_title(f"{load_cell_names[i]} Load Cell - {dim}")
+                axs[idx].set_xlabel("Time (s)")
+                axs[idx].set_ylabel(f"{dim} (N)")
+                axs[idx].legend()
+            fig.tight_layout()
+            force_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_{load_cell_names[i].lower()}_force_{timestamp}.png"
+            fig.savefig(force_filename)
+            self.log(f"Saved {load_cell_names[i]} force plot: {force_filename}")
+        # --- Log max z force on each load cell ---
+        #only log max after the first 30 seconds of data collection
+        stable_force_data_front = [d for d in self.force_data_front if d["time"] >= 30000]
+        stable_force_data_backr = [d for d in self.force_data_backr if d["time"] >= 30000]
+        stable_force_data_backl = [d for d in self.force_data_backl if d["time"] >= 30000]
+        stable_force_data_total = [d for d in self.force_data_total if d["time"] >= 30000]
+        max_forces = {
+            "Front": max([d["Fz"] for d in stable_force_data_front], default=0),
+            "Back Right": max([d["Fz"] for d in stable_force_data_backr], default=0),
+            "Back Left": max([d["Fz"] for d in stable_force_data_backl], default=0),
+            "Total": max([d["Fz"] for d in stable_force_data_total], default=0)
+        }
+        for load_cell, max_force in max_forces.items():
+            self.log(f"Max Z Force on {load_cell} Load Cell: {max_force:.2f} N")
+        # --- Save force data to CSV ---
+        force_csv_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_force_data_{timestamp}.csv"
+        with open(force_csv_filename, mode='w', newline='') as csvfile:
+            fieldnames = ["Fx", "Fy", "Fz", "time"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for data in self.force_data_front + self.force_data_backr + self.force_data_backl + self.force_data_total:
+                writer.writerow(data)
+        self.log(f"Saved force data CSV: {force_csv_filename}")
+    
+    def generateDebugActuatorPlots(self):
+        # Ensure there is data to plot.
+        if not self.debug_actuator_data:
+            self.log("No debug actuator data captured for plotting.")
+            return
+
+        base_filename = self.trajectory_dropdown.currentText().strip()
+        base_filename = base_filename.replace(" ", "_")
+        filename = base_filename.replace(".csv", "")
+        speed = self.speed_spin.value()
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+        # --- Figure 1: Plot for actuator length and filtered length ---
+        fig1, axs1 = plt.subplots(3, 2, figsize=(10, 8))
+        axs1 = axs1.flatten()
+        for i in range(6):
+            act_data = [d for d in self.debug_actuator_data if d["actuator"] == i]
+            if act_data:
+                times = [d["time"] for d in act_data]
+                times = [(t - times[0]) / 1000 for t in times]  # convert ms to s
+                lengths = [d["length"] for d in act_data]
+                filtered_lengths = [d["filtered_length"] for d in act_data]
+                axs1[i].plot(times, lengths, label="Length", color="green")
+                axs1[i].plot(times, filtered_lengths, label="Filtered Length", color="red")
+                axs1[i].set_title(f"Actuator {i}")
+                axs1[i].set_xlabel("Time (s)")
+                axs1[i].set_ylabel("Length (mm)")
+                axs1[i].legend()
+            else:
+                axs1[i].text(0.5, 0.5, "No Data", ha="center")
+                axs1[i].set_title(f"Actuator {i}")
+        fig1.tight_layout()
+        debug_length_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_debug_length_{timestamp}.png"
+        fig1.savefig(debug_length_filename)
+        self.log(f"Saved debug actuator length plot: {debug_length_filename}")
+
+        # --- Figure 2: Plot for actuator raw potentiometer value ---
+        fig2, axs2 = plt.subplots(3, 2, figsize=(10, 8))
+        axs2 = axs2.flatten()
+        for i in range(6):
+            act_data = [d for d in self.debug_actuator_data if d["actuator"] == i]
+            if act_data:
+                times = [d["time"] for d in act_data]
+                times = [(t - times[0]) / 1000 for t in times]  # convert ms to s
+                raw_values = [d["raw_value"] for d in act_data]
+                axs2[i].plot(times, raw_values, label="Raw Value", color="orange")
+                axs2[i].set_title(f"Actuator {i}")
+                axs2[i].set_xlabel("Time (s)")
+                axs2[i].set_ylabel("Raw Value")
+                axs2[i].legend()
+            else:
+                axs2[i].text(0.5, 0.5, "No Data", ha="center")
+                axs2[i].set_title(f"Actuator {i}")
+        fig2.tight_layout()
+        debug_raw_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_debug_raw_{timestamp}.png"
+        fig2.savefig(debug_raw_filename)
+        self.log(f"Saved debug actuator raw value plot: {debug_raw_filename}")
 
     def closeEvent(self, event):
         self.serial.stop()
