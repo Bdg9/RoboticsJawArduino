@@ -11,7 +11,7 @@
 class Trajectory {
 public:
     // Constructor that sets a default interval (in milliseconds)
-    Trajectory(unsigned long fixedInterval = 1000);
+    Trajectory(unsigned long fixedInterval = 100);
 
     // Adds a waypoint with the fixed interval; time is computed automatically.
     bool addWaypoint(Pose& pose);
@@ -24,8 +24,13 @@ public:
     Pose getPose(unsigned long currentTime);
     void printPoints();
     void printPose(const Pose& pose);
+
+    // Set fixed interval for trajectory points
+    void setFixedInterval(unsigned long interval);
+    int getFixedInterval() const;
+
 private:
-    static const int MAX_POINTS = 10;
+    static const int MAX_POINTS = 3500;
     struct Waypoint {
         Pose pose;
         unsigned long time;

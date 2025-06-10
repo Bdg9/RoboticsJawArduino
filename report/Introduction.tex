@@ -1,18 +1,29 @@
 \section{Introduction}
 
-\begin{itemize}
-    \item Jaw is one of the most complex articulation in the human body with its 6 degrees of freedom and complex joint movement
-    \item Chewing robot applications: food industry, medical field, dental field, etc.
-    \item Chewing robot can be used to test food texture, dental implants, orthodontic devices, etc.
-    \item Chewing robot can be used to study chewing disorders and develop treatments / also understand more about the human chewing process/development throughout life
-    \item State of the art chewing robots
-    \item Most of them are not able to mimic the human chewing process because not 6 dof / no saliva / no tongue / not able to apply the same forces as human
-    \item Our aim is to create a chewing robot that can mimic the human chewing process as closely as possible
-\end{itemize}
-
-
 %1. **Goal: What do you want to achieve? (e.g. KPI/New capabilities)**
 %2. **Problem: What are the obstacles to achieve the goal? What is currently not possible? (Includes literature review paragraph)**
 %3. **Hypothesis: How do plan to overcome the obstacles and how do you expect this to work? This is usually theoretical/mathematical models/methods**
 %4. **Proof and contributions Does your hypothesis work? To what extent quantitatively?**
 %5. **Conclusion: What did we learn?**
+
+Human chewing is a complex process, involving different systems such as the jaw, teeth, tongue and saliva, all coordinated to break down food into 
+a bolus that can be swallowed and digested. Chewing robots are a great tool to study this process that is not yet fully understood as they give us the opportunity 
+for a closely controlled environment where each parameter can be adjusted and measured. This makes them valuable not only for advancing our understanding of 
+chewing mechanics and related disorders, but also for a wide range of applications. In dentistry, they are used to test how implants and other dental devices
+ wear over time. In food science, they help assess texture and flavor release during mastication. They also offer a reliable platform for studying the release of 
+ active compounds in chewable medications such as medical chewing gum.\\
+Nowadays, many mastication robots exist, and while most are limited in their ability to fully mimic human chewing due to restricted degrees of freedom, 
+some have already made significant progress. For example, the Bristol Dento-Munch Robo-Simulator \cite{BristolChewingRobot} features 6 degrees of freedom 
+(DoF), closed-loop control, force feedback, and a full set of teeth capable of replicating human chewing forces. Similarly, the robot developed by Seung-Ju 
+Lee \cite{ChewingRobotLinearActuator} offers the same capabilities, with a design that more closely follows human biomechanics. Another system, by Alemzadeh 
+et al. \cite{ChewingRobotGums}, includes a closed mouth and artificial saliva—two important components of realistic mastication—even though it has limited 
+sensory feedback. However, none of these systems combine all critical elements: 6 DoF, position and multidirectional force feedback, a closed mouth, and 
+saliva. In addition, none of them include a tongue, which plays a crucial role in directing the food towards the molars and mixing it with saliva during 
+chewing.\\
+This project aims at developing a chewing robot that incorporates all these features, with the goal of replicating the full chewing process as closely as 
+possible. As this is the first iteration, the focus is primarily on the mechanical design and the development of a simple, closed-loop, modular, and scalable 
+control system that can be extended in future versions. The robot includes a 6-DoF Stewart platform capable of replicating chewing forces, along with 
+tri-axial force sensing and position feedback to monitor jaw dynamics in detail. In parallel, we created a first dataset of human chewing motion using 
+motion capture, as no publicly available datasets were found. This dataset will serve as a reference for identifying chewing patterns and 
+improving control strategies. By laying down a flexible and expandable foundation, this work provides a platform for future integration of key components 
+such as artificial saliva flow, an artificial tongue, and adaptive neuromuscular control strategies.

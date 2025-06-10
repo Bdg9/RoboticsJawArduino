@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "RobotController.h"
 #include "Utils.h"
+#include <CD74HC4067.h>
 
 RobotController robotController;
 
@@ -60,7 +61,6 @@ void loop() {
             if (sscanf(params.c_str(), "%f,%f,%f", &x, &y, &z) == 3) {
                 // Update the global target pose.
                 robotController.setCalibrationTargetPose({x, y, z, 0, 0, 0});
-                Serial.println("New target position received.");
             } else {
                 Serial.print("Error: Invalid parameters for set position. Message received: ");
                 Serial.println(command);
@@ -79,6 +79,18 @@ void loop() {
                 Serial.println(z);
             } else {
                 Serial.print("Error: Invalid parameters for set origin. Message received: ");
+                Serial.println(command);
+            }
+            return;
+        } else if (command.startsWith("set fixed interval:")) {
+            // Parse the command to set a new fixed interval
+            String params = command.substring(19);
+            params.trim();
+            unsigned long interval = params.toInt();
+            if (interval > 0) {
+                robotController.setFixedInterval(interval);
+            } else {
+                Serial.print("Error: Invalid fixed interval value. Message received: ");
                 Serial.println(command);
             }
             return;

@@ -82,19 +82,13 @@ float Actuator::getLength(bool verbose) {
     float filtered_length = sum / ACT_LPF_N;
 
     if(verbose) {
-        Serial.print("Debug Actuator "); Serial.print(actuatorNb);
+        Serial.print("Actuator "); Serial.print(actuatorNb);
         Serial.print(" raw pot value: "); Serial.print(raw);
         Serial.print(", length: "); Serial.print(length);
-        Serial.print(", filtered length: "); Serial.print(filtered_length);
-        Serial.print(" time: "); Serial.println(millis());
+        Serial.print(", filtered length: "); Serial.println(filtered_length);
     }
     
     return filtered_length;
-}
-
-int Actuator::getRaw() {
-    pot_mux.channel(potPin); // Select the correct channel for this actuator
-    return analogRead(POT_MUX_SIG);
 }
 
 void Actuator::setTargetLength(float length) {
@@ -120,7 +114,7 @@ bool Actuator::update(bool verbose) {
     lastError = error;
     if (verbose) {
         Serial.print("Actuator "); Serial.print(actuatorNb); 
-        Serial.print(" target speed: "); Serial.print((int)min(abs(output), 255.0f));
+        Serial.print(" target speed: "); Serial.print(output);
         Serial.print(", target length: "); Serial.print(targetLength);
         Serial.print(", current length: "); Serial.print(current);
         Serial.print(", time: "); Serial.println(millis());
@@ -142,4 +136,9 @@ void Actuator::setMin(int min) {
 
 void Actuator::setMax(int max) {
     maxPotValue = max;
+}
+
+int Actuator::getRaw() {
+    pot_mux.channel(potPin); // Select the correct channel for this actuator
+    return analogRead(POT_MUX_SIG);
 }

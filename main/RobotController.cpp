@@ -19,6 +19,9 @@ bool RobotController::begin() {
     }
 
     trajectory.printPoints();
+
+    // Initialize force sensing
+    forceSensing.tareAll(); // Tare all load cells
     return true;
 }
 
@@ -79,6 +82,10 @@ void RobotController::setCalibrationTargetPose(const Pose& pose) {
     }
 }
 
+void RobotController::setFixedInterval(unsigned long interval) {
+    fixedInterval = interval;
+}
+
 // ========= Private methods implementation ===========
 
 void RobotController::calibrate() {
@@ -94,6 +101,10 @@ void RobotController::calibrate() {
             setState(RobotState::STOP);
         }
     }
+    delay(10);
+    // update and print the force sensing data
+    forceSensing.update();
+    forceSensing.printForce();
 }
 
 void RobotController::move() {
@@ -105,7 +116,7 @@ void RobotController::move() {
         Pose target = trajectory.getPose(now);
         trajectory.printPose(target);
         platform.moveToPose(target);
-        if(!platform.update()) {
+        if(!platform.update(true)) {
             Serial.println("Error: Failed updating platform. Stoppping execution.");
             setState(RobotState::STOP); 
             return;
@@ -119,6 +130,18 @@ void RobotController::stop() {
         if (!loadTrajectoryFromFile(trajectoryFileName)) {
             Serial.println("Error: Failed to load trajectory from file.");
         } 
+    }
+
+    if(trajectory.getFixedInterval() != fixedInterval) {
+        trajectory.setFixedInterval(fixedInterval);
+        Serial.print("Fixed interval set to: ");
+        Serial.println(fixedInterval);
+
+        if(!trajectory.loadFromCSV(trajectoryFileName)){ // Reload trajectory with new fixed interval
+            Serial.println("Error: Failed to reload trajectory with new fixed interval.");
+        }else{
+            loadedTrajectoryFileName = trajectoryFileName; // Update the loaded trajectory file name
+        }
     }
 
     // If the robot is in STOP state, make platform return to home pose.
@@ -142,7 +165,8 @@ void RobotController::onEnterCalibrating() {
     // Stop movement before calibration begins.
     platform.stop();
     
-    // Similarly, other subsystems could be prepared for a manual calibration mode.
+    // Reset calibration target pose
+    calibrationTargetPose = {0, 0, Z0+5, 0, 0, 0}; 
 }
 
 void RobotController::onEnterMoving() {

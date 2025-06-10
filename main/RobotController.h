@@ -3,6 +3,7 @@
 
 #include "StewartPlatform.h"
 #include "Trajectory.h" 
+#include "ForceSensing.h"
 
 enum class RobotState {
     CALIBRATING,
@@ -24,6 +25,7 @@ public:
     void setTrajectoryFileName(const String& filename) {
         trajectoryFileName = filename;
     }
+    void setFixedInterval(unsigned long interval);
 
 private:
     RobotState state = RobotState::STOP; // Initial state
@@ -33,6 +35,10 @@ private:
     String trajectoryFileName = "test_trajectory.csv"; // File name for trajectory
     String loadedTrajectoryFileName = ""; // Track the currently loaded trajectory file
     unsigned long trajectoryInitTime = 0; // Time when trajectory is started because we changed to MOVING state
+    unsigned long fixedInterval = 100; // Default fixed interval for trajectory points in milliseconds
+
+    // Force sensing subsystem
+    ForceSensing forceSensing; 
 
     // State-specific methods
     void calibrate();     
