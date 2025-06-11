@@ -36,7 +36,7 @@ Note that the jaw's speed is not a design requirement as food can be effictively
 
     Mandibular motion range 
       & $14$ mm lateral shift, $11$ mm protrusion, $61$ mm mouth opening in healthy adults \cite{range_motion_required}
-      & $\pm20$ mm (X, Y);\;\; $0$–$60$ mm (Z) \\[2pt]
+      & $\pm20$ mm (X, Y);\;\; $0$–$70$ mm (Z) \\[2pt]
   \bottomrule
   \end{tabular}
   \caption{Functional design requirements.}
@@ -46,16 +46,97 @@ Note that the jaw's speed is not a design requirement as food can be effictively
 
 \subsection{Mechanical design}
 \begin{itemize}
-    \item goal is to create a robotic jaw that can mimic the motion and force of human chewing 
-    \item 6dof stewart platform to be able to mimic the motion of the jaw
-    \item linear actuators instead of rotary servo motors to have more efficient force transmission + simpler kinematics + more rigid structure
-    \item choice of actuators based on the required force to mimic human chewing (speed less important as jaw can chew even if slow) + required length to 
-    reach the desired range of motion + feedback to control in position
     \item choosing the dimensions of the stewart platform based on the size of the actuators + working space of the robot
     \item choice of structure/material to hold upper jaw to be rigid enough to not deform under the forces applied by the actuators 
     \item 3 axis load cells to measure the force applied by the jaw
     \item so far 3d printed teeth/jaw but to be changed in the future
 \end{itemize}
+
+The first major design decision was how to achieve 6 degrees of freedom (DoF) for jaw motion. In the field of robotic mastication, two common approaches 
+are used. The first is a biomechanically inspired design using linear actuators \cite{ChewingRobotLinearActuator} or combinations of actuated cables and 
+springs \cite{ChewingRobotGums} to replicate muscle behavior. The second is a Stewart platform \cite{BristolChewingRobot}—a widely used 6-DoF parallel mechanism, often seen in 
+motion simulators. See Figure~\ref{fig:stewart_platforms} for a visualization of the two approaches.
+
+For this project, we chose the Stewart platform approach. Its well-defined kinematics and ease of control make it particularly suitable for our goal of 
+replicating recorded human chewing motion. Because our control strategy is based on reproducing real motion trajectories, having a platform with 
+straightforward inverse kinematics is a key advantage.
+
+Stewart platforms generally come in two configurations: one based on rotary servo motors and one based on linear actuators, see Figure~\ref{fig:stewart_platforms}. 
+We selected the linear actuator design for several reasons. It offers more efficient force transmission, a simpler kinematic model, and greater structural 
+rigidity—all important factors when attempting to reproduce the forces involved in human chewing.
+
+% 3 pictures side by side of the two approaches
+\begin{figure}[H]
+\centering
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[height=4.6cm]{figures/linear_stewart_platform_2.jpg}
+  \subcaption{}
+  \label{fig:linear_stewart_platform}
+\end{minipage}
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[height=4.6cm]{figures/rotary-stewart-plateform.jpg}
+  \subcaption{}
+  \label{fig:rotary_stewart_platform}
+\end{minipage}
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[height=4.6cm]{figures/6dof_jaw_cad.jpg}
+  \subcaption{}
+  \label{fig:biomechanically_inspired_design}
+\end{minipage}
+\caption{(a) Linear actuator-based jaw design. (b) Rotary servo motor-based Stewart platform. (c) Biomechanically inspired design\cite{ChewingRobotLinearActuator}.}
+\label{fig:stewart_platforms}
+\end{figure}
+
+The platform's dimensions were determined based on actuator specifications, desired jaw range of motion, and the working space required. The working space 
+refers to the overall range of jaw motion and is defined by functional requirements summarized in Table~\ref{tab:functional_criteria}. Based on findings 
+in \cite{StewartPlatformWorkspace}, we prioritized achieving the necessary vertical range of motion, knowing that sufficient horizontal range would follow.
+
+Assuming a minimum actuator mounting angle of 45° to the horizontal, the minimum required stroke length is calculated as:
+\begin{equation}
+l_{\text{min}} = \frac{z_{\text{max}} - z_{\text{min}}}{\sin(45^\circ)} = \frac{70\,\text{mm}}{\sin(45^\circ)} \approx 99\,\text{mm}
+\end{equation}
+
+To meet the minimum vertical force requirement of 800 N, each actuator must provide:
+\begin{equation}
+F_{\text{min}} = \frac{F_{z,\text{min}}}{6 \cdot \sin(45^\circ)} = \frac{800\,\text{N}}{6 \cdot \sin(45^\circ)} \approx 189\,\text{N}
+\end{equation}
+
+With this minimum actuator force, we estimate the lateral (shear) and front-back force capacities as:
+\begin{equation}
+F_{x} \approx 2 \cdot \cos(45^\circ) \cdot F_{\text{min}} + 4 \cdot \cos(45^\circ) \cdot \sin(30^\circ) \cdot F_{\text{min}} \approx 534\,\text{N} \gg 100\,\text{N}
+\end{equation}
+\begin{equation}
+F_{y} \approx 4 \cdot \cos(45^\circ) \cdot \cos(30^\circ) \cdot F_{\text{min}} \approx 462\,\text{N} \gg 50\,\text{N}
+\end{equation}
+
+These calculations show that ensuring the vertical force requirement is met also guarantees that shear forces in the x and y directions will exceed 
+their respective targets.
+
+Since speed is not a strict requirement for this prototype, we prioritized force over velocity when selecting actuators. Position feedback is necessary 
+for closed-loop control, as we use inverse kinematics to compute actuator positions based on the desired platform pose.
+
+We selected the PA-14P-4-50 linear actuator, which meets both stroke and force requirements as seen in table \ref{tab:actuator_spec}.
+%spec of actuator
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}p{3cm} p{3cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value}\\
+\midrule
+Stroke length & 101 mm \\
+Max force & 222.4 N \\
+Speed (no load) & 28 mm/s \\
+Speed (full load) & 21 mm/s \\
+Position feedback & Potentiometer \\
+\bottomrule
+\end{tabular}
+\caption{PA-14P-4-50 specifications.}
+\label{tab:actuator_spec}
+\end{table}
+
 
 
 \subsection{Control}
