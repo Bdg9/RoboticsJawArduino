@@ -18,14 +18,18 @@ some have already made significant progress. For example, the Bristol Dento-Munc
 (DoF), closed-loop control, force feedback, and a full set of teeth capable of replicating human chewing forces. Similarly, the robot developed by Seung-Ju 
 Lee \cite{ChewingRobotLinearActuator} offers the same capabilities, with a design that more closely follows human biomechanics. Another system, by Alemzadeh 
 et al. \cite{ChewingRobotGums}, includes a closed mouth and artificial saliva—two important components of realistic mastication—even though it has limited 
-sensory feedback. However, none of these systems combine all critical elements: 6 DoF, position and multidirectional force feedback, a closed mouth, and 
-saliva. In addition, none of them include a tongue, which plays a crucial role in directing the food towards the molars and mixing it with saliva during 
-chewing.
+sensory feedback. However, no existing system combines all critical elements: 6 DoF, position and multidirectional force feedback, a hermetically closed 
+mouth with saliva circulation, and an actuated tongue. The absence of the tongue is particularly important, as it directs food toward the molars and mixes 
+it with saliva during chewing.
 
-This project aims at developing a chewing robot that incorporates all these features, with the goal of replicating the full chewing process as closely as 
-possible. As this is the first iteration, the focus is primarily on the mechanical design and the development of a simple, closed-loop, modular, and scalable 
-control system that can be extended in future versions. The robot includes a 6-DoF Stewart platform capable of replicating chewing forces, along with 
-tri-axial force sensing and position feedback to monitor jaw dynamics in detail. In parallel, we created a first dataset of human chewing motion using 
-motion capture, as no publicly available datasets were found. This dataset will serve as a reference for identifying chewing patterns and 
-improving control strategies. By laying down a flexible and expandable foundation, this work provides a platform for future integration of key components 
-such as artificial saliva flow, an artificial tongue, and adaptive neuromuscular control strategies.\\
+This project addresses that gap by taking the first step toward an all-inclusive chewing robot. Because only four months were available and no previous hardware 
+existed, the present work concentrates on the mechanical foundation: a modular 6-DoF Stewart platform-based jaw sized from physiological data, equipped with tri-axial 
+force sensing and position feedback. The overarching research question is therefore narrowed to:
+
+\textit{How can a modular Stewart-platform jaw be designed and validated so that it reproduces human chewing trajectories and forces while exposing interfaces for 
+future tongue and saliva modules?}
+
+To answer this question, we (i) designed and built the platform, (ii) implemented a simple closed-loop control system that can be scaled in later iterations, 
+(iii) recorded our own motion-capture dataset of human chewing, and (iv) replayed these trajectories on the robot to assess its performance. By laying down a 
+flexible, expandable foundation, this work enables future integration of artificial saliva flow, an artificial tongue and adaptive bio-inspired control, 
+moving one step closer to a robot that replicates the complete human chewing process.
