@@ -6,7 +6,7 @@ The jaw makes essential contributions to the chewing process such as generating 
 and giving sensory feedback. A robotic jaw should therefore be able to mimic these functions as closely as possible.
 As this is the first iteration of the chewing robot, we focus on force generation and range of motion, while sensory feedback and other functions can be added in future iterations.
 The design requirements are based on the literature and the human jaw anatomy and physiology, as summarized in Table~\ref{tab:functional_criteria}.
-Note that the jaw's speed is not a design requirement as food can be effictively chewed even at slow speeds.
+Note that the jaw's speed is not a design requirement as food can be effectively chewed even at slow speeds.
 
 \begin{table}[H]
   \centering
@@ -45,12 +45,6 @@ Note that the jaw's speed is not a design requirement as food can be effictively
 
 
 \subsection{Mechanical design}
-\begin{itemize}
-    \item choosing the dimensions of the stewart platform based on the size of the actuators + working space of the robot
-    \item choice of structure/material to hold upper jaw to be rigid enough to not deform under the forces applied by the actuators 
-    \item 3 axis load cells to measure the force applied by the jaw
-    \item so far 3d printed teeth/jaw but to be changed in the future
-\end{itemize}
 
 The first major design decision was how to achieve 6 degrees of freedom (DoF) for jaw motion. In the field of robotic mastication, two common approaches 
 are used. The first is a biomechanically inspired design using linear actuators \cite{ChewingRobotLinearActuator} or combinations of actuated cables and 
@@ -118,26 +112,130 @@ their respective targets.
 Since speed is not a strict requirement for this prototype, we prioritized force over velocity when selecting actuators. Position feedback is necessary 
 for closed-loop control, as we use inverse kinematics to compute actuator positions based on the desired platform pose.
 
-We selected the PA-14P-4-50 linear actuator, which meets both stroke and force requirements as seen in table \ref{tab:actuator_spec}.
-%spec of actuator
+We selected the PA-14P-4-50 linear actuator, which meets both stroke and force requirements as seen in Table~\ref{tab:actuator_spec}. The dimensions 
+of both base and platform, see Figure~\ref{fig:stewart_platform}, were chosen to accomodate the size of the actuators. The resulting vertical workspace 
+of the platform is 118 mm, which is more than enough to cover the required 70 mm.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.4\textwidth}
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{@{}p{3cm} p{2.5cm}@{}}
+    \toprule
+    \textbf{Parameter} & \textbf{Value}\\
+    \midrule
+    Stroke length & 101 mm \\
+    Max force & 222.4 N \\
+    Speed (no load) & 28 mm/s \\
+    Speed (full load) & 21 mm/s \\
+    Position feedback & Potentiometer \\
+    \bottomrule
+    \end{tabular}
+    \caption{PA-14P-4-50 specifications.}
+    \label{tab:actuator_spec}
+  \end{table}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/stewart_platform_annotated.drawio.png}
+  \caption{Final stewart platform design.}
+  \label{fig:stewart_platform}
+\end{minipage}
+\end{figure}
+
+Next, we designed the upper and lower jaws, which are attached to the platform and base respectively. The lower jaw is mounted on the 
+moving platform and elevated using four aluminum rods. This elevation provides two main advantages: it creates a clear line of sight to 
+place a motion capture marker on the gnathion, and it leaves space beneath the jaw for integrating a future esophagus module. The 
+mandibular teeth are fixed to a rigid plate and positioned slightly forward to leave room for a future tongue module. See Figure~\ref{fig:lower_jaw}.
+
+The upper jaw is mounted on a rigid frame made of aluminum rods to ensure sufficient stability and stiffness under loading. This 
+rigidity is essential to resist the forces applied by the lower jaw during chewing. Three-axis load cells are installed on the 
+upper jaw mounting plate to measure both vertical and lateral forces during contact. Two acrylic adaptor plates connect these load 
+cells to the maxillary teeth. Each adaptor has a central opening reserved for a future camera, which will be used to observe food 
+behavior during mastication. See Figure~\ref{fig:upper_jaw}.
+
+Both the maxillary and mandibular teeth are designed to be easily replaceable through the use of acrylic adaptor plates. This modularity 
+allows for testing different tooth shapes, materials, and conditions (e.g., healthy, aged, or damaged teeth), which will be important for 
+future studies on chewing development and masticatory disorders.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/lower_jaw_annotated.drawio.png}
+  \subcaption{}
+  \label{fig:lower_jaw}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/upper_jaw_annotated.drawio.png}
+  \subcaption{}
+  \label{fig:upper_jaw}
+\end{minipage}
+\caption{(a) Annotated lower jaw design. (b) Annotated upper jaw design. }
+\label{fig:jaws}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.4\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/overview.png}
+  \subcaption{}
+  \label{fig:overview}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/workspace_2.drawio.png}
+  \subcaption{}
+  \label{fig:vertical_workspace}
+\end{minipage}
+\caption{(a) Final design overview. (b) Workspace design: A-Full vertical workspace of 118mm; B-Upper margin of 25mm; C-Working chewing volume of 60mm; D-Bottom margin of 33mm.}
+\label{fig:mecha_design}
+\end{figure}
+
+The final design is shown in Figure~\ref{fig:overview}. The height of the upper jaw subsystem was set slightly below the platform's maximum 
+vertical reach—roughly centered in the middle of its vertical workspace. This positioning ensures that the robot can apply maximum vertical 
+force when the mandibular and maxillary teeth are in contact, while still allowing enough range to meet angular requirements during chewing. 
+A detailed view of the vertical workspace can be found in Figure~\ref{fig:vertical_workspace}.
+
+The base, platform, lower jaw mount, and upper jaw mount are all made out of steel, see Table~\ref{tab:mecha_materials}. Although heavier than aluminum, steel offers 
+significantly higher stiffness, with a Young's modulus of 190-210 GPa. This makes it a better choice for components that require high 
+rigidity and minimal deformation under load. Additionally, steel's weldability makes it practical for future modifications—for example, 
+adding reinforcement ribs to the upper jaw mounting plate to further improve structural stability.
+
+
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}p{3cm} p{3cm}@{}}
+\begin{tabular}{@{}p{3.5cm} p{4.6cm} p{3cm}@{}}
 \toprule
-\textbf{Parameter} & \textbf{Value}\\
+\textbf{Subsystem} & \textbf{Part} & \textbf{Material} \\
 \midrule
-Stroke length & 101 mm \\
-Max force & 222.4 N \\
-Speed (no load) & 28 mm/s \\
-Speed (full load) & 21 mm/s \\
-Position feedback & Potentiometer \\
+\multirow{3}{*}{Stewart Platform} 
+    & Base & Steel \\
+    & Platform & Steel \\
+    & Adaptator & PLA \\
+\midrule
+\multirow{2}{*}{Lower Jaw} 
+    & Lower jaw mounting plate & Steel \\
+    & Mandibular teeth & PLA \\
+\midrule
+\multirow{3}{*}{Upper Jaw} 
+    & Upper jaw mounting plate & Steel \\
+    & Upper jaw adaptator plates & Acrylic \\
+    & Maxillary teeth & PLA \\
 \bottomrule
 \end{tabular}
-\caption{PA-14P-4-50 specifications.}
-\label{tab:actuator_spec}
+\caption{Mechanical design materials.}
+\label{tab:mecha_materials}
 \end{table}
 
-
+\paragraph{Waterproofing.}
+As the robot is designed to eventually include a saliva module, it is important to ensure that the electronics and mechanical components are protected from moisture.
+First, we protected the steel parts with a layer of paint to prevent rusting. Then on both the upper and bottom side of the base, a plastic sheet was added 
+to cover the electronics and prevent water from entering inside the box and damaging the electronics. 
+Finally, the linear actuators are IP54 rated, meaning they are protected against dust and splashes of water from any direction.
 
 \subsection{Control}
 
@@ -181,8 +279,6 @@ The three controller states are:
 \end{enumerate}
 A lightweight Python GUI on the host PC issues high-level commands, such as state changes, and plots sensor data.  
 
-    
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/code_structure.drawio.png}
@@ -198,8 +294,10 @@ A lightweight Python GUI on the host PC issues high-level commands, such as stat
 \label{fig:state_machine}
 \end{figure}
 
-\subsubsection{Position control}
+\subsubsection{Stewart platform control}
 
+The Stewart platform is controlled by the \texttt{StewartPlatform} class, which implements the following functionalities:
+\paragraph{Trajectory interpolation}
 The Stewart Platform follows a 3D trajectory (x, y, z, roll, pitch, yaw) from a .csv file on the micro-SD card.
 See section \ref{sec:motion-capture} for details on the recording protocol and data processing.
 Each pose is defined by its position ${\bf t}=(x,y,z)$ and orientation given by the Euler angles $(\phi,\theta,\psi)$,
@@ -243,7 +341,9 @@ Finally, the actuator length is the Euclidean distance to the fixed base joint $
 \]
 
 \paragraph{PI controller}
-For each actuator, its desired length is sent to a PI position controller, see Figure~\ref{fig:actuator_pi}.
+For each actuator, its desired length is sent to a PI position controller, see Figure~\ref{fig:actuator_pi}. The PI gain values 
+are set to $K_P=25$ and $K_I=0.1$, which were determined empirically to achieve a good trade-off between responsiveness and stability. 
+An anti-windup mechanism is implemented to prevent the integral term from growing too large, which could lead to overshooting. 
 To minimize the noise of the potentiometer feedback, we apply a low-pass filter averaging the last 10 samples.
 \begin{figure}[H]
 \centering
@@ -257,7 +357,7 @@ To minimize the noise of the potentiometer feedback, we apply a low-pass filter 
 
 \paragraph{Subjects.} 
 Two healthy adult volunteers (author and project supervisor) participated in this pilot recording. Owing to time constraints and the exploratory 
-nature of the study, no additional subjects were recruited.
+nature of the study, no additional subjects were recruited. Informed consent was obtained from both participants.
 
 \paragraph{Motion-capture acquisition.}
 Mandibular motion was recorded with a five-camera OptiTrack system sampling at 120 Hz.
