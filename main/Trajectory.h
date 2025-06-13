@@ -22,6 +22,7 @@ public:
 
     // Returns the interpolated or current pose based on the current time.
     Pose getPose(unsigned long currentTime);
+    float catmullRom(float p0, float p1, float p2, float p3, float t);
     void printPoints();
     void printPose(const Pose& pose);
 
@@ -37,6 +38,8 @@ private:
     } points[MAX_POINTS];
     int count;
     unsigned long fixedInterval; // Fixed time interval between points (in ms)
+
+    Pose clampPose(const Pose& pose);
 };
 
 #endif // TRAJECTORY_H

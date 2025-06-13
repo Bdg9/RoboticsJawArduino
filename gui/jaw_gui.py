@@ -233,6 +233,7 @@ class RobotGUI(QMainWindow):
         self.log("Sent: stop")
         # When stop is pressed, generate the plots from the saved serial messages.
         self.generate_plots()
+        self.generateForcePlots()
 
     def open_calibration_window(self):
         # Disable main window buttons
@@ -247,7 +248,7 @@ class RobotGUI(QMainWindow):
         self.cal_window.exec()
 
         # Plot force data after calibration
-        self.generateForcePlots()
+        #self.generateForcePlots()
         #self.generateDebugActuatorPlots()
         
         # Re-enable buttons once the calibration window is closed
@@ -508,6 +509,15 @@ class RobotGUI(QMainWindow):
             writer.writeheader()
             writer.writerows(self.pose_data)
         self.log(f"Saved pose data CSV: {pose_csv_filename}")
+
+        # --- Close figures to free memory ---
+        plt.close(fig1)
+        plt.close(fig2)
+        plt.close(fig3)
+
+        # --- Clear data lists once plots are generated to free memory. ---
+        self.actuator_data.clear()
+        self.pose_data.clear()
     
     def generateForcePlots(self):
         # Ensure there is data to plot.
@@ -570,6 +580,15 @@ class RobotGUI(QMainWindow):
             for data in self.force_data_front + self.force_data_backr + self.force_data_backl + self.force_data_total:
                 writer.writerow(data)
         self.log(f"Saved force data CSV: {force_csv_filename}")
+
+        # --- Close figures to free memory ---
+        plt.close('all')
+
+        # --- Clear data lists once plots are generated to free memory. ---
+        self.force_data_backl.clear()
+        self.force_data_backr.clear()
+        self.force_data_front.clear()
+        self.force_data_total.clear()
     
     def generateDebugActuatorPlots(self):
         # Ensure there is data to plot.
@@ -628,6 +647,12 @@ class RobotGUI(QMainWindow):
         debug_raw_filename = f"{ROOT_DIR}\\{filename}_{speed}_ms_debug_raw_{timestamp}.png"
         fig2.savefig(debug_raw_filename)
         self.log(f"Saved debug actuator raw value plot: {debug_raw_filename}")
+
+        # --- Close figures to free memory ---
+        plt.close(fig1)
+        plt.close(fig2)
+        # --- Clear data lists once plots are generated to free memory. ---
+        self.debug_actuator_data.clear()
 
     def closeEvent(self, event):
         self.serial.stop()

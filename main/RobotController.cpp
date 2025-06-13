@@ -26,11 +26,15 @@ bool RobotController::begin() {
 }
 
 void RobotController::update() {
+    // update and print the force sensing data
+    forceSensing.update();
     if(state == RobotState::MOVING) {
         move();
+        forceSensing.printForce();
     }
     else if(state == RobotState::CALIBRATING) {
         calibrate();
+        //forceSensing.printForce();
     }
     else if(state == RobotState::STOP) {
         stop();
@@ -101,10 +105,6 @@ void RobotController::calibrate() {
             setState(RobotState::STOP);
         }
     }
-    delay(10);
-    // update and print the force sensing data
-    forceSensing.update();
-    forceSensing.printForce();
 }
 
 void RobotController::move() {

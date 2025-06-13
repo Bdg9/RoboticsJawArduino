@@ -113,35 +113,88 @@ bool Trajectory::loadFromCSV(const String &filename) {
 
 Pose Trajectory::getPose(unsigned long currentTime) {
     if(count == 0) return {0,0,0,0,0,0};
+    if(currentTime >= points[count-1].time) {
+        // If current time is beyond the last point, return the initial pose.
+        return {0,0,0,0,0,0};
+    }
     if(currentTime <= points[0].time) return points[0].pose;
-    for(int i = 1; i < count; i++) {
-        if(currentTime < points[i].time) {
-            float t = float(currentTime - points[i-1].time) / (points[i].time - points[i-1].time);
-            Pose a = points[i-1].pose, b = points[i].pose;
-            Pose interpolatedPose = {
-                a.x + t * (b.x - a.x),
-                a.y + t * (b.y - a.y),
-                a.z + t * (b.z - a.z),
-                a.roll + t * (b.roll - a.roll),
-                a.pitch + t * (b.pitch - a.pitch),
-                a.yaw + t * (b.yaw - a.yaw)
-            };
-            // Clamp the interpolated pose to the defined limits
-            interpolatedPose.x = clamp(interpolatedPose.x, MIN_X, MAX_X);
-            interpolatedPose.y = clamp(interpolatedPose.y, MIN_Y, MAX_Y);
-            interpolatedPose.z = clamp(interpolatedPose.z, MIN_Z, MAX_Z);
-            interpolatedPose.roll = clamp(interpolatedPose.roll, MIN_ROLL, MAX_ROLL);
-            interpolatedPose.pitch = clamp(interpolatedPose.pitch, MIN_PITCH, MAX_PITCH);
-            interpolatedPose.yaw = clamp(interpolatedPose.yaw, MIN_YAW, MAX_YAW);
-            interpolatedPose.y = clamp(interpolatedPose.y, MIN_Y, MAX_Y);
-            interpolatedPose.z = clamp(interpolatedPose.z, MIN_Z, MAX_Z);
-            interpolatedPose.roll = clamp(interpolatedPose.roll, MIN_ROLL, MAX_ROLL);
-            interpolatedPose.pitch = clamp(interpolatedPose.pitch, MIN_PITCH, MAX_PITCH);
-            interpolatedPose.yaw = clamp(interpolatedPose.yaw, MIN_YAW, MAX_YAW);
-            return interpolatedPose;
+    if(count < 4){
+        for(int i = 1; i < count; i++) {
+            if(currentTime < points[i].time) {
+                float t = float(currentTime - points[i-1].time) / (points[i].time - points[i-1].time);
+                Pose a = points[i-1].pose, b = points[i].pose;
+                Pose interpolatedPose = {
+                    a.x + t * (b.x - a.x),
+                    a.y + t * (b.y - a.y),
+                    a.z + t * (b.z - a.z),
+                    a.roll + t * (b.roll - a.roll),
+                    a.pitch + t * (b.pitch - a.pitch),
+                    a.yaw + t * (b.yaw - a.yaw)
+                };
+                // Clamp the interpolated pose to the defined limits
+                interpolatedPose = clampPose(interpolatedPose);
+
+                return interpolatedPose;
+            }
         }
+    }else{
+        // Locate the segment we’re inside (between points[i-1] and points[i])
+        int i = 1;
+        while (i < count && currentTime >= points[i].time) ++i;
+
+        // Clamp i so that we have p(i-2) … p(i+1) available
+        int i0 = std::max(0, i - 2);
+        int i1 = std::max(0, i - 1);
+        int i2 = std::min(count - 1, i);
+        int i3 = std::min(count - 1, i + 1);
+
+        // Normalised parameter 0‥1 inside the segment [points[i1], points[i2]]
+        const unsigned long t0 = points[i1].time, t1 = points[i2].time;
+        float t = static_cast<float>(currentTime - t0) / static_cast<float>(t1 - t0);
+
+        const Pose &P0 = points[i0].pose;
+        const Pose &P1 = points[i1].pose;
+        const Pose &P2 = points[i2].pose;
+        const Pose &P3 = points[i3].pose;
+
+        Pose p {
+            catmullRom(P0.x,    P1.x,    P2.x,    P3.x,    t),
+            catmullRom(P0.y,    P1.y,    P2.y,    P3.y,    t),
+            catmullRom(P0.z,    P1.z,    P2.z,    P3.z,    t),
+            catmullRom(P0.roll, P1.roll, P2.roll, P3.roll, t),
+            catmullRom(P0.pitch,P1.pitch,P2.pitch,P3.pitch,t),
+            catmullRom(P0.yaw,  P1.yaw,  P2.yaw,  P3.yaw,  t)
+        };
+
+        // Clamp to operational limits (duplicates removed)
+        p = clampPose(p);
+
+        return p;
     }
     return points[count-1].pose;
+}
+
+Pose Trajectory::clampPose(const Pose& pose) {
+    Pose clampedPose;
+    clampedPose.x = clamp(pose.x, MIN_X, MAX_X);
+    clampedPose.y = clamp(pose.y, MIN_Y, MAX_Y);
+    clampedPose.z = clamp(pose.z, MIN_Z, MAX_Z);
+    clampedPose.roll = clamp(pose.roll, MIN_ROLL, MAX_ROLL);
+    clampedPose.pitch = clamp(pose.pitch, MIN_PITCH, MAX_PITCH);
+    clampedPose.yaw = clamp(pose.yaw, MIN_YAW, MAX_YAW);
+    return clampedPose;
+}
+
+float Trajectory::catmullRom(float p0, float p1, float p2, float p3, float t)
+{
+    float t2 = t * t;
+    float t3 = t2 * t;
+    return 0.5f * (
+          2.0f * p1
+        + (p2 - p0) * t
+        + (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2
+        + (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3
+    );
 }
 
 void Trajectory::printPose(const Pose& pose) {

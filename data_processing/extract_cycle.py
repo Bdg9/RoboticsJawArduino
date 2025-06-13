@@ -13,8 +13,8 @@ def main(input_csv: pathlib.Path, output_csv: pathlib.Path) -> None:
         raise ValueError("Input CSV must contain Frame, Time, x_mm, y_mm, z_mm columns")
 
     # take 59s to 85s of the recording
-    start_time = 59.0
-    end_time = 85.0
+    start_time = 70.0
+    end_time = 80.0
     df = df[(df["Time"] >= start_time) & (df["Time"] <= end_time)].reset_index(drop=True)
     if df.empty:
         raise ValueError("No data in the specified time range")

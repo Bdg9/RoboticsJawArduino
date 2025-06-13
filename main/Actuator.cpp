@@ -102,7 +102,7 @@ void Actuator::setTargetLength(float length) {
 }
 
 bool Actuator::update(bool verbose) {
-    float current = getLength(verbose);
+    float current = getLength(false);
     // if(current < ACTUATOR_MIN_LENGTH || current > ACTUATOR_MAX_LENGTH) {
     //     driver.setSpeed(0);
     //     Serial.print("Error: Actuator "); Serial.print(actuatorNb); Serial.println(" out of bounds.");
