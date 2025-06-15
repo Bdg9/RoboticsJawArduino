@@ -29,6 +29,7 @@ def analyse_actuator(df_act):
     # Estimate Δt from the 'time' column (assumes monotonic ascending)
     t = df_act["time"].to_numpy()
     dt = np.median(np.diff(t)) if len(t) > 1 else np.nan
+    print(f"Actuator {df_act['actuator'].iloc[0]}: dt = {dt:.6f} s, k_peak = {k_peak}")
     tau_sec = k_peak * dt
 
     return k_peak, tau_sec, rho_peak
@@ -39,6 +40,14 @@ def main(csv_path):
     if not required.issubset(df.columns):
         sys.exit(f"CSV must contain columns: {', '.join(required)}")
 
+    pose_df = pd.read_csv(csv_path.replace("actuator", "pose"))
+    #extract first non-zero pose time
+    first_non_zero_time = pose_df[pose_df.iloc[:, :6].ne(0).any(axis=1)]['time'].iloc[0]
+    #extract last non-zero pose time
+    last_non_zero_time = pose_df[pose_df.iloc[:, :6].ne(0).any(axis=1)]['time'].iloc[-1]
+    # Crop the actuator data to the first non-zero pose time
+    df = df[(df['time'] >= first_non_zero_time) & (df['time'] <= last_non_zero_time)]
+
     print("\nCross-correlation delay per actuator")
     print("------------------------------------")
     for act_id, group in df.groupby("actuator"):
@@ -46,9 +55,16 @@ def main(csv_path):
         direction = "y lags u" if k > 0 else "u lags y" if k < 0 else "no lag"
         tau_ms = tau * 1e3
         print(f"Actuator {act_id}: lag = {k:+d} samples  "
-              f"({tau_ms:+.2f} ms, {direction})   ρ = {rho:+.4f}")
+              f"({tau_ms/1000:+.2f} ms, {direction})   ρ = {rho:+.4f}")
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit("Usage: python delay_xcorr.py <file.csv>")
-    main(sys.argv[1])
+actuator_path_names = ["../Results/benhui_10s_40ms/benhui_gum_10s_40_ms_actuator_data_20250613-182908.csv",
+            "../Results/benhui_10s_50ms/benhui_gum_10s_50_ms_actuator_data_20250613-182743.csv",
+            "../Results/benhui_10s_60ms/benhui_gum_10s_60_ms_actuator_data_20250613-193131.csv",
+            "../Results/benhui_10s_70ms/benhui_gum_10s_70_ms_actuator_data_20250613-182602.csv",
+            "../Results/benhui_10s_80ms/benhui_gum_10s_80_ms_actuator_data_20250613-183103.csv",
+            "../Results/benhui_10s_90ms/benhui_gum_10s_90_ms_actuator_data_20250613-182359.csv",
+            "../Results/benhui_10s_100ms/benhui_gum_10s_100_ms_actuator_data_20250613-182110.csv"]
+    
+for actuator_path in actuator_path_names:
+    print(f"\nProcessing {actuator_path}")
+    main(actuator_path)

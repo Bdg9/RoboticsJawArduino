@@ -7,7 +7,93 @@
     \item show graphs of the force during chewing for human vs robot
 \end{itemize}
 
-\subsection{chewing force}
-\begin{itemize}
-    \item max force that can be applied by the robot (both vertical and shear)
-\end{itemize}
+\subsection{Motion captured chewing trajectories}
+
+\subsection{Position control}
+
+\paragraph{Speed and accuracy}
+To evaluate the performance of the position control system, we investigated the robot's ability to track a predefined trajectory at varying speeds. 
+In this context, “speed” refers to the time interval between consecutive trajectory points. While the motion capture data was recorded at 120 Hz 
+(approximately every 8.3 ms), the playback was tested at longer intervals: 40 ms (25 Hz), 50 ms (20 Hz), 60 ms (16.67 Hz), 70 ms (14.29 Hz), 80 ms 
+(12.5 Hz), 90 ms (11.11 Hz), and 100 ms (10 Hz).
+
+For this test, a 10-second segment of randomly selected chewing motion was used. We recorded both the target and actual actuator lengths across all 
+actuators. Figure~\ref{fig:actuator_delays_2} illustrates the tracking performance of actuator 2 at the various speeds. To quantify timing discrepancies, we 
+conducted a cross-correlation analysis between the target and actual actuator lengths, providing both time delays (Figure~\ref{fig:actuator_delays_2}) 
+and cross-correlation coefficients (Figure~\ref{fig:actuator_rhos_2}).
+
+The results show that at a sampling interval of 100 ms (10 Hz), the robot tracks the trajectory well, with an average delay of ~0.7 s and 
+cross-correlation coefficients exceeding 0.975. However, performance degrades significantly at higher speeds (i.e., shorter intervals), 
+as reflected in both increased delays and a drop in correlation values—especially below 80 ms, where the tracking error becomes pronounced 
+and key trajectory peaks are missed.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/actuator_2_trajectories.png}
+    \caption{Performance of position control of actuator 2 across different time intervals between trajectory points.}
+    \label{fig:position_control}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/actuator_delays.png}
+    \caption{Delays between target and actual actuator length across different time intervals.}
+    \label{fig:actuator_delays_2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/actuator_rhos.png}
+    \caption{Cross-correlation coefficients across actuators for different time intervals.}
+    \label{fig:actuator_rhos_2}
+\end{figure}
+
+\subsection{Force analysis}
+
+\subsubsection{Maximum force}
+
+The robot's vertical force generation capabilities were assessed using manual control mode normally used to set the robot's home position during calibration. 
+The platform was driven at its highest height under active force feedback while avoiding structural failure. The upper bound of the robot's vertical force 
+output was constrained by the stiffness of the upper jaw structure, which visibly bent under high vertical force. table~\ref{tab:max_force} shows the 
+maximum forces recorded by the three load cells during this test, see Figure %TODO
+for the load cell positions. The results shows that most of the vertical force is applied on the back load cells, which reflects the 
+anatomical load pattern during full occlusion, where the molars bear the majority of chewing forces. The total vertical force output of the robot is 
+315.98 N, which is well within the average occlusal force during chewing, although below the maximum bit force from Table~\ref{tab:functional_criteria}.
+%TODO: find average bite force during chewing paper
+\begin{table}[H]
+    \centering
+    \begin{tabular}{p{4cm} p{2cm} p{2cm} p{2cm}}
+        \toprule
+        \textbf{Load Cell} & \textbf{$F_{z,max}$ (N)} & \textbf{$F_{y,max}$ (N)} & \textbf{$F_{x,max}$ (N)} \\
+        \midrule
+        Back Right Load Cell & 124.63 & x & x \\
+        Back Left Load Cell & 124.63 & x & x  \\
+        Front Load Cell & 66.28 & x & x  \\
+        \midrule
+        \textbf{Total Force} & \textbf{315.98} & x & x \\
+        \bottomrule       
+    \end{tabular}
+    \caption{Maximal forces recorded by the load cells during the force test.}
+    \label{tab:max_force}
+\end{table}
+
+%TODO: shear and protrusion forces
+
+\subsubsection{Force feedback distribution}
+
+To evaluate the spatial resolution of the force sensing system, we applied a simple vertical trajectory while placing a piece of gum-like material 
+at three distinct positions between the teeth: back right, front, and back left. The vertical force output from each of the three load cells was 
+recorded (Figure~\ref{fig:force_distribution_gum}).
+
+The plot clearly shows three distinct peaks corresponding to the three test positions, confirming the system's capability to localize force application 
+across the dental arch. Additionally, when force is applied at the back, the front load cell registers a smaller secondary response. This is consistent 
+with the mechanical coupling in the mounting structure, as the front load cell is physically situated between the two rear ones.
+
+\begin{figure}[H]
+    \centering 
+    \includegraphics[width=0.8\textwidth]{figures/ForceDistributionGum.png}
+    \caption{Vertical force output across three load cells during chewing with localized gum placement.  
+    The red lines separate the three gum positions: back right, front, and back left.}
+    \label{fig:force_distribution_gum}
+\end{figure}
+
