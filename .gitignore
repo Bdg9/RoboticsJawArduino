@@ -45,6 +45,7 @@ report/*
 !report/Conclusion.tex
 !report/biblio.bib
 !report/figures/
+!report/Appendix.tex
 
 #from data_processing folder, ignore .csv
 data_processing/*.csv
