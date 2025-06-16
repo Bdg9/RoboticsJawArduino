@@ -46,6 +46,8 @@ Note that the jaw's speed is not a design requirement as food can be effectively
 
 \subsection{Mechanical design}
 
+This section details the mechanical design of the final chewing robot.
+
 \subsubsection{6 DoF mechanism selection}
 
 The first major design decision was how to achieve 6 degrees of freedom (DoF) for jaw motion. In the field of robotic mastication, two common approaches 
@@ -82,7 +84,7 @@ rigidity—all important factors when attempting to reproduce the forces involve
   \subcaption{}
   \label{fig:biomechanically_inspired_design}
 \end{minipage}
-\caption{(a) Linear actuator-based jaw design. (b) Rotary servo motor-based Stewart platform. (c) Biomechanically inspired design\cite{ChewingRobotLinearActuator}.}
+\caption{(a) Linear actuator-based Stewart platform. (b) Rotary servo motor-based Stewart platform. (c) Biomechanically inspired robotic jaw design\cite{ChewingRobotLinearActuator}.}
 \label{fig:stewart_platforms}
 \end{figure}
 
@@ -90,8 +92,17 @@ rigidity—all important factors when attempting to reproduce the forces involve
 
 The combination of high bite-force replication and position feedback demands actuators large enough to deliver both power and sensing hardware; their size 
 therefore becomes a critical design constraint. Their stroke and force requirements are fixed by the functional criteria in Table \ref{tab:functional_criteria}. 
-\paragraph{Stroke length.}Guided by the workspace analysis in \cite{StewartPlatformWorkspace}, we prioritize achieving the necessary vertical range of motion, knowing that sufficient 
-horizontal range would follow. Assuming a minimum actuator mounting angle of at least 45° to the horizontal, the minimum required stroke length is calculated as:
+
+\paragraph{Design assumptions.}To compute the required actuator specifications, we assumed a minimum actuator mounting angle of at least 45° to the horizontal and the general 
+geometry of the platform and base shown in Figure~\ref{fig:assumptions}. 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/stewart_platform_assumption.drawio.png}
+\caption{Top view of the base and platform design assumption.}
+\label{fig:assumptions}
+\end{figure}
+\paragraph{Stroke length.}Guided by the workspace analysis from Masory et al. \cite{StewartPlatformWorkspace}, we prioritize achieving the necessary vertical range of motion, knowing that sufficient 
+horizontal range would follow. The minimum required stroke length is:
 \begin{equation}
 l_{\text{min}} = \frac{z_{\text{max}} - z_{\text{min}}}{\sin(45^\circ)} = \frac{70\,\text{mm}}{\sin(45^\circ)} \approx 99\,\text{mm}
 \end{equation}
@@ -111,10 +122,15 @@ F_{y} \approx 4 \cdot \cos(45^\circ) \cdot \cos(30^\circ) \cdot F_{\text{min}} \
 These calculations show that ensuring the vertical force requirement is met also guarantees that shear forces in the x and y directions will exceed 
 their respective targets.
 \paragraph{Speed and feedback.}Since speed is not a strict requirement for this prototype, we prioritized force over velocity when selecting actuators. Position feedback is necessary 
-for closed-loop control, as we use inverse kinematics to compute actuator positions based on the desired platform pose.
+for closed-loop control, as we use inverse kinematics to compute actuators lengths based on the desired platform pose.
 \paragraph{Selection.}We selected the PA-14P-4-50 linear actuator, which meets both stroke and force requirements as seen in Table~\ref{tab:actuator_spec}. The dimensions 
 of both base and platform, see Figure~\ref{fig:stewart_platform}, were chosen to accomodate the size of the actuators. The resulting vertical workspace 
 of the platform is 118 mm, which is more than enough to cover the required 70 mm.
+
+At mid-stroke, the actuators are positioned at an angle of 60° relative to the horizontal plane. Under this configuration, the theoretical maximum force 
+outputs are: $F_{z,max} = 1155$ N (vertical), $F_{x,max} = 444$ N (lateral), and $F_{y,max} = 385$ N (anterior-posterior). 
+All values surpass the design requirements specified in Table~\ref{tab:functional_criteria}. These are idealized values and do not account 
+for frictional losses or mechanical inefficiencies.
 
 \begin{figure}[H]
 \centering
@@ -148,15 +164,15 @@ of the platform is 118 mm, which is more than enough to cover the required 70 mm
 
 \subsubsection{Jaw subassemblies}
 
-Next, we designed the upper and lower jaws, which are attached to the platform and base respectively. 
+Next, we designed the lower and upper jaws, which are attached to the platform and base respectively. 
 \paragraph{Lower jaw.}The lower jaw, Figure~\ref{fig:lower_jaw}, is mounted on the moving platform and elevated using four aluminum rods. This elevation 
 provides two main advantages: it creates a clear line of sight to place a motion capture marker on the gnathion, and it 
 leaves space beneath the jaw for integrating a future esophagus module. The mandibular teeth are fixed to a rigid plate 
-and positioned slightly forward to leave room for a future tongue module. 
+and positioned slightly forward to leave room for a future tongue module. This plate already accomodates a hole for a future esophagus module.
 \paragraph{Upper jaw.}The upper jaw, Figure~\ref{fig:upper_jaw}, is mounted on a rigid frame made of aluminum rods to ensure sufficient stability and stiffness under loading. This 
 rigidity is essential to resist the forces applied by the lower jaw during chewing. Three-axis load cells are installed on the 
 upper jaw mounting plate to measure both vertical and lateral forces during contact. Two acrylic adaptor plates connect these load 
-cells to the maxillary teeth. Each adaptor has a central opening reserved for a future camera, which will be used to observe food 
+cells to the maxillary teeth. The top adaptor has a central opening reserved for a future camera, which will be used to observe food 
 behavior during mastication.
 \paragraph{Exchangeable teeth.}Both the maxillary and mandibular teeth are designed to be easily replaceable through the use of acrylic adaptor plates. This modularity 
 allows for testing different tooth shapes, materials, and conditions (e.g., healthy, aged, or damaged teeth), which will be important for 
@@ -180,6 +196,16 @@ future studies on chewing development and masticatory disorders.
 \label{fig:jaws}
 \end{figure}
 
+\subsubsection{Final design overview}
+
+The final design is shown in Figure~\ref{fig:overview}. The height of the upper jaw subsystem was set slightly below the platform's maximum 
+vertical reach—roughly centered in the middle of its vertical workspace. This positioning ensures that the robot can apply maximum vertical 
+force when the mandibular and maxillary teeth are in contact, while still allowing enough range to meet angular requirements during chewing. 
+A detailed view of the vertical workspace can be found in Figure~\ref{fig:vertical_workspace}. The lateral and anterior-posterior workspaces are 
+constrained by the upper jaw frame and are approximately $\pm$60 mm and $\pm$80 mm, respectively. 
+The base is designed as a hollow box to house the electronics 
+described in Section~\ref{sec:control}. 
+
 \begin{figure}[H]
 \centering
 \begin{minipage}{.4\textwidth}
@@ -198,17 +224,10 @@ future studies on chewing development and masticatory disorders.
 \label{fig:mecha_design}
 \end{figure}
 
-The final design is shown in Figure~\ref{fig:overview}. The height of the upper jaw subsystem was set slightly below the platform's maximum 
-vertical reach—roughly centered in the middle of its vertical workspace. This positioning ensures that the robot can apply maximum vertical 
-force when the mandibular and maxillary teeth are in contact, while still allowing enough range to meet angular requirements during chewing. 
-A detailed view of the vertical workspace can be found in Figure~\ref{fig:vertical_workspace}.
-
-\subsubsection{Material selection}
-
-The base, platform, lower jaw mount, and upper jaw mount are all made out of steel, see Table~\ref{tab:mecha_materials}. Although heavier than aluminum, steel offers 
-significantly higher stiffness, with a Young's modulus of 190-210 GPa. This makes it a better choice for components that require high 
-rigidity and minimal deformation under load. Additionally, steel's weldability makes it practical for future modifications—for example, 
-adding reinforcement ribs to the upper jaw mounting plate to further improve structural stability.
+\paragraph{Material selection.}The base, platform, lower jaw mount, and upper jaw mount are all made out of steel, see Table~\ref{tab:mecha_materials}. 
+Although heavier than aluminum, steel offers significantly higher stiffness, with a Young's modulus of 190-210 GPa. This makes it a better choice 
+for components that require high rigidity and minimal deformation under load. Additionally, steel's weldability makes it practical for future 
+modifications—for example, adding reinforcement ribs to the upper jaw mounting plate to further improve structural stability.
 
 \begin{table}[H]
 \centering
@@ -235,16 +254,43 @@ adding reinforcement ribs to the upper jaw mounting plate to further improve str
 \label{tab:mecha_materials}
 \end{table}
 
-The final robot design has a total mass of approximately 21 kg, with a bounding box measuring 530 mm in length, 460 mm in width, and 600 mm in height.
-The center of mass is located roughly 150 mm above the middle of the base, low enough to ensure stability during operation.
-
 \paragraph{Waterproofing.}
 As the robot is designed to eventually include a saliva module, it is important to ensure that the electronics and mechanical components are protected from moisture.
 First, we protected the steel parts with a layer of paint to prevent rusting. Then on both the upper and bottom side of the base, a plastic sheet was added 
-to cover the electronics and prevent water from entering inside the box and damaging the electronics. 
-Finally, the linear actuators are IP54 rated, meaning they are protected against dust and splashes of water from any direction.
+to isolate the electronics from the steel base and prevent water from entering inside the box and damaging the electronics. 
+Finally, the linear actuators are IP54 rated, meaning they are protected against dust and splashes of water from any direction, see Table~\ref{tab:actuator_spec}.
+
+\paragraph{Specifications summary.}The final specifications of the chewing robot are summarized in Table~\ref{tab:final_specs}. It is worth noting that 
+the center of mass height is expected to decrease further once the electronic components are installed within the base enclosure.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ l l }
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Total mass & 21 kg \\
+Dimensions (L x W x H) & 530 mm x 460 mm x 600 mm \\
+Center of mass & 150 mm above base center \\
+Vertical force capacity ($F_{z,\mathrm{max}}$) & 1155 N \\
+Lateral force capacity ($F_{x,\mathrm{max}}$) & 444 N \\
+Anterior-posterior force capacity ($F_{y,\mathrm{max}}$) & 385 N \\
+Vertical workspace & 118 mm \\
+Lateral workspace & $\pm$ 60 mm \\
+Anterior-posterior workspace & $\pm$ 80 mm \\
+Working vertical chewing volume & 60 mm \\
+Actuator stroke length & 101 mm \\
+Max actuator speed (no load) & 28 mm/s \\
+Max actuator speed (full load) & 21 mm/s \\
+Moisture protection & Painted + plastic sheets + IP54-rated actuators \\
+\bottomrule
+\end{tabular}
+\caption{Final specifications of the chewing robot.}
+\label{tab:final_specs}
+\end{table}
 
 \subsection{Control}
+\label{sec:control}
 
 %The control layer combines a high-speed microcontroller, a modular C++ codebase, and classical PI loops to deliver real-time motion of 
 %the Stewart platform.  Figure~\ref{fig:code_structure} gives the software context, while the full electronics schematic is shown in 
@@ -337,13 +383,20 @@ The platform joints ${\bf p}_i$, $i$ being the actuator index, are then rotated 
 which is the front of the gnathion, and translated by the user-defined home position ${\bf t}=(x,y,z)$, 
 resulting in the world coordinates of the platform joints:
 \[
-{\bf w}_i = R\bigl({\bf p}_i-{\bf c}\bigr)+{\bf c}+{\bf t}.
+{\bf q}_i = R\bigl({\bf p}_i-{\bf c}\bigr)+{\bf c}+{\bf t}.
 \]
 
 Finally, the actuator length is the Euclidean distance to the fixed base joint ${\bf b}_i$:
 \[
-\ell_i = \lVert {\bf w}_i-{\bf b}_i\rVert_2.
+\ell_i = \lVert {\bf q}_i-{\bf b}_i\rVert_2.
 \]
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/kinematic_schematic.png}
+\caption{Schematic of the Stewart platform kinematics for the $i^{th}$ actuator \cite{instructables2024}.}
+\label{fig:kinematic_schematic}
+\end{figure}
 
 \paragraph{PI controller}
 For each actuator, its desired length is sent to a PI position controller, see Figure~\ref{fig:actuator_pi}. The PI gain values 
@@ -408,12 +461,31 @@ the 3-D marker positions (in millimetres) and the orientation of each marker set
 \end{table}
 
 \paragraph{Data processing.}
-To reduce the noise, we apply a 4th-order butterworth filter to the data. The cutoff frequency is set to 6Hz, as human mastication frequency is around 1Hz to 2Hz %\cite{chewing_frequency} TODO: find paper
-. \\
-The data is then transformed to the head reference frame using rotation matrices. 
+To reduce high-frequency noise in the motion capture data, a 4th-order Butterworth low-pass filter was applied, with a cutoff frequency set at 6 Hz. This value 
+was chosen based on reported human mastication frequencies, typically ranging from 1-3 Hz and up to 6 Hz when the subject is guided to \cite{chewinf_frequencies_2}.
 
+Following filtering, the gnathion marker motion was transformed to the head-fixed marker reference frame using rotation matrices, effectively compensating 
+for head motion during recording. The next step was to convert the data into the robot's coordinate system, defined as follows:
+\begin{itemize}[nosep]
+    \item the $X$ axis is horizontal, pointing to the subject's left;
+    \item the $Y$ axis is horizontal, pointing forward;
+    \item the $Z$ axis is vertical, pointing upwards.
+\end{itemize}
+Due to uncertainty about the absolute orientation of the OptiTrack coordinate system, we performed Principal Component Analysis (PCA) on the open-close 
+jaw motion dataset to estimate the appropriate rotation matrix. The underlying assumption is that the first principal component (largest motion range) 
+corresponds to the robot's Z-axis, the second to the Y-axis, and the third to the X-axis, following the hierarchy of motion amplitude typical in mastication 
+dynamics \cite{mouth_opening_mvt}. As the principal components are orthogonal, the resulting matrix forms a valid orthonormal basis. The rotation matrix is 
+then constructed by assigning the principal components as its column vectors.
 
+Upon visual inspection of the data, we flipped the Y and Z axes so that both decrease during jaw opening, ensuring alignment with the robot's coordinate 
+conventions. All positional and rotational data were then projected into this new reference frame.
 
+To express orientation, the recorded quaternions were converted to Euler angles, providing the roll, pitch, and yaw components used by the robot's 
+Stewart platform.
+
+Finally, to align the trajectory with the robot's origin, positional and rotational offsets were computed from the final stationary segment of the 
+recording. The last second of the dataset—during which the subject remained still—was used to compute the median values of position and orientation. 
+These offsets were subtracted from the full dataset to ensure proper alignment with the robot's neutral pose.
 
 
 

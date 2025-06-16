@@ -150,7 +150,7 @@ class RobotGUI(QMainWindow):
 
         self.error_console = QTextEdit()
         self.error_console.setReadOnly(True)
-        self.error_console.setFixedHeight(100)
+        self.error_console.setFixedHeight(200)
         self.error_console.setPlaceholderText("Console output / errors...")
 
         # Left column: put start and stop vertically.
@@ -175,7 +175,6 @@ class RobotGUI(QMainWindow):
         grid_layout.addLayout(speed_layout, 1, 1)          # second row, second column
 
         main_layout.addLayout(grid_layout)
-        main_layout.addWidget(self.canvas_3d)
         main_layout.addWidget(self.error_console)
 
         container = QWidget()
@@ -196,9 +195,6 @@ class RobotGUI(QMainWindow):
         self.trajectory_dropdown.popupAboutToBeShown.connect(self.load_trajectory_files)
 
         self.data = []
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_plots)
-        self.timer.start(100)
 
         self.pending_files = None  # <-- new attribute to store file list
 
@@ -663,6 +659,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = RobotGUI()
     window.setWindowIcon(QIcon("app_icon.ico"))
-    window.resize(900, 800)
+    window.resize(900, 300)
     window.show()
     sys.exit(app.exec())
