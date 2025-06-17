@@ -10,6 +10,30 @@ def normalised_xcorr(x, y):
     denom = np.sqrt(np.sum(x**2) * np.sum(y**2))
     return correlate(y, x, mode='full') / denom
 
+def rms_error_shifted(u: np.ndarray, y: np.ndarray, k: int) -> float:
+    """Return RMS(|shift(u,k) − y|) after aligning for lag k.
+
+    Positive *k* means *y* lags *u*, so we discard the first *k* samples of *u*.
+    Negative *k* means *u* lags *y*, so we discard the first |k| samples of *y*.
+    """
+    if k > 0:
+        # Discard the first *k* samples of u so that u[k] aligns with y[0]
+        u_aligned = u[k:]
+        y_aligned = y[: len(u_aligned)]
+    elif k < 0:
+        k_abs = abs(k)
+        # Discard first |k| samples of y so that y[k_abs] aligns with u[0]
+        y_aligned = y[k_abs:]
+        u_aligned = u[: len(y_aligned)]
+    else:
+        u_aligned = u
+        y_aligned = y
+
+    if len(u_aligned) == 0 or len(y_aligned) == 0:
+        return np.nan
+
+    return float(np.sqrt(np.mean((u_aligned - y_aligned) ** 2)))
+
 
 def analyse_actuator(df_act):
     u = df_act["target_length"].to_numpy()
@@ -21,8 +45,11 @@ def analyse_actuator(df_act):
 
     t = df_act["time"].to_numpy()
     dt = np.median(np.diff(t)) if len(t) > 1 else np.nan
+
     tau_sec = k_peak * dt
-    return k_peak, tau_sec * 1e3, rho_peak  # return delay in ms
+    # RMS error after delay compensation
+    rms_err = rms_error_shifted(u, y, k_peak)
+    return k_peak, tau_sec * 1e3, rho_peak, rms_err  # return delay in ms
 
 
 def process_file(csv_path):
@@ -35,22 +62,28 @@ def process_file(csv_path):
 
     delays = []
     rhos = []
+    rms_errors = []
     for act_id, group in df.groupby("actuator"):
-        k, tau_ms, rho = analyse_actuator(group)
+        k, tau_ms, rho, rms = analyse_actuator(group)
         tau_ms = tau_ms / 1e3  # convert to milliseconds
         delays.append(tau_ms)
         rhos.append(rho)
-    return delays, rhos
+        rms_errors.append(rms)
+    
+    return delays, rhos, rms_errors
 
 
-def plot_results(time_intervals, delay_data, rho_data):    
+def plot_results(time_intervals, delay_data, rho_data, rms_data):    
     df_delay = pd.DataFrame(delay_data, index=time_intervals)
     df_rho = pd.DataFrame(rho_data, index=time_intervals)
+    df_rms = pd.DataFrame(rms_data, index=time_intervals)
 
     delay_mean = df_delay.mean(axis=1).to_numpy()
     delay_std = df_delay.std(axis=1).to_numpy()
     rho_mean = df_rho.mean(axis=1).to_numpy()
     rho_std = df_rho.std(axis=1).to_numpy()
+    rms_mean = df_rms.mean(axis=1).to_numpy()
+    rms_std = df_rms.std(axis=1).to_numpy()
     x_vals = np.array(time_intervals, dtype=float)
 
     # Plot delay
@@ -82,6 +115,23 @@ def plot_results(time_intervals, delay_data, rho_data):
     plt.tight_layout()
     plt.savefig("actuator_rhos.png", dpi=300)
 
+    # Plot RMS error
+    plt.figure(figsize=(10, 6))
+    for column in df_rms.columns:
+        plt.plot(x_vals, df_rms[column], linestyle='--', alpha=0.5, label=f'Actuator {column}')
+    plt.plot(x_vals, rms_mean, color='black', marker='o', label='Mean RMS Error')
+    plt.fill_between(x_vals, rms_mean - rms_std, rms_mean + rms_std, color='gray', alpha=0.3, label='±1 Std Dev')
+    # add the values of the mean RMS error on the plot
+    # for i, val in enumerate(rms_mean):
+    #     plt.text(x_vals[i], val + 0.1, f"{val:.2f}", ha='center', va='bottom', fontsize=8)
+    plt.xlabel("Time Interval Between Trajectory Points (ms)")
+    plt.ylabel("RMS Error (mm)")
+    plt.grid(True)
+    plt.gca().invert_xaxis()
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("actuator_rms_errors.png", dpi=300)
+
 
 if __name__ == "__main__":
     actuator_path_names = [
@@ -97,13 +147,16 @@ if __name__ == "__main__":
     time_intervals = [40, 50, 60, 70, 80, 90, 100]
     all_delays = []
     all_rhos = []
+    all_rms = []
 
     for path in actuator_path_names:
-        delays, rhos = process_file(path)
+        delays, rhos, rms = process_file(path)
         all_delays.append(delays)
         all_rhos.append(rhos)
+        all_rms.append(rms)
 
     delay_dict = {f"Actuator {i}": [d[i] for d in all_delays] for i in range(6)}
     rho_dict = {f"Actuator {i}": [r[i] for r in all_rhos] for i in range(6)}
+    rms_dict = {f"Actuator {i}": [rms[i] for rms in all_rms] for i in range(6)}
 
-    plot_results(time_intervals, delay_dict, rho_dict)
+    plot_results(time_intervals, delay_dict, rho_dict, rms_dict)

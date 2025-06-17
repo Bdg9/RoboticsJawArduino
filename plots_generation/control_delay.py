@@ -18,6 +18,31 @@ def normalised_xcorr(x, y):
     denom = np.sqrt(np.sum(x**2) * np.sum(y**2))
     return correlate(y, x, mode='full') / denom           # +lag ⇒ y lags x
 
+
+def rms_error_shifted(u: np.ndarray, y: np.ndarray, k: int) -> float:
+    """Return RMS(|shift(u,k) − y|) after aligning for lag k.
+
+    Positive *k* means *y* lags *u*, so we discard the first *k* samples of *u*.
+    Negative *k* means *u* lags *y*, so we discard the first |k| samples of *y*.
+    """
+    if k > 0:
+        # Discard the first *k* samples of u so that u[k] aligns with y[0]
+        u_aligned = u[k:]
+        y_aligned = y[: len(u_aligned)]
+    elif k < 0:
+        k_abs = abs(k)
+        # Discard first |k| samples of y so that y[k_abs] aligns with u[0]
+        y_aligned = y[k_abs:]
+        u_aligned = u[: len(y_aligned)]
+    else:
+        u_aligned = u
+        y_aligned = y
+
+    if len(u_aligned) == 0 or len(y_aligned) == 0:
+        return np.nan
+
+    return float(np.sqrt(np.mean((u_aligned - y_aligned) ** 2)))
+
 def analyse_actuator(df_act):
     u = df_act["target_length"].to_numpy()
     y = df_act["current_length"].to_numpy()
@@ -32,7 +57,10 @@ def analyse_actuator(df_act):
     print(f"Actuator {df_act['actuator'].iloc[0]}: dt = {dt:.6f} s, k_peak = {k_peak}")
     tau_sec = k_peak * dt
 
-    return k_peak, tau_sec, rho_peak
+    # RMS error after delay compensation
+    rms_err = rms_error_shifted(u, y, k_peak)
+
+    return k_peak, tau_sec, rho_peak, rms_err
 
 def main(csv_path):
     df = pd.read_csv(csv_path)
@@ -51,11 +79,11 @@ def main(csv_path):
     print("\nCross-correlation delay per actuator")
     print("------------------------------------")
     for act_id, group in df.groupby("actuator"):
-        k, tau, rho = analyse_actuator(group)
+        k, tau, rho, rms = analyse_actuator(group)
         direction = "y lags u" if k > 0 else "u lags y" if k < 0 else "no lag"
         tau_ms = tau * 1e3
         print(f"Actuator {act_id}: lag = {k:+d} samples  "
-              f"({tau_ms/1000:+.2f} ms, {direction})   ρ = {rho:+.4f}")
+              f"({tau_ms/1000:+.2f} ms, {direction})   ρ = {rho:+.4f}, RMS error = {rms:.4f} mm")
 
 actuator_path_names = ["../Results/benhui_10s_40ms/benhui_gum_10s_40_ms_actuator_data_20250613-182908.csv",
             "../Results/benhui_10s_50ms/benhui_gum_10s_50_ms_actuator_data_20250613-182743.csv",
