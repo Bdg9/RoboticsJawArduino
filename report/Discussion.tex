@@ -1,17 +1,95 @@
 \section{Discussion}
-\subsection{Summary of findings}
 
 \subsection{Limitations}
-\begin{itemize}
-    \item So far very big and heavy robot due to steel plates and big actuator \(\neq\) human jaw
-    \item 3D printed teeth/jaw not strong enough to withstand the forces applied by the actuators
-\end{itemize}
 
-\subsection{Future work}
-\begin{itemize}
-    \item 3D printed jaw/teeth to be replaced by a more rigid material
-    \item add a tongue module
-    \item add a saliva module
-    \item adapt state machine to coordinate the different modules
-    \item add a camera to track the food
-\end{itemize}
+Although this work represents an important first step towards a complete chewing robot, several limitations remain that currently prevent the system from 
+accurately mimicking real mastication.
+
+\subsubsection{Mechanical design}
+\paragraph{Incomplete oral enclosure.}
+One major limitation is that the robot does not currently feature a closed mouth. This means that food placed between the jaws is prone to falling out during 
+chewing. For a functional mastication process, particularly with soft or fragmented food items, a sealed oral cavity is essential to retain and guide the bolus.
+
+\paragraph{Non-biological tooth material and surface.}
+The current teeth are 3D printed in PLA, a material that is neither hard nor stiff enough to reproduce the mechanical properties of real enamel. As a result, 
+they deform under load and are susceptible to wear. Furthermore, the surface finish of 3D printed PLA is inherently rough, which introduces friction and causes 
+jitter when the teeth slide against each other. This affects both motion fidelity and safety of the robot.
+
+\paragraph{Structural compliance of the upper jaw.}
+During high-force tests, the upper jaw frame was observed to bend, limiting the system's maximum vertical force to around 300 N—well below the theoretical 
+capacity of 1155 N. This compliance introduces uncontrolled movement and restricts our ability to reproduce realistic occlusal forces.
+
+\paragraph{Incompatibility of stiffness and precision.}
+The current Stewart platform is both non-compliant and relatively imprecise in position tracking. This is a problematic combination for full occlusion: human teeth 
+can slide and interact with high dexterity, while the robot risks damage during such contact. Introducing compliance, for instance with a soft layer under the mandibular 
+teeth, could improve robustness and better replicate human chewing mechanics.
+
+\subsubsection{Electronics and control}
+\paragraph{Limitations of the control strategy.}
+The control strategy implemented in this prototype is intentionally simple to validate basic mechanical function. However, it lacks both force regulation and 
+bio-inspiration. There is no feedback loop controlling the force applied to the upper jaw, and the chewing trajectory is open-loop. Additionally, the system 
+introduces a 0.7 s delay at 10 Hz, which is too high for real-time coordination with future modules such as the tongue or saliva system.
+
+\paragraph{Inaccurate position feedback and actuator selection.}
+The potentiometers used for position feedback are not sufficiently precise to capture small actuator displacements. Optical encoders or alternative sensing methods 
+would offer improved resolution. Moreover, since we currently rely on motors with built-in position feedback, this constrains actuator selection. Exploring motors 
+with similar force capabilities but higher speed and no integrated feedback could enhance performance.
+
+\subsubsection{Motion capture recordings}
+
+\paragraph{Optitrack precision.}The quality of the recorded human jaw motion is limited by the precision and methodology of the motion capture system. The calibration error of approximately $0.3$ mm is 
+relatively high in the context of mastication, where displacements typically occur on the scale of millimeters. This level of uncertainty can significantly 
+affect the fidelity of the extracted trajectories.
+
+\paragraph{Skin motion.}Moreover, the motion was tracked using a reflective marker placed on the gnathion, a point located on the skin. Since the skin exhibits independent movement relative to 
+the underlying jaw bone during chewing, the recorded trajectory does not accurately reflect true mandibular motion. This inherently reduces the biomechanical validity of the data.
+
+Alternative approaches such as kinesiography, which involves tracking a small magnet attached to the jaw, offer better temporal and spatial resolution by directly capturing 
+bone motion. These methods would be more suitable for building reliable and reusable datasets of human chewing trajectories.
+
+\subsection{Future Work}
+
+This section outlines key directions for improving both the mechanical design and control architecture of the chewing robot to move closer to a functional and autonomous chewing system.
+
+\subsubsection{Mechanical design improvements}
+
+\paragraph{Closing the mouth and food retention.}  
+A major limitation of the current prototype is the open oral cavity. Sealing the mouth using a flexible membrane—such as latex or polyurethane—would prevent food from falling out 
+during chewing and improve user safety. A transparent membrane would additionally allow visual monitoring of the food during mastication.
+
+\paragraph{Tongue, saliva, and esophagus modules.}  
+The mechanical design already accommodates future modules including a tongue and esophagus. The tongue would help reposition the food between cycles or push it into the esophagus. 
+Integration of a saliva system would enable studies on bolus formation and realistic food breakdown. To monitor these internal processes, a small camera will be mounted inside the mouth.
+
+\paragraph{Tooth design improvements.}  
+The current PLA teeth are not mechanically suitable for realistic chewing. Future iterations should use more rigid and smoother materials, such as 3D-printed resin or 
+anatomical dental models, to reduce deformation, surface friction, and jitter.
+
+\paragraph{Upper jaw rigidity.}  
+To address observed bending under load, the upper jaw assembly should be reinforced. This could be achieved by welding structural ribs onto the mounting plate or attaching 
+an external aluminum rod for additional support.
+
+\paragraph{Weight reduction.}  
+The use of heavy steel components contributes to the robot's high mass. Future iterations could explore alternative materials to reduce weight while preserving structural integrity.
+
+\paragraph{Compliance under mandibular teeth.}  
+Introducing a compliant layer beneath the mandibular teeth would allow controlled deformation during occlusion. This would reduce risk of damage and improve fidelity 
+in reproducing natural sliding contact between teeth.
+
+\subsubsection{Control system improvements}
+
+\paragraph{Force-aware.}  
+The current closed-loop position-based strategy is insufficient for coordinated mastication. Future work should explore alternative control methods managing both position and force in a 
+dynamic, compliant manner, such as impedance control. 
+\textbf{TODO: cite relevant impedance control paper}
+
+\paragraph{Bio-inspired control, towards autonomous chewing.}  
+Future iterations of the software could leverage the recorded human chewing motion data to identify a small set of representative motion patterns using PCA. Mixing these trajectories 
+would allow the robot to switch between different chewing motions based on sensory input or task requirements. This would enable autonomous mastication and food processing, paving 
+the way for biologically accurate studies of chewing mechanics.
+
+\paragraph{Dataset validation and expansion.}  
+To implement the above approach, the suitability of the current motion dataset must be assessed. If inadequate, new recordings—ideally using more accurate motion capture 
+methods—will be necessary.
+
+

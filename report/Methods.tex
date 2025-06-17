@@ -45,6 +45,7 @@ Note that the jaw's speed is not a design requirement as food can be effectively
 
 
 \subsection{Mechanical design}
+\label{sec:mechanical_design}
 
 This section details the key design decisions that led to the final mechanical design of the chewing robot and the resulting specifications.
 
@@ -434,6 +435,13 @@ According to the manufacturer's calibration data, the load cell output from the 
 (Figure~\ref{fig:load_cell_calibration}). Based on this, the \texttt{LoadCell} class linearly scales the filtered signal to a calibrated 
 force range of [0, 500] N. To eliminate static bias introduced by preloading or assembly stress, each load cell is automatically tared at system startup.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/load_cell_calibration.png}
+\caption{Load cell calibration data.}
+\label{fig:load_cell_calibration}
+\end{figure}
+
 The \texttt{ForceSensing} module aggregates the force data from all three load cells to compute the total force applied on the upper jaw. 
 Since each load cell only measures force in the positive direction of its axis, their physical orientation must be accounted for during summation. 
 This configuration is illustrated in Figure~\ref{fig:load_cells_axis}. The total forces in the x, y, and z directions are calculated as:
@@ -452,14 +460,7 @@ to prevent damage to the robot.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figures/load_cell_calibration.png}
-\caption{Load cell calibration data.}
-\label{fig:load_cell_calibration}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.6\textwidth]{figures/load_cells_axis.drawio.png}
+\includegraphics[width=0.4\textwidth]{figures/load_cells_axis.drawio.png}
 \caption{Load cells orientation.}
 \label{fig:load_cells_axis}
 \end{figure}

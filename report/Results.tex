@@ -1,13 +1,7 @@
 \section{Results}
-\subsection{Mimicking human jaw motion}
-\begin{itemize}
-    \item human jaw motion from motion capture
-    \item results of PCA on human jaw motion
-    \item show graphs of human jaw motion vs robotic jaw motion
-    \item show graphs of the force during chewing for human vs robot
-\end{itemize}
-
 \subsection{Motion captured chewing trajectories}
+
+TODO clean graphs of trajectories
 
 \subsection{Position control}
 
@@ -96,4 +90,32 @@ with the mechanical coupling in the mounting structure, as the front load cell i
     The red lines separate the three gum positions: back right, front, and back left.}
     \label{fig:force_distribution_gum}
 \end{figure}
+
+\subsection{Scalability and modularity}
+\subsubsection{Scalability} One of the goals of the design was to create a foundation for a more complete chewing robot, like adding a tongue, saliva pumps or an esophagus. 
+As described in Section~\ref{sec:mechanical_design}, the platform design and jaws subassemblies already allow for the addition of a tongue and esophagus, as well as cameras 
+to monitor the chewing process. These design choices where possible thanks to the collaboration with my supervisor, Benhui Dai. Figure xxx shows a rendering of the 
+robot with the future modules. As seen in Section~\ref{sec:control}, the control system is also designed to scaled to easily support additional modules, such as a tongue or esophagus. 
+
+A central objective of this project was to design a chewing robot that could serve as a scalable platform for future extensions. As detailed in Section~\ref{sec:mechanical_design}, 
+the mechanical structure of the jaws and Stewart platform has been intentionally configured to accommodate additional components such as a tongue module, saliva pumps, and an 
+esophagus. Sufficient space has also been reserved for mounting internal cameras to observe the food during mastication.
+
+These hardware design choices were made in collaboration with the project supervisor, Benhui Dai, and rendering of the future modules is shown in Figure XXX.
+
+**TODO: add rendering of future modules**
+
+The control system, described in Section~\ref{sec:control}, was developed with similar scalability in mind. The modular software architecture and finite-state machine 
+allow for straightforward integration of new modules, including actuators, sensors, and subsystems required for tongue or saliva control.
+
+\subsubsection{Modularity} 
+The robot is designed with modularity at both the hardware and software levels. On the mechanical side, key components such as the mandibular and maxillary teeth are mounted using 
+replaceable acrylic adaptors, enabling rapid swaps for testing different dentitions. This feature is particularly relevant for simulating conditions such as orthodontic treatments, 
+dental implants, or age-related tooth wear.
+
+**TODO: Example of new teeth?**
+
+On the software side, adaptation to new dental configurations only requires updating the initial platform position to achieve full occlusion. New chewing trajectories can be added to 
+the micro-SD card and executed without code modification, making the robot well-suited for testing diverse experimental scenarios and clinical applications.
+
 
