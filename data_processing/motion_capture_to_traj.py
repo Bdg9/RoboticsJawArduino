@@ -152,9 +152,9 @@ def main(in_csv: pathlib.Path, pca_path: pathlib.Path, out_csv: pathlib.Path,
         np.save(pca_path, R_pca)
         print(f"Saved PCA matrix → {pca_path}")
 
-    # Build basis with (PC2→+X, −PC1→+Y, −PC0→+Z) -----------------------------
+    # Build basis with (-PC2→+X, PC1→+Y, −PC0→+Z) -----------------------------
     R_basis = R_pca[:, [2, 1, 0]].copy()  # columns are new x‑y‑z axes in old coords
-    R_basis[:, 1] *= -1  # flip Y
+    R_basis[:, 0] *= -1  # flip X
     R_basis[:, 2] *= -1  # flip Z
 
     # Re‑express translations ------------------------------------------------
