@@ -1,7 +1,46 @@
 \section{Results}
 \subsection{Motion captured chewing trajectories}
 
-TODO clean graphs of trajectories
+Figures~\ref{fig:trajectory_plot} and \ref{fig:xy-z} show a representative chewing trajectory recorded from a human subject masticating chewing gum on random sides of the mouth, using the OptiTrack motion 
+capture system. The vertical displacement clearly reveals cyclic jaw movements, identifiable by recurring peaks that correspond to the opening and closing 
+phases of the chewing cycle. The horizontal components (x and y) show a pattern that is qualitatively consistent with reported human data in \cite{chewing_traj}.
+
+However, in the second half of the recording, the orientation data becomes less structured, making it difficult to extract a consistent angular pattern. Notably, 
+this segment was selected for its relatively clean signal compared to other portions of the dataset. This highlights the limitations of the current motion capture 
+setup in accurately capturing fine jaw dynamics.
+
+Several factors may contribute to this inaccuracy. First, the experimental setup in the lab is optimized for larger body movements, with camera placements and 
+coverage not tailored for millimeter-scale precision. Second, the marker was placed on the gnathion, a point on the skin, which does not remain rigidly coupled 
+to the mandible during mastication. Skin movement introduces additional noise that likely distorts the underlying bone trajectory.
+
+Despite these limitations, the trajectory remains sufficiently accurate to evaluate the robot's position control performance and serves as a useful initial 
+benchmark.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/trajectory_plot.png}
+    \caption{Random side chewing gum mastication trajectory.}
+    \label{fig:trajectory_plot}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.45\textwidth}
+  \centering
+  \includegraphics[height=6cm]{figures/x_vs_z_position.png}
+  \subcaption{}
+  \label{fig:x-z}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+  \centering
+  \includegraphics[height=6cm]{figures/y_vs_z_position.png}
+  \subcaption{}
+  \label{fig:y-z}
+\end{minipage}
+\caption{Position of the jaw in the x-z plane (a) and y-z plane (b).}
+\label{fig:xy-z}
+\end{figure}
+
 
 \subsection{Position control}
 
@@ -101,9 +140,25 @@ A central objective of this project was to design a chewing robot that could ser
 the mechanical structure of the jaws and Stewart platform has been intentionally configured to accommodate additional components such as a tongue module, saliva pumps, and an 
 esophagus. Sufficient space has also been reserved for mounting internal cameras to observe the food during mastication.
 
-These hardware design choices were made in collaboration with the project supervisor, Benhui Dai, and rendering of the future modules is shown in Figure XXX.
+These hardware design choices were made in collaboration with the project supervisor, Benhui Dai, and a first rendering of the future module tongue implemented on the lower jaw is shown in Figur~\ref{fig:tongue}.
 
-**TODO: add rendering of future modules**
+\begin{figure}[H]
+\centering
+\begin{minipage}{.45\textwidth}
+  \centering
+  \includegraphics[height=6cm]{figures/tongue_front.png}
+  \subcaption{}
+  \label{fig:tongue_front}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+  \centering
+  \includegraphics[height=6cm]{figures/tongue_back.png}
+  \subcaption{}
+  \label{fig:tongue_back}
+\end{minipage}
+\caption{Future tongue module rendering. (a) Front view, (b) Back view. }
+\label{fig:tongue}
+\end{figure}
 
 The control system, described in Section~\ref{sec:control}, was developed with similar scalability in mind. The modular software architecture and finite-state machine 
 allow for straightforward integration of new modules, including actuators, sensors, and subsystems required for tongue or saliva control.

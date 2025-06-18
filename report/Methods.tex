@@ -327,26 +327,35 @@ The central class \texttt{RobotController} maintains the finite-state machine in
     \item \texttt{ForceSensing}: continuous load-cell acquisition and filtering;
 \end{itemize}
 The controller is designed to be modular, allowing for easy addition of new modules such as a tongue or saliva module in the future.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/code_structure.drawio.png}
+\caption{Overall code structure.}
+\label{fig:code_structure}
+\end{figure}
+
 The three controller states are:
 \begin{enumerate}
     \item \textbf{Stop} – return to home pose; reload trajectory if the user selects a new file;
     \item \textbf{Calibrate} – user can manually change the initial $(x,y,z)$ position via the GUI;
     \item \textbf{Move} – replay the selected trajectory.
 \end{enumerate}
-A lightweight Python GUI on the host PC issues high-level commands, such as state changes, and plots sensor data.  
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figures/code_structure.drawio.png}
-\caption{Overall code structure.}
-\label{fig:code_structure}
-\end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{figures/state_machine.drawio.png}
 \caption{Robot controller state machine.}
 \label{fig:state_machine}
+\end{figure}
+
+A lightweight Python GUI, made with PyQt5, on the host PC issues high-level commands, such as state changes, and plots sensor data. Figure~\ref{fig:gui} shows the GUI interface. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/gui.drawio.png}
+  \caption{Robot controller GUI.}
+  \label{fig:gui}  
 \end{figure}
 
 \subsubsection{Stewart platform control}
@@ -473,14 +482,21 @@ Two healthy adult volunteers (author and project supervisor) participated in thi
 Owing to time constraints and the exploratory nature of the study, no additional subjects were recruited. 
 
 \subsubsection{Motion-capture acquisition}
+\begin{minipage}{0.15\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/benhui_marker.jpg}
+  \captionof{figure}{Marker placement.}
+  \label{fig:marker_placement}
+\end{minipage}
+\hfill
+\begin{minipage}{0.80\textwidth}
 Mandibular motion was recorded with a five-camera OptiTrack system sampling at 120 Hz.
 Four reflective markers arranged in a square were attached to the forehead and served as a head-fixed reference frame.
-A second set of three markers forming a triangle was placed on the gnathion.
-Two additional lip markers were recorded but later discarded because a single marker cannot encode orientation. \cite{motion_capture_adult,motion_capture_children}
-
+A second set of three markers forming a triangle was placed on the gnathion. Figure~\ref{fig:marker_placement} shows the marker placement. 
+Two additional lip markers were recorded but later discarded because a single marker cannot encode orientation \cite{motion_capture_adult,motion_capture_children}.
 The subject then performed the motion sequences listed in Table~\ref{tab:recording-protocol}. Each frame was saved by Motive as a \texttt{.csv} file that contains
 the 3-D marker positions (in millimetres) and the orientation of each marker set as quaternions. The calibrated volume had a residual error of $0.3\,$mm.
-% TODO: insert a photograph of the marker placement
+\end{minipage}
 
 \begin{table}[H]
   \centering
@@ -532,11 +548,11 @@ corresponds to the robot's Z-axis, the second to the Y-axis, and the third to th
 dynamics during mouth opening \cite{mouth_opening_mvt}. As the principal components (PC) are orthogonal, the resulting matrix forms a valid orthonormal basis. The rotation matrix is 
 then constructed by assigning the principal components as its column vectors.
 
-Upon visual inspection of the data, we flipped the Y and Z axes so that both decrease during jaw opening, ensuring alignment with the robot's coordinate 
-conventions. All positional and rotational data were then projected into this new reference frame usin the resulting rotation matrix:
+Upon visual inspection of the data, we flipped the X and Z axes so that both decrease during jaw opening, ensuring alignment with the robot's coordinate 
+conventions and human data \cite{chewing_traj}. All positional and rotational data were then projected into this new reference frame usin the resulting rotation matrix:
 \[
 R = \begin{pmatrix}
-    \text{PC}_1 & -\text{PC}_2 & -\text{PC}_3
+    -\text{PC}_1 & \text{PC}_2 & -\text{PC}_3
 \end{pmatrix}.
 \]
 
