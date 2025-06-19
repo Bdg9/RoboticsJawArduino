@@ -86,30 +86,28 @@ and key trajectory peaks are missed.
 
 The robot's vertical force generation capabilities were assessed using manual control mode normally used to set the robot's home position during calibration. 
 The platform was driven at its highest height under active force feedback while avoiding structural failure. The upper bound of the robot's vertical force 
-output was constrained by the stiffness of the upper jaw structure, which visibly bent under high vertical force. table~\ref{tab:max_force} shows the 
+output was constrained by the stiffness of the upper jaw structure, which visibly bent under high vertical force. Table~\ref{tab:max_force} shows the 
 maximum forces recorded by the three load cells during this test, see Figure~\ref{fig:load_cells_axis}.
 for the load cell positions. The results shows that most of the vertical force is applied on the back load cells, which reflects the 
-anatomical load pattern during full occlusion, where the molars bear the majority of chewing forces. The total vertical force output of the robot is 
-315.98 N, which is well within the average occlusal force during chewing, although below the maximum bit force from Table~\ref{tab:functional_criteria}.
-%TODO: find average bite force during chewing paper
+anatomical load pattern during full occlusion, where the molars bear the majority of chewing forces. Same for the antero-posterior force ($F_y$) where most of it 
+is applied on the front load cell, i.e. the incisors. The total vertical, lateral and antero-posterior force output of the robot are well within the average 
+forces during healthy human chewing \cite{shear_force}, although $F_z$ is below the maximum bit force from Table~\ref{tab:functional_criteria}.
 \begin{table}[H]
     \centering
     \begin{tabular}{p{4cm} p{2cm} p{2cm} p{2cm}}
         \toprule
         \textbf{Load Cell} & \textbf{$F_{z,max}$ (N)} & \textbf{$F_{y,max}$ (N)} & \textbf{$F_{x,max}$ (N)} \\
         \midrule
-        Back Right Load Cell & 124.63 & x & x \\
-        Back Left Load Cell & 124.63 & x & x  \\
-        Front Load Cell & 66.28 & x & x  \\
+        Back Right Load Cell & 124.63 & 59.64 & 123.85 \\
+        Back Left Load Cell & 124.63 & 23.95 & 67.84  \\
+        Front Load Cell & 66.28 & 81.38 & 123.07  \\
         \midrule
-        \textbf{Total Force} & \textbf{315.98} & x & x \\
+        \textbf{Total Force} & \textbf{315.98} & \textbf{103.08} & \textbf{125.71} \\
         \bottomrule       
     \end{tabular}
     \caption{Maximal forces recorded by the load cells during the force test.}
     \label{tab:max_force}
 \end{table}
-
-%TODO: shear and protrusion forces
 
 \subsubsection{Force feedback distribution}
 
