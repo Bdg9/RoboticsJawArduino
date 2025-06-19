@@ -12,7 +12,7 @@ ForceSensing::ForceSensing(): lc_mux(LC_MUX_S0, LC_MUX_S1, LC_MUX_S2, LC_MUX_S3)
     lc_mux.channel(LC_FRONT[2]); // Select channel for front load cell
 }
 
-void ForceSensing::update() {
+bool ForceSensing::update() {
     lc_front.update();
     lc_back_r.update();
     lc_back_l.update();
@@ -22,10 +22,16 @@ void ForceSensing::update() {
     ForceVector backRForce = lc_back_r.readForce();
     ForceVector backLForce = lc_back_l.readForce();
 
-    // Combine the forces into a single force vector TODO see if we need to apply any scaling or calibration
-    force.x = frontForce.x + backLForce.x;
-    force.y = frontForce.y + backLForce.y;
+    // Combine the forces into a single force vector
+    force.x = frontForce.x + backLForce.x -  backRForce.x;
+    force.y = frontForce.y + backLForce.y -  backRForce.y; 
     force.z = frontForce.z + backRForce.z + backLForce.z;
+
+    if (force.z > FORCE_THRESHOLD) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 ForceVector ForceSensing::getTotalForce() const {

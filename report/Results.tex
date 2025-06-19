@@ -1,38 +1,34 @@
 \section{Results}
 \subsection{Motion captured chewing trajectories}
+\label{sec:traj_result}
 
-Figures~\ref{fig:trajectory_plot} and \ref{fig:xy-z} show a representative chewing trajectory recorded from a human subject masticating chewing gum on random sides of the mouth, using the OptiTrack motion 
-capture system. The vertical displacement clearly reveals cyclic jaw movements, identifiable by recurring peaks that correspond to the opening and closing 
-phases of the chewing cycle. The horizontal components (x and y) show a pattern that is qualitatively consistent with reported human data in \cite{chewing_traj}.
+Figures~\ref{fig:trajectory_plot} shows a trajectory obtained using from Section~\ref{sec:motion-capture}. The vertical displacement clearly reveals cyclic jaw movements, 
+identifiable by recurring peaks that correspond to the opening and closing 
+phases of the chewing cycle. The horizontal components (x and y) show a pattern consistent with reported human data \cite{chewing_traj}.
 
-However, in the second half of the recording, the orientation data becomes less structured, making it difficult to extract a consistent angular pattern. Notably, 
-this segment was selected for its relatively clean signal compared to other portions of the dataset. This highlights the limitations of the current motion capture 
-setup in accurately capturing fine jaw dynamics.
+The orientation data on the other hand is less reliable as no clear pattern can be seen throughout the trajectory. Several factors described in Section~\ref{sec:motion_capture_limitations} 
+may contribute to this inaccuracy. 
 
-Several factors may contribute to this inaccuracy. First, the experimental setup in the lab is optimized for larger body movements, with camera placements and 
-coverage not tailored for millimeter-scale precision. Second, the marker was placed on the gnathion, a point on the skin, which does not remain rigidly coupled 
-to the mandible during mastication. Skin movement introduces additional noise that likely distorts the underlying bone trajectory.
-
-Despite these limitations, the trajectory remains sufficiently accurate to evaluate the robot's position control performance and serves as a useful initial 
+Nonetheless, the trajectory remains sufficiently accurate to evaluate the robot's position control performance and serves as a useful initial 
 benchmark.
 
-\begin{figure}[H]
-\centering
-\begin{minipage}{.45\textwidth}
-  \centering
-  \includegraphics[height=6cm]{figures/x_vs_z_position.png}
-  \subcaption{}
-  \label{fig:x-z}
-\end{minipage}
-\begin{minipage}{.45\textwidth}
-  \centering
-  \includegraphics[height=6cm]{figures/y_vs_z_position.png}
-  \subcaption{}
-  \label{fig:y-z}
-\end{minipage}
-\caption{Position of the jaw in the x-z plane (a) and y-z plane (b).}
-\label{fig:xy-z}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \begin{minipage}{.45\textwidth}
+%   \centering
+%   \includegraphics[height=6cm]{figures/x_vs_z_position.png}
+%   \subcaption{}
+%   \label{fig:x-z}
+% \end{minipage}
+% \begin{minipage}{.45\textwidth}
+%   \centering
+%   \includegraphics[height=6cm]{figures/y_vs_z_position.png}
+%   \subcaption{}
+%   \label{fig:y-z}
+% \end{minipage}
+% \caption{Position of the jaw in the x-z plane (a) and y-z plane (b).}
+% \label{fig:xy-z}
+% \end{figure}
 
 \begin{figure}[H]
     \centering
@@ -49,10 +45,9 @@ In this context, “speed” refers to the time interval between consecutive tra
 (approximately every 8.3 ms), the playback was tested at longer intervals: 40 ms (25 Hz), 50 ms (20 Hz), 60 ms (16.67 Hz), 70 ms (14.29 Hz), 80 ms 
 (12.5 Hz), 90 ms (11.11 Hz), and 100 ms (10 Hz).
 
-For this test, a 10-second segment of randomly selected chewing motion was used. We recorded both the target and actual actuator lengths across all 
-actuators. Figure~\ref{fig:actuator_delays_2} illustrates the tracking performance of actuator 2 at the various speeds. To quantify timing discrepancies, we 
-conducted a cross-correlation analysis between the target and actual actuator lengths, providing both time delays (Figure~\ref{fig:actuator_delays_2}) 
-and cross-correlation coefficients (Figure~\ref{fig:actuator_rhos_2}).
+For this test, a 10-second segment of chewing motion was used. Figure~\ref{fig:actuator_delays_2} illustrates the tracking performance of actuator 2 
+at the various speeds. To quantify timing discrepancies, we conducted a cross-correlation analysis between the target and actual actuator lengths, 
+providing both time delays (Figure~\ref{fig:actuator_delays_2}) and cross-correlation coefficients (Figure~\ref{fig:actuator_rhos_2}).
 
 The results show that at a sampling interval of 100 ms (10 Hz), the robot tracks the trajectory well, with an average delay of ~0.7 s and 
 cross-correlation coefficients exceeding 0.975. However, performance degrades significantly at higher speeds (i.e., shorter intervals), 
@@ -128,28 +123,22 @@ with the mechanical coupling in the mounting structure, as the front load cell i
 \end{figure}
 
 \subsection{Scalability and modularity}
-\subsubsection{Scalability} One of the goals of the design was to create a foundation for a more complete chewing robot, like adding a tongue, saliva pumps or an esophagus. 
-As described in Section~\ref{sec:mechanical_design}, the platform design and jaws subassemblies already allow for the addition of a tongue and esophagus, as well as cameras 
-to monitor the chewing process. These design choices where possible thanks to the collaboration with my supervisor, Benhui Dai. Figure xxx shows a rendering of the 
-robot with the future modules. As seen in Section~\ref{sec:control}, the control system is also designed to scaled to easily support additional modules, such as a tongue or esophagus. 
-
-A central objective of this project was to design a chewing robot that could serve as a scalable platform for future extensions. As detailed in Section~\ref{sec:mechanical_design}, 
-the mechanical structure of the jaws and Stewart platform has been intentionally configured to accommodate additional components such as a tongue module, saliva pumps, and an 
-esophagus. Sufficient space has also been reserved for mounting internal cameras to observe the food during mastication.
-
-These hardware design choices were made in collaboration with the project supervisor, Benhui Dai, and a first rendering of the future module tongue implemented on the lower jaw is shown in Figur~\ref{fig:tongue}.
+A central goal of the project was to build a scalable platform for future modules such as a tongue, saliva pumps, and an esophagus. As described in 
+Section~\ref{sec:mechanical_design}, the mechanical design already accommodates these additions, including space for internal cameras to observe the 
+chewing process. A rendering of the proposed tongue module is shown in Figure~\ref{fig:tongue}. These design decisions were made in collaboration with 
+project supervisor Benhui Dai.
 
 \begin{figure}[H]
 \centering
 \begin{minipage}{.45\textwidth}
   \centering
-  \includegraphics[height=6cm]{figures/tongue_front.png}
+  \includegraphics[height=5cm]{figures/tongue_front.png}
   \subcaption{}
   \label{fig:tongue_front}
 \end{minipage}
 \begin{minipage}{.45\textwidth}
   \centering
-  \includegraphics[height=6cm]{figures/tongue_back.png}
+  \includegraphics[height=5cm]{figures/tongue_back.png}
   \subcaption{}
   \label{fig:tongue_back}
 \end{minipage}
@@ -157,17 +146,8 @@ These hardware design choices were made in collaboration with the project superv
 \label{fig:tongue}
 \end{figure}
 
-The control system, described in Section~\ref{sec:control}, was developed with similar scalability in mind. The modular software architecture and finite-state machine 
-allow for straightforward integration of new modules, including actuators, sensors, and subsystems required for tongue or saliva control.
+The control system, detailed in Section~\ref{sec:control}, was developed with similar modularity in mind. Its finite-state machine architecture supports 
+the easy integration of new components such as actuators and sensors for additional subsystems.
 
-\subsubsection{Modularity} 
-The robot is designed with modularity at both the hardware and software levels. On the mechanical side, key components such as the mandibular and maxillary teeth are mounted using 
-replaceable acrylic adaptors, enabling rapid swaps for testing different dentitions. This feature is particularly relevant for simulating conditions such as orthodontic treatments, 
-dental implants, or age-related tooth wear.
-
-**TODO: Example of new teeth?**
-
-On the software side, adaptation to new dental configurations only requires updating the initial platform position to achieve full occlusion. New chewing trajectories can be added to 
-the micro-SD card and executed without code modification, making the robot well-suited for testing diverse experimental scenarios and clinical applications.
-
-
+The robot's modularity also extends to the dental elements. Maxillary and mandibular teeth are mounted on replaceable acrylic adaptors, allowing for 
+rapid testing of different dentitions. Combined with flexible trajectory loading, this makes the system suitable for a wide range of experimental and clinical scenarios.

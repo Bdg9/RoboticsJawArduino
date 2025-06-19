@@ -27,7 +27,11 @@ bool RobotController::begin() {
 
 void RobotController::update() {
     // update and print the force sensing data
-    forceSensing.update();
+    if(!forceSensing.update()) {
+        Serial.println("Error: Too much vertical force. Stopping execution.");
+        setState(RobotState::STOP);
+        return;
+    }
     if(state == RobotState::MOVING) {
         move();
         forceSensing.printForce();

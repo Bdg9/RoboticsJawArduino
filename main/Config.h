@@ -93,6 +93,9 @@ const float MAX_YAW = degrees2rad(10.0f);
 
 const int MIN_SPEED = 20;
 
+// Force threshold
+const float FORCE_THRESHOLD = 200.0f;
+
 // Center of rotation
 const float ROTATION_CENTER_X = 0.0f;
 const float ROTATION_CENTER_Y = 102.0f;

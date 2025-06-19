@@ -10,7 +10,7 @@ public:
     ForceSensing();
     
     // Update the force readings
-    void update();
+    bool update();
     
     // Get the current force vector
     ForceVector getTotalForce() const;

@@ -450,6 +450,7 @@ force range of [0, 500] N. To eliminate static bias introduced by preloading or 
 The \texttt{ForceSensing} module aggregates the force data from all three load cells to compute the total force applied on the upper jaw. 
 Since each load cell only measures force in the positive direction of its axis, their physical orientation must be accounted for during summation. 
 This configuration is illustrated in Figure~\ref{fig:load_cells_axis}. The total forces in the x, y, and z directions are calculated as:
+
 \begin{equation}
   F_{x,total} = F_{x,front} + F_{x,backL} - F_{x,backR},
 \end{equation}

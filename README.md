@@ -29,7 +29,7 @@ This repository contains all the code used for my master thesis project at CREAT
 7. Calibrate the robot home position using the GUI
 8. Press start to replay the trajectory
 
-## Demo Short
+## Demo video
 [![Watch on YouTube](https://img.youtube.com/shorts/_uW6wkvUZ1g/hqdefault.jpg)](https://www.youtube.com/shorts/_uW6wkvUZ1g)
 
 
