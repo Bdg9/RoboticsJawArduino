@@ -30,6 +30,6 @@ This repository contains all the code used for my master thesis project at CREAT
 8. Press start to replay the trajectory
 
 ## Demo video 
-<video src="video_pic_real_robot/demo_video.mp4" controls width="50%"></video>
+<video src="video_pic_real_robot/demo_video.mp4" controls width="1080"></video>
 
 
