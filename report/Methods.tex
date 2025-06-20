@@ -466,13 +466,10 @@ This configuration is illustrated in Figure~\ref{fig:load_cells_axis}. The total
 \begin{equation}
   F_{z,total} = F_{z,front} + F_{z,backL} + F_{z,backR}.
 \end{equation}
-% For now, the \texttt{ForceSensing} module primarily serves as a safety mechanism. If the total measured force exceeds predefined 
-% thresholds—200 N in the z-direction, 60 N in x, or 50 N in y—the module fails and triggers \texttt{RobotController} to transition to \texttt{Stop} mode 
-% to prevent damage to the robot.
 
 \begin{minipage}{0.50\textwidth}
-For now, the \texttt{ForceSensing} module primarily serves as a safety mechanism and force feedback recording. If the total measured force exceeds predefined 
-thresholds—200 N in the z-direction, 60 N in x, or 50 N in y—the module fails and triggers \texttt{RobotController} to transition to \texttt{Stop} mode 
+For now, the \texttt{ForceSensing} module primarily serves as a safety mechanism and force feedback recording. If the total measured force exceeds 
+200 N in the z-direction the module fails and triggers \texttt{RobotController} to transition to \texttt{Stop} mode 
 to prevent damage to the robot.
 \end{minipage}
 \hfill
