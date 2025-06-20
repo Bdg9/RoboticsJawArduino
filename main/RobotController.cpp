@@ -34,11 +34,11 @@ void RobotController::update() {
     }
     if(state == RobotState::MOVING) {
         move();
-        forceSensing.printForce();
+        forceSensing.printForce(); 
     }
     else if(state == RobotState::CALIBRATING) {
         calibrate();
-        forceSensing.printForce();
+        //forceSensing.printForce(); // uncomment to record force data during calibration
     }
     else if(state == RobotState::STOP) {
         stop();

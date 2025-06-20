@@ -2,7 +2,7 @@
 \subsection{Motion captured chewing trajectories}
 \label{sec:traj_result}
 
-Figures~\ref{fig:trajectory_plot} shows a trajectory obtained using from Section~\ref{sec:motion-capture}. The vertical displacement clearly reveals cyclic jaw movements, 
+Figure~\ref{fig:trajectory_plot} shows a trajectory obtained using the method described in Section~\ref{sec:motion-capture}. The vertical displacement clearly reveals cyclic jaw movements, 
 identifiable by recurring peaks that correspond to the opening and closing 
 phases of the chewing cycle. The horizontal components (x and y) show a pattern consistent with reported human data \cite{chewing_traj}.
 
@@ -39,7 +39,6 @@ benchmark.
 
 \subsection{Position control}
 
-\paragraph{Speed and accuracy}
 To evaluate the performance of the position control system, we investigated the robot's ability to track a predefined trajectory at varying speeds. 
 In this context, “speed” refers to the time interval between consecutive trajectory points. While the motion capture data was recorded at 120 Hz 
 (approximately every 8.3 ms), the playback was tested at longer intervals: 40 ms (25 Hz), 50 ms (20 Hz), 60 ms (16.67 Hz), 70 ms (14.29 Hz), 80 ms 
@@ -83,10 +82,10 @@ The robot's vertical force generation capabilities were assessed using manual co
 The platform was driven at its highest height under active force feedback while avoiding structural failure. The upper bound of the robot's vertical force 
 output was constrained by the stiffness of the upper jaw structure, which visibly bent under high vertical force. Table~\ref{tab:max_force} shows the 
 maximum forces recorded by the three load cells during this test, see Figure~\ref{fig:load_cells_axis}.
-for the load cell positions. The results shows that most of the vertical force is applied on the back load cells, which reflects the 
-anatomical load pattern during full occlusion, where the molars bear the majority of chewing forces. Same for the antero-posterior force ($F_y$) where most of it 
+for the load cell positions. The results shows that most of the vertical force is applied to the back load cells, which reflects the 
+anatomical load pattern during full occlusion, where the molars bear the majority of chewing forces. Similarly for the antero-posterior force ($F_y$) where most of it 
 is applied on the front load cell, i.e. the incisors. The total vertical, lateral and antero-posterior force output of the robot are well within the average 
-forces during healthy human chewing \cite{shear_force}, although $F_z$ is below the maximum bit force from Table~\ref{tab:functional_criteria}.
+forces during healthy human chewing \cite{shear_force}, although $F_z$ is below the maximum bite force from Table~\ref{tab:functional_criteria}.
 \begin{table}[H]
     \centering
     \begin{tabular}{p{4cm} p{2cm} p{2cm} p{2cm}}
@@ -108,7 +107,7 @@ forces during healthy human chewing \cite{shear_force}, although $F_z$ is below 
 
 To evaluate the spatial resolution of the force sensing system, we applied a simple vertical trajectory while placing a piece of gum-like material 
 at three distinct positions between the teeth: back right, front, and back left. The vertical force output from each of the three load cells was 
-recorded (Figure~\ref{fig:force_distribution_gum}).
+recorded and shown in Figure~\ref{fig:force_distribution_gum}.
 
 The plot clearly shows three distinct peaks corresponding to the three test positions, confirming the system's capability to localize force application 
 across the dental arch. Additionally, when force is applied at the back, the front load cell registers a smaller secondary response. This is consistent 
@@ -116,7 +115,7 @@ with the mechanical coupling in the mounting structure, as the front load cell i
 
 \begin{figure}[H]
     \centering 
-    \includegraphics[width=0.8\textwidth]{figures/ForceDistributionGum.png}
+    \includegraphics[width=0.7\textwidth]{figures/ForceDistributionGum.png}
     \caption{Vertical force output across three load cells during chewing with localized gum placement.  
     The red lines separate the three gum positions: back right, front, and back left.}
     \label{fig:force_distribution_gum}

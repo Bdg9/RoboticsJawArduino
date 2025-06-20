@@ -243,20 +243,20 @@ class RobotGUI(QMainWindow):
         self.cal_window.setModal(True)
         self.cal_window.exec()
 
-        # Plot force data after calibration
+        # uncomment the following lines if you want to print max forces after calibration
+        # max_front = max([d['Fx'] for d in self.force_data_front]) if self.force_data_front else 0
+        # max_backr = max([d['Fx'] for d in self.force_data_backr]) if self.force_data_backr else 0
+        # max_backl = max([d['Fx'] for d in self.force_data_backl]) if self.force_data_backl else 0
+        # max_total = max([d['Fx'] for d in self.force_data_total]) if self.force_data_total else 0
+        # self.log(f"Max Front Force: {max_front:.2f} N")
+        # self.log(f"Max Back Right Force: {max_backr:.2f} N")
+        # self.log(f"Max Back Left Force: {max_backl:.2f} N")
+        # self.log(f"Max Total Force: {max_total:.2f} N")
+        # Plot force data after calibration, uncomment if needed
         #self.generateForcePlots()
         #self.generateDebugActuatorPlots()
         #print max of each force data
-        max_front = max([d['Fx'] for d in self.force_data_front]) if self.force_data_front else 0
-        max_backr = max([d['Fx'] for d in self.force_data_backr]) if self.force_data_backr else 0
-        max_backl = max([d['Fx'] for d in self.force_data_backl]) if self.force_data_backl else 0
-        max_total = max([d['Fx'] for d in self.force_data_total]) if self.force_data_total else 0
-        self.log(f"Max Front Force: {max_front:.2f} N")
-        self.log(f"Max Back Right Force: {max_backr:.2f} N")
-        self.log(f"Max Back Left Force: {max_backl:.2f} N")
-        self.log(f"Max Total Force: {max_total:.2f} N")
-
-        self.generateForcePlots()
+        
         
         # Re-enable buttons once the calibration window is closed
         self.start_button.setEnabled(True)

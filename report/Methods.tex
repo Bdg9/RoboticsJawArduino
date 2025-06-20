@@ -14,9 +14,9 @@ The design requirements are based on the human jaw anatomy and physiology, as su
     \toprule
     \textbf{Quantity} & \textbf{Values reported in the literature} & \textbf{Design requirement} \\
     \midrule
-    Degrees of freedom (DoF) 
-      & 6 DoF: 3 translational (X, Y, Z) and 3 rotational (roll, pitch, yaw) \cite{6dof}
-      & 6 DoF \\[2pt]
+    DoF
+      & 6-DoF: 3 translational (X, Y, Z) and 3 rotational (roll, pitch, yaw) \cite{6dof}
+      & 6-DoF \\[2pt]
     \hline
     Vertical (compressive) bite force $F_{z}$ 
       & $600$ N chewing force in healthy adults \cite{chewing_force},\; $1243$ N maximum clenching force \cite{max_clenching_force}
@@ -36,7 +36,7 @@ The design requirements are based on the human jaw anatomy and physiology, as su
 
     Mandibular motion range 
       & $14$ mm lateral shift, $11$ mm protrusion, $61$ mm mouth opening in healthy adults \cite{range_motion_required}
-      & $\pm20$ mm (X, Y);\;\; $0$–$70$ mm (Z) \\[2pt]
+      & $\pm20$ mm (X, Y);\;\; $0$–$60$ mm (Z) \\[2pt]
   \bottomrule
   \end{tabular}
   \caption{Functional design requirements.}
@@ -51,7 +51,7 @@ This section details the key design decisions that led to the final mechanical d
 
 \subsubsection{6-DoF mechanism}
 
-The first major design decision was how to achieve 6 DoFs for jaw motion. In the field of robotic mastication, two common approaches 
+The first major design decision was how to achieve 6-DoF for jaw motion. In the field of robotic mastication, two common approaches 
 are used. The first is a biomechanically inspired design using linear actuators \cite{ChewingRobotLinearActuator} or combinations of actuated cables and 
 springs \cite{ChewingRobotGums} to replicate muscle behavior. The second is a Stewart platform \cite{BristolChewingRobot}—a widely used 6-DoF parallel mechanism, often seen in 
 motion simulators. See Figure~\ref{fig:stewart_platforms} for a visualization of the two approaches.
@@ -122,10 +122,10 @@ F_{y} \approx 4 \cdot \cos(45^\circ) \cdot \cos(30^\circ) \cdot F_{\text{min}} \
 
 These calculations show that ensuring the vertical force requirement is met also guarantees that shear forces in the x and y directions will exceed 
 their respective targets.
-\paragraph{Speed and feedback.}Since speed is not a strict requirement for this prototype, we prioritized force over velocity when selecting actuators. Position feedback is necessary 
+\paragraph{Speed and feedback.}Since speed is not a requirement for this prototype, we prioritized force over velocity when selecting actuators. Position feedback is necessary 
 for closed-loop control, as we use inverse kinematics to compute actuators lengths based on the desired platform pose.
 \paragraph{Selection.}We selected the PA-14P-4-50 linear actuator, which meets both stroke and force requirements as seen in Table~\ref{tab:actuator_spec}. The dimensions 
-of both base and platform, see Figure~\ref{fig:stewart_platform}, were chosen to accomodate the size of the actuators. The resulting vertical workspace 
+of both base and platform, see Figure~\ref{fig:stewart_platform}, were chosen to accommodate the size of the actuators. The resulting vertical workspace 
 of the platform is 118 mm, which is more than enough to cover the required 70 mm.
 
 At mid-stroke, the actuators are positioned at an angle of 60° relative to the horizontal plane. Under this configuration, the theoretical maximum force 
@@ -158,7 +158,7 @@ for frictional losses or mechanical inefficiencies.
 \begin{minipage}{.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{figures/stewart_platform_annotated.drawio.png}
-  \caption{Final stewart platform design.}
+  \caption{Final Stewart platform design.}
   \label{fig:stewart_platform}
 \end{minipage}
 \end{figure}
@@ -169,7 +169,7 @@ Next, we designed the lower and upper jaws, which are attached to the platform a
 \paragraph{Lower jaw.}The lower jaw, Figure~\ref{fig:lower_jaw}, is mounted on the moving platform and elevated using four aluminum rods. This elevation 
 provides two main advantages: it creates a clear line of sight to place a motion capture marker on the gnathion, and it 
 leaves space beneath the jaw for integrating a future esophagus module. The mandibular teeth are fixed to a rigid plate 
-and positioned slightly forward to leave room for a future tongue module. This plate already accomodates a hole for a future esophagus module.
+and positioned slightly forward to leave room for a future tongue module. This plate already accommodates a hole for a future esophagus module.
 \paragraph{Upper jaw.}The upper jaw, Figure~\ref{fig:upper_jaw}, is mounted on a rigid frame made of aluminum rods to ensure sufficient stability and stiffness under loading. This 
 rigidity is essential to resist the forces applied by the lower jaw during chewing. Three-axis load cells are installed on the 
 upper jaw mounting plate to measure both vertical and lateral forces during contact. Two acrylic adaptor plates connect these load 
@@ -199,7 +199,7 @@ future studies on chewing development and masticatory disorders.
 
 \subsubsection{Full assembly}
 
-\paragraph{Final workspace.}The final design is shown in Figure~\ref{fig:overview}. The height of the upper jaw subsystem was set slightly below the platform's maximum 
+\paragraph{Final workspace.}The final design is shown in Figure~\ref{fig:overview}. Pictures of the built robot are included in Section~\ref{sec:real_pictures} of the Appendix. The height of the upper jaw subsystem was set slightly below the platform's maximum 
 vertical reach—roughly centered in the middle of its vertical workspace. This positioning ensures that the robot can apply maximum vertical 
 force when the mandibular and maxillary teeth are in contact, while still allowing enough range to meet angular requirements during chewing. 
 A detailed view of the vertical workspace can be found in Figure~\ref{fig:vertical_workspace}. The lateral and anterior-posterior workspaces are 
@@ -239,7 +239,7 @@ modifications—for example, adding reinforcement ribs to the upper jaw mounting
 \multirow{3}{*}{Stewart Platform} 
     & Base & Steel \\
     & Platform & Steel \\
-    & Adaptator & PLA \\
+    & Adapter & PLA \\
 \midrule
 \multirow{2}{*}{Lower Jaw} 
     & Lower jaw mounting plate & Steel \\
@@ -247,7 +247,7 @@ modifications—for example, adding reinforcement ribs to the upper jaw mounting
 \midrule
 \multirow{3}{*}{Upper Jaw} 
     & Upper jaw mounting plate & Steel \\
-    & Upper jaw adaptator plates & Acrylic \\
+    & Upper jaw adapter plates & Acrylic \\
     & Maxillary teeth & PLA \\
 \bottomrule
 \end{tabular}
@@ -259,7 +259,7 @@ modifications—for example, adding reinforcement ribs to the upper jaw mounting
 As the robot is designed to eventually include a saliva module, it is important to ensure that the electronics and mechanical components are protected from moisture.
 First, we protected the steel parts with a layer of paint to prevent rusting. Then on both the upper and bottom side of the base, a plastic sheet was added 
 to isolate the electronics from the steel base and prevent water from entering inside the box and damaging the electronics. 
-Finally, the linear actuators are IP54 rated, meaning they are protected against dust and splashes of water from any direction, see Table~\ref{tab:actuator_spec}.
+Finally, the linear actuators are IP54-rated, meaning they are protected against dust and splashes of water from any direction, see Table~\ref{tab:actuator_spec}.
 
 \paragraph{Specifications summary.}The final specifications of the chewing robot are summarized in Table~\ref{tab:final_specs}. It is worth noting that 
 the center of mass height is expected to decrease further once the electronic components are installed within the base enclosure.
@@ -296,17 +296,21 @@ Moisture protection & Painted + plastic sheets + IP54-rated actuators \\
 This section describes the hardware and software architecture of the chewing robot as well as the control strategy.
 
 \subsubsection{Hardware (electronics)}
-A Teensy~4.1 (600 MHz ARM Cortex-M7, single-precision FPU) executes the control loop.% at \SI{100}{\hertz}. %? %todo: add ref for the freq/reason
+A Teensy~4.1 (600 MHz ARM Cortex-M7, single-precision FPU) executes the control loop. % at \SI{100}{\hertz}. %? %todo: add ref for the freq/reason
 Its key peripherals are:  
 \begin{itemize}[nosep]
     \item three \SI{12}{\ampere} dual DC motor drivers (DF Robot) controlling the six linear actuators;
-    \item six analogue inputs reading potentiometer position feedback from the linear actuators;
-    \item three transmitters for the load cells mounted on top of the maxilla;
+    \item two multiplexers connected to :
+    \begin{itemize}
+      \item six analogue inputs reading potentiometer position feedback from the linear actuators;
+      \item three transmitters for the load cells mounted on top of the maxilla;
+    \end{itemize}
     \item an on-board micro-SD slot used for trajectory files and calibration data.
 \end{itemize}
-A \SI{12}{\volt} AC/DC brick powers the actuators directly; the user's computer supplies \SI{5}{\volt} to the Teensy, which in 
-turn sources the \SI{3.3}{\volt} logic rails for the motor drivers and load-cell transmitters.
-The full electronics schematic is shown in Fig.~\ref{fig:elec_schematic}.
+As for the power supply, the Teensy is powered by a \SI{5}{\volt} USB connection from the host computer, which also provides the communication link. 
+The \SI{3.3}{\volt} from the Teensy gives the logic levels for the motor drivers and load-cell transmitters. 
+A \SI{12}{\volt} AC/DC power supply powers the motor drivers directly, which in turn power the linear actuators. A \SI{24}{\volt} AC/DC power supply is used to power the load-cell transmitters. 
+The full electronics schematic is shown in Fig.~\ref{fig:elec_schematic}. More details on the electronics connections to the Teensy~4.1 are shown in Fig.~\ref{fig:connections_teensy} in the Appendix.
 
 \begin{figure}[H]
 \centering
@@ -316,13 +320,13 @@ The full electronics schematic is shown in Fig.~\ref{fig:elec_schematic}.
 \end{figure}
 
 \subsubsection{Software architecture}
+The main code \cite{githu_repo} was developed in object-oriented C++ using the Arduino framework and runs on the Teensy~4.1. 
 The central class \texttt{RobotController} maintains the finite-state machine in Fig.~\ref{fig:state_machine} and manages two
  modules:  
 \begin{itemize}[nosep]
     \item \texttt{StewartPlatform}: inverse kinematics, trajectory interpolation, and low-level actuator commands;
     \item \texttt{ForceSensing}: continuous load-cell acquisition and filtering;
 \end{itemize}
-The controller is designed to be modular, allowing for easy addition of new modules such as a tongue or saliva module in the future.
 
 \begin{figure}[H]
 \centering
@@ -330,6 +334,7 @@ The controller is designed to be modular, allowing for easy addition of new modu
 \caption{Overall code structure.}
 \label{fig:code_structure}
 \end{figure}
+The controller is designed to be modular, allowing for easy addition of new modules such as a tongue or saliva module in the future. 
 
 The three controller states are:
 \begin{enumerate}
@@ -345,7 +350,8 @@ The three controller states are:
 \label{fig:state_machine}
 \end{figure}
 
-A lightweight Python GUI, made with PyQt5, on the host PC issues high-level commands, such as state changes, and plots sensor data. Figure~\ref{fig:gui} shows the GUI interface. 
+The host PC runs a lightweight python GUI built with PyQt5, which is used to send high-level commands, such as initiating state transitions. It also collects sensory feedback 
+through the serial terminal. Upon pressing the Stop button, the interface generates plots from the recorded data. The GUI layout is shown in Figure~\ref{fig:gui}.
 
 \begin{figure}[H]
   \centering
@@ -356,12 +362,13 @@ A lightweight Python GUI, made with PyQt5, on the host PC issues high-level comm
 
 \subsubsection{Stewart platform control}
 
-The Stewart platform is controlled by the \texttt{StewartPlatform} class, which manages 
-The Stewart Platform follows a 3D trajectory (x, y, z, roll, pitch, yaw) from a .csv file on the micro-SD card.
-See section \ref{sec:motion-capture} for details on the recording protocol and data processing.
+The Stewart platform is controlled by the \texttt{StewartPlatform} class, which manages the trajectory, platform kinematics, and high-level actuator control. 
+Its real-time loop executes every \SI{10}{\milli\second} (\SI{100}{\hertz}). 
+The platform follows a 3D trajectory (x, y, z, roll, pitch, yaw) from a .csv file on the micro-SD card. 
+See section \ref{sec:motion-capture} for details on the recording protocol and data processing. 
 Each pose is defined by its position ${\bf t}=(x,y,z)$ and orientation given by the Euler angles $(\phi,\theta,\psi)$,
- which are the roll, pitch, and yaw angles respectively.
-The trajectory is then linearly interpolated with a fixed time step chosen by the user.
+ which are the roll, pitch, and yaw angles respectively. 
+The trajectory is then interpolated using a Catmull-Rom spline with a fixed time step chosen by the user.
 
 \paragraph{Inverse kinematics}
 For each pose in the trajectory, \texttt{Kinematics} computes the lengths of the six linear actuators that will achieve 
@@ -390,7 +397,7 @@ R(\phi,\theta,\psi) = R_Z(\psi) R_Y(\theta) R_X(\phi) =
 \end{pmatrix}
 \]
 
-In our case, the center of rotation is the gnathion, defined as a fixed point ${\bf c}$, rather than the origin of the platform. Therefore, 
+In our case, the center of rotation is the gnathion, defined as a fixed point ${\bf c}$ and visualized in Figure~\ref{fig:lower_jaw}, rather than the origin of the platform. Therefore, 
 the platform joints ${\bf p}_i$, $i$ being the actuator index, are first rotated about the gnathion and then translated by the user-defined 
 home position ${\bf T}=(x,y,z)$, resulting in the global coordinates of the platform joints:
 \[
@@ -436,8 +443,8 @@ The \texttt{ForceSensing} module is responsible for acquiring and processing dat
 Each load cell is represented by an instance of the \texttt{LoadCell} class, which performs signal conditioning on the raw sensor data. 
 Specifically, a low-pass filter is applied by averaging the last 10 samples to reduce high-frequency noise.
 
-According to the manufacturer's calibration data, the load cell output from the transmitter is sufficiently linear for direct mapping 
-(Figure~\ref{fig:load_cell_calibration}). Based on this, the \texttt{LoadCell} class linearly scales the filtered signal to a calibrated 
+According to the manufacturer's calibration data, the load cell output from the transmitter is sufficiently linear for direct mapping, see 
+Figure~\ref{fig:load_cell_calibration}. Based on this, the \texttt{LoadCell} class linearly scales the filtered signal to a calibrated 
 force range of [0, 500] N. To eliminate static bias introduced by preloading or assembly stress, each load cell is automatically tared at system startup.
 
 \begin{figure}[H]
@@ -450,7 +457,6 @@ force range of [0, 500] N. To eliminate static bias introduced by preloading or 
 The \texttt{ForceSensing} module aggregates the force data from all three load cells to compute the total force applied on the upper jaw. 
 Since each load cell only measures force in the positive direction of its axis, their physical orientation must be accounted for during summation. 
 This configuration is illustrated in Figure~\ref{fig:load_cells_axis}. The total forces in the x, y, and z directions are calculated as:
-
 \begin{equation}
   F_{x,total} = F_{x,front} + F_{x,backL} - F_{x,backR},
 \end{equation}
@@ -460,16 +466,29 @@ This configuration is illustrated in Figure~\ref{fig:load_cells_axis}. The total
 \begin{equation}
   F_{z,total} = F_{z,front} + F_{z,backL} + F_{z,backR}.
 \end{equation}
-For now, the \texttt{ForceSensing} module primarly serve as a safety mechanism. If the total measured force exceeds predefined 
+% For now, the \texttt{ForceSensing} module primarily serves as a safety mechanism. If the total measured force exceeds predefined 
+% thresholds—200 N in the z-direction, 60 N in x, or 50 N in y—the module fails and triggers \texttt{RobotController} to transition to \texttt{Stop} mode 
+% to prevent damage to the robot.
+
+\begin{minipage}{0.50\textwidth}
+For now, the \texttt{ForceSensing} module primarily serves as a safety mechanism and force feedback recording. If the total measured force exceeds predefined 
 thresholds—200 N in the z-direction, 60 N in x, or 50 N in y—the module fails and triggers \texttt{RobotController} to transition to \texttt{Stop} mode 
 to prevent damage to the robot.
+\end{minipage}
+\hfill
+\begin{minipage}{0.40\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/load_cells_axis.drawio.png}
+  \captionof{figure}{Load cells orientation.}
+  \label{fig:load_cells_axis}
+\end{minipage}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.4\textwidth]{figures/load_cells_axis.drawio.png}
-\caption{Load cells orientation.}
-\label{fig:load_cells_axis}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.4\textwidth]{figures/load_cells_axis.drawio.png}
+% \caption{Load cells orientation.}
+% \label{fig:load_cells_axis}
+% \end{figure}
 
 \subsection{Data acquisition and processing}
 \label{sec:motion-capture}
@@ -546,7 +565,7 @@ dynamics during mouth opening \cite{mouth_opening_mvt}. As the principal compone
 then constructed by assigning the principal components as its column vectors.
 
 Upon visual inspection of the data, we flipped the X and Z axes so that both decrease during jaw opening, ensuring alignment with the robot's coordinate 
-conventions and human data \cite{chewing_traj}. All positional and rotational data were then projected into this new reference frame usin the resulting rotation matrix:
+conventions and human data \cite{chewing_traj}. All positional and rotational data were then projected into this new reference frame using the resulting rotation matrix:
 \[
 R = \begin{pmatrix}
     -\text{PC}_1 & \text{PC}_2 & -\text{PC}_3
